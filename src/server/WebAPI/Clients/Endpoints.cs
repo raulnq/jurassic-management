@@ -1,0 +1,42 @@
+﻿namespace WebAPI.Clients;
+
+public static class Endpoints
+{
+    public class Endpoint
+    {
+        public string List = "/ui/clients/list";
+
+        public string Register = "/ui/clients/register";
+
+        public string Edit = "/ui/clients/{clientId}/edit";
+    }
+
+    public static readonly Endpoint Instance = new();
+
+    public static void RegisterClientEndpoints(this WebApplication app)
+    {
+        var group = app.MapGroup("/clients")
+        .WithTags("clients");
+
+        group.MapPost("/", RegisterClient.Handle);
+
+        group.MapGet("/", ListClients.Handle);
+
+        group.MapGet("/{clientId:guid}", GetClient.Handle);
+
+        group.MapPut("/{clientId:guid}", EditClient.Handle);
+
+        var uigroup = app.MapGroup("/ui/clients")
+        .ExcludeFromDescription();
+
+        uigroup.MapGet("/list", ListClients.HandlePage);
+
+        uigroup.MapGet("/register", RegisterClient.HandlePage);
+
+        uigroup.MapPost("/register", RegisterClient.HandleAction);
+
+        uigroup.MapGet("/{clientId:guid}/edit", EditClient.HandlePage);
+
+        uigroup.MapPost("/{clientId:guid}/edit", EditClient.HandleAction);
+    }
+}

@@ -1,0 +1,34 @@
+﻿@using WebAPI.Infrastructure.SqlKata;
+@using WebAPI.Infrastructure.Ui;
+
+<div id="search-results">
+    <DataTable TResult=ListProjects.Result
+               Result=@Result
+               Query=@Query
+               Context="item"
+               Endpoint=@(Endpoints.Edit.Replace("{clientId}", Query.ClientId))
+               Target="#search-results"
+               Swap="outerHTML">
+        <TableHeader>
+            <th></th>
+            <th>Name</th>
+        </TableHeader>
+        <RowTemplate>
+            <th>
+                <ActionLink Target="#dialog"
+                            Endpoint=@(Endpoints.Edit.Replace(new Dictionary<string, object?>(){{"{clientId}",item.ClientId}, {"projectId", item.ProjectId}}))
+                            Icon="bi bi-eye" />
+            </th>
+            <td>@item.Name</td>
+        </RowTemplate>
+    </DataTable>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public ListResults<ListProjects.Result> Result { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public ListProjects.Query Query { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public Endpoints.Endpoint Endpoints { get; set; } = default!;
+}

@@ -1,0 +1,124 @@
+﻿@using WebAPI.Clients;
+@using WebAPI.Infrastructure.SqlKata;
+@using WebAPI.Infrastructure.Ui;
+
+<Heading Text="Clients" />
+<Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new("List clients", Endpoints.List.AddListParameters()), new("Register client") }) />
+<Section>
+    <Content>
+        <Form Endpoint=@Endpoints.Register
+              Target="#workspace">
+            <Content>
+                <div class="row">
+                    <div class="col">
+                        <TextInput Property=@nameof(Client.Name)
+                                   Label="Name"
+                                   Placeholder="Enter name"
+                                   MaxLenght=200
+                                   Required=true />
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <TextInput Property=@nameof(Client.PhoneNumber)
+                                   Label="Phone number"
+                                   Placeholder="Enter phone number"
+                                   MaxLenght=50
+                                   Required=true />
+                    </div>
+                    <div class="col-6">
+                        <TextInput Property=@nameof(Client.DocumentNumber)
+                                   Label="Document number"
+                                   Placeholder="Enter document number"
+                                   MaxLenght=50
+                                   Required=true />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <TextInput Property=@nameof(Client.Address)
+                                   Label="Address"
+                                   Placeholder="Enter address"
+                                   MaxLenght=500
+                                   Required=true />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <NumberInput Property=@nameof(Client.PenaltyMinimumHours)
+                                     Label="Penalty minimum hours"
+                                     Placeholder="Enter penalty minimum hours"
+                                     Sufix="hours"
+                                     Min=0
+                                     Step=0.01m
+                                     Value=0
+                                     Required=true />
+                    </div>
+                    <div class="col-6">
+                        <NumberInput Property=@nameof(Client.PenaltyAmount)
+                                     Label="Penalty amount"
+                                     Placeholder="Enter penalty amount"
+                                     Prefix="$"
+                                     Min=0
+                                     Step=0.01m
+                                     Value=0
+                                     Required=true />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <NumberInput Property=@nameof(Client.TaxesExpensesPercentage)
+                                     Label="Taxes expenses percentage"
+                                     Placeholder="Enter taxes expenses percentage"
+                                     Sufix="%"
+                                     Min=0
+                                     Max=100
+                                     Step=0.01m
+                                     Value=0
+                                     Required=true />
+                    </div>
+                    <div class="col-6">
+                        <NumberInput Property=@nameof(Client.AdministrativeExpensesPercentage)
+                                     Label="Administrative expenses percentage"
+                                     Placeholder="Enter administrative expenses percentage"
+                                     Sufix="%"
+                                     Min=0
+                                     Max=100
+                                     Step=0.01m
+                                     Value=0
+                                     Required=true />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <NumberInput Property=@nameof(Client.BankingExpensesPercentage)
+                                     Label="Banking expenses percentage"
+                                     Placeholder="Enter banking expenses percentage"
+                                     Sufix="%"
+                                     Min=0
+                                     Max=100
+                                     Step=0.01m
+                                     Value=0
+                                     Required=true />
+                    </div>
+                    <div class="col-6">
+                        <NumberInput Property=@nameof(Client.MinimumBankingExpenses)
+                                     Label="Minimum banking expenses"
+                                     Placeholder="Enter minimum banking expenses"
+                                     Sufix="%"
+                                     Min=0
+                                     Step=0.01m
+                                     Value=0
+                                     Required=true />
+                    </div>
+                </div>
+            </Content>
+        </Form>
+    </Content>
+</Section>
+
+@code {
+    [Parameter, EditorRequired]
+    public Endpoints.Endpoint Endpoints { get; set; } = default!;
+}

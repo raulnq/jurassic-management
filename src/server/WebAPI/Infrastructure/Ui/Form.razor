@@ -1,0 +1,17 @@
+﻿<form hx-post=@Endpoint hx-target=@Target hx-swap=@Swap hx-ext="json-enc" hx-indicator="#form-spinner" hx-disabled-elt="#form-button">
+    @Content
+    <button id="form-button" type="submit" class="btn btn-primary">
+        <span>Save Changes</span>
+        <span id="form-spinner" class="spinner-border spinner-border-sm htmx-indicator" aria-hidden="true" />
+    </button>
+</form>
+@code {
+    [Parameter, EditorRequired]
+    public string Endpoint { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public string Target { get; set; } = default!;
+    [Parameter]
+    public string Swap { get; set; } = "innerHTML";
+    [Parameter, EditorRequired]
+    public RenderFragment? Content { get; set; } = default!;
+}

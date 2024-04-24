@@ -1,0 +1,24 @@
+﻿<li class="nav-item">
+    <a class="nav-link text-white" href="#" hx-get=@Endpoint hx-target=@Target hx-swap=@Swap>
+        @if (!string.IsNullOrEmpty(Icon))
+        {
+            <i class="@Icon me-2"></i>
+        }
+        @if (!string.IsNullOrEmpty(Text))
+        {
+            @Text
+        }
+    </a>
+</li>
+@code {
+    [Parameter, EditorRequired]
+    public string Target { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public string Endpoint { get; set; } = default!;
+    [Parameter]
+    public string Swap { get; set; } = "innerHTML";
+    [Parameter]
+    public string Icon { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public string Text { get; set; } = default!;
+}

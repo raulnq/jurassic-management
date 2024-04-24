@@ -1,0 +1,23 @@
+﻿@using WebAPI.Clients;
+@using WebAPI.Infrastructure.SqlKata;
+@using WebAPI.Infrastructure.Ui;
+
+<ModalForm Endpoint=@(Endpoints.Register.Replace("{clientId}", ClientId))
+           Swap="outerHTML"
+           Target="#search-results"
+           Title="Add project">
+    <Content>
+        <TextInput Property=@nameof(Project.Name)
+                   Label="Name"
+                   Placeholder="Enter name"
+                   MaxLenght=100
+                   Required=true />
+    </Content>
+</ModalForm>
+
+@code {
+    [Parameter, EditorRequired]
+    public Endpoints.Endpoint Endpoints { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public Guid ClientId { get; set; } = default!;
+}

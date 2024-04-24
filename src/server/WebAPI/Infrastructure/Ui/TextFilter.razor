@@ -1,0 +1,43 @@
+﻿@using WebAPI.Infrastructure.SqlKata
+
+@if (string.IsNullOrEmpty(Select))
+{
+    <input type="search"
+           class="form-control"
+           name=@Name
+           placeholder=@Label
+           hx-trigger="input changed delay:500ms, search"
+           hx-get="@Endpoint.AddListParameters(1, @Query.PageSize,@Query.Ascending)"
+           hx-swap=@Swap
+           hx-target=@Target />
+}
+else
+{
+    <input type="search"
+           class="form-control"
+           name=@Name
+           placeholder=@Label
+           hx-trigger="input changed delay:500ms, search"
+           hx-get="@Endpoint.AddListParameters(1, @Query.PageSize,@Query.Ascending)"
+           hx-swap=@Swap
+           hx-target=@Target
+           hx-select=@Select />
+}
+
+
+@code {
+    [Parameter, EditorRequired]
+    public string Label { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public string Name { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public string Target { get; set; } = default!;
+    [Parameter]
+    public string Swap { get; set; } = "innerHTML";
+    [Parameter, EditorRequired]
+    public string Endpoint { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public ListQuery Query { get; set; } = default!;
+    [Parameter]
+    public string Select { get; set; } = default!;
+}

@@ -1,0 +1,67 @@
+﻿@using WebAPI.Clients;
+@using WebAPI.Infrastructure.SqlKata;
+@using WebAPI.Infrastructure.Ui;
+
+<Heading Text="Clients" />
+<Breadcrumbs Links=@(new []{new Breadcrumbs.Link("List clients")}) />
+<Toolbar>
+    <Actions>
+        <ActionButton Text="Register Client"
+                      Endpoint=@Endpoints.Register
+                      Target="#workspace"
+                      Icon="bi bi-plus-lg" />
+    </Actions>
+</Toolbar>
+<Section>
+    <Content>
+        <div class="row g-3">
+            <div class="col">
+                <TextFilter Label="Name"
+                            Name="Name"
+                            Target="#search-results"
+                            Endpoint=@Endpoints.List
+                            Query=@Query
+                            Select="#search-results"
+                            Swap="outerHTML" />
+            </div>
+        </div>
+        <div id="search-results">
+            <DataTable TResult=ListClients.Result
+                       Result=@Result
+                       Query=@Query
+                       Context="item"
+                       Endpoint=@Endpoints.List
+                       Target="#search-results"
+                       Swap="outerHTML"
+                       Select="#search-results"
+                       Parameters=@(new []{ new KeyValuePair<string, object?>(nameof(Query.Name), Query.Name)})>
+                <TableHeader>
+                    <th></th>
+                    <th>ClientId</th>
+                    <th>Name</th>
+                    <th>Phone Number</th>
+                    <th>Document Number</th>
+                </TableHeader>
+                <RowTemplate>
+                    <th>
+                        <ActionLink Target="#workspace"
+                                    Endpoint=@(Endpoints.Edit.Replace("{clientId}", @item.ClientId))
+                                    Icon="bi bi-eye" />
+                    </th>
+                    <td>@item.ClientId</td>
+                    <td>@item.Name</td>
+                    <td>@item.PhoneNumber</td>
+                    <td>@item.DocumentNumber</td>
+                </RowTemplate>
+            </DataTable>
+        </div>
+    </Content>
+</Section>
+@code {
+    [Parameter, EditorRequired]
+    public ListResults<ListClients.Result> Result { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public ListClients.Query Query { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public Endpoints.Endpoint Endpoints { get; set; } = default!;
+}

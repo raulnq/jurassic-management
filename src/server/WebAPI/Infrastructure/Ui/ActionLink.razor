@@ -1,0 +1,23 @@
+﻿<a class="icon-link" href="#" hx-get=@Endpoint hx-target=@Target hx-swap=@Swap>
+
+    @if (!string.IsNullOrEmpty(Icon))
+    {
+        <i class=@Icon></i>
+    }
+    @if (!string.IsNullOrEmpty(Text))
+    {
+        @Text
+    }
+</a>
+@code {
+    [Parameter, EditorRequired]
+    public string Target { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public string Endpoint { get; set; } = default!;
+    [Parameter]
+    public string Swap { get; set; } = "innerHTML";
+    [Parameter]
+    public string Icon { get; set; } = default!;
+    [Parameter]
+    public string Text { get; set; } = default!;
+}

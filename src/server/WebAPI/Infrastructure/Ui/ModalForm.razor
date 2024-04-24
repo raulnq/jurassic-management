@@ -1,0 +1,32 @@
+﻿<div class="modal-content">
+    <form hx-post=@Endpoint hx-target=@Target hx-swap=@Swap hx-ext="json-enc" hx-indicator="#modal-form-spinner" hx-disabled-elt="#modal-form-button">
+        <div class="modal-header">
+            <h1 class="modal-title fs-5">@Title</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            @Content
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button id="modal-form-button" type="submit" class="btn btn-primary">
+                <span>Save Changes</span>
+                <span id="modal-form-spinner" class="spinner-border spinner-border-sm htmx-indicator" aria-hidden="true" />
+            </button>
+        </div>
+    </form>
+</div>
+
+
+@code {
+    [Parameter, EditorRequired]
+    public string Endpoint { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public string Target { get; set; } = default!;
+    [Parameter]
+    public string Swap { get; set; } = "outerHTML";
+    [Parameter, EditorRequired]
+    public RenderFragment? Content { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public string Title { get; set; } = default!;
+}

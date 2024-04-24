@@ -1,0 +1,7 @@
+﻿<nav class="navbar justify-content-end">
+    @Actions
+</nav>
+@code {
+    [Parameter, EditorRequired]
+    public RenderFragment? Actions { get; set; } = default!;
+}

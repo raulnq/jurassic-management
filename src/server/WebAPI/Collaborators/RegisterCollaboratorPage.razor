@@ -1,0 +1,34 @@
+﻿@using WebAPI.Collaborators;
+@using WebAPI.Infrastructure.SqlKata;
+@using WebAPI.Infrastructure.Ui;
+
+<Heading Text="Collaborators" />
+<Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new("List collaborators", Endpoints.List.AddListParameters()), new("Register collaborator") }) />
+<Section>
+    <Content>
+        <Form Endpoint=@Endpoints.Register
+              Target="#workspace">
+            <Content>
+                <TextInput Property=@nameof(Collaborator.Name)
+                           Label="Name"
+                           Placeholder="Enter name"
+                           MaxLenght=100
+                           Required=true />
+                <NumberInput Property=@nameof(Collaborator.WithholdingPercentage)
+                             Label="Withholding percentage"
+                             Placeholder="Enter withholding percentage"
+                             Sufix="%"
+                             Max=100
+                             Min=0
+                             Step=0.01m
+                             Value="0"
+                             Required=true />
+            </Content>
+        </Form>
+    </Content>
+</Section>
+
+@code {
+    [Parameter, EditorRequired]
+    public Endpoints.Endpoint Endpoints { get; set; } = default!;
+}

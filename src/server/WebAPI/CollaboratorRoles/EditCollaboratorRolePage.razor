@@ -1,0 +1,44 @@
+﻿@using WebAPI.Collaborators;
+@using WebAPI.Infrastructure.SqlKata;
+@using WebAPI.Infrastructure.Ui;
+
+<Heading Text="Collaborator Roles" />
+<Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new("List collaborators roles", Endpoints.List.AddListParameters()), new("Edit collaborator role") }) />
+<Section>
+    <Content>
+        <Form Endpoint=@(Endpoints.Edit.Replace("{collaboratorRoleId}", @Result.CollaboratorRoleId))
+              Target="#workspace">
+            <Content>
+                <TextInput Property=@nameof(CollaboratorRole.Name)
+                           Label="Name"
+                           Placeholder="Enter name"
+                           Value=@Result.Name
+                           Required=true />
+                <NumberInput Property=@nameof(CollaboratorRole.ProfitPercentage)
+                             Label="Profit percentage"
+                             Placeholder="Enter profit percentage"
+                             Sufix="%"
+                             Max=100
+                             Min=0
+                             Step=0.01m
+                             Value=@Result.ProfitPercentage
+                             Required=true />
+                <NumberInput Property=@nameof(CollaboratorRole.FeeAmount)
+                             Label="Fee amount"
+                             Placeholder="Enter fee amount"
+                             Prefix="$"
+                             Min=0
+                             Step=0.01m
+                             Value=@Result.FeeAmount
+                             Required=true />
+            </Content>
+        </Form>
+    </Content>
+</Section>
+
+@code {
+    [Parameter, EditorRequired]
+    public Endpoints.Endpoint Endpoints { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public GetCollaboratorRole.Result Result { get; set; } = default!;
+}

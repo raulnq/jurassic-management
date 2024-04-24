@@ -1,0 +1,152 @@
+﻿@using WebAPI.Collaborators;
+@using WebAPI.Infrastructure.SqlKata;
+@using WebAPI.Infrastructure.Ui;
+@using WebAPI.Projects;
+
+<Heading Text="Clients" />
+<Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new("List clients", ClientEndpoints.List.AddListParameters()), new("Edit client") }) />
+<Section>
+    <Content>
+        <Form Endpoint=@(ClientEndpoints.Edit.Replace("{clientId}", GetClientResult.ClientId))
+              Target="#workspace">
+            <Content>
+                <div class="row">
+                    <div class="col">
+                        <TextInput Property=@nameof(Client.Name)
+                                   Label="Name"
+                                   Placeholder="Enter name"
+                                   MaxLenght=200
+                                   Required=true
+                                   Value=@GetClientResult.Name />
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <TextInput Property=@nameof(Client.PhoneNumber)
+                                   Label="Phone number"
+                                   Placeholder="Enter phone number"
+                                   MaxLenght=50
+                                   Required=true
+                                   Value=@GetClientResult.PhoneNumber />
+                    </div>
+                    <div class="col-6">
+                        <TextInput Property=@nameof(Client.DocumentNumber)
+                                   Label="Document number"
+                                   Placeholder="Enter document number"
+                                   MaxLenght=50
+                                   Required=true
+                                   Value=@GetClientResult.DocumentNumber />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <TextInput Property=@nameof(Client.Address)
+                                   Label="Address"
+                                   Placeholder="Enter address"
+                                   MaxLenght=500
+                                   Required=true
+                                   Value=@GetClientResult.Address />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <NumberInput Property=@nameof(Client.PenaltyMinimumHours)
+                                     Label="Penalty minimum hours"
+                                     Placeholder="Enter penalty minimum hours"
+                                     Sufix="hours"
+                                     Min=0
+                                     Step=0.01m
+                                     Required=true
+                                     Value=@GetClientResult.PenaltyMinimumHours />
+                    </div>
+                    <div class="col-6">
+                        <NumberInput Property=@nameof(Client.PenaltyAmount)
+                                     Label="Penalty amount"
+                                     Placeholder="Enter penalty amount"
+                                     Prefix="$"
+                                     Min=0
+                                     Step=0.01m
+                                     Required=true
+                                     Value=@GetClientResult.PenaltyAmount />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <NumberInput Property=@nameof(Client.TaxesExpensesPercentage)
+                                     Label="Taxes expenses percentage"
+                                     Placeholder="Enter taxes expenses percentage"
+                                     Sufix="%"
+                                     Min=0
+                                     Max=100
+                                     Step=0.01m
+                                     Required=true
+                                     Value=@GetClientResult.TaxesExpensesPercentage />
+                    </div>
+                    <div class="col-6">
+                        <NumberInput Property=@nameof(Client.AdministrativeExpensesPercentage)
+                                     Label="Administrative expenses percentage"
+                                     Placeholder="Enter administrative expenses percentage"
+                                     Sufix="%"
+                                     Min=0
+                                     Max=100
+                                     Step=0.01m
+                                     Required=true
+                                     Value=@GetClientResult.AdministrativeExpensesPercentage />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <NumberInput Property=@nameof(Client.BankingExpensesPercentage)
+                                     Label="Banking expenses percentage"
+                                     Placeholder="Enter banking expenses percentage"
+                                     Sufix="%"
+                                     Min=0
+                                     Max=100
+                                     Step=0.01m
+                                     Value=@GetClientResult.BankingExpensesPercentage
+                                     Required=true />
+                    </div>
+                    <div class="col-6">
+                        <NumberInput Property=@nameof(Client.MinimumBankingExpenses)
+                                     Label="Minimum banking expenses"
+                                     Placeholder="Enter minimum banking expenses"
+                                     Sufix="%"
+                                     Min=0
+                                     Step=0.01m
+                                     Value=@GetClientResult.MinimumBankingExpenses
+                                     Required=true />
+                    </div>
+                </div>
+            </Content>
+        </Form>
+    </Content>
+</Section>
+<Section Title="Projects">
+    <Content>
+        <Toolbar>
+            <Actions>
+                <ActionButton Text="Add Project"
+                              Endpoint=@(ProjectEndpoints.Register.Replace("{clientId}", GetClientResult.ClientId))
+                              Target="#dialog"
+                              Icon="bi bi-plus-lg" />
+            </Actions>
+        </Toolbar>
+        <ListProjectsPage Endpoints=@ProjectEndpoints
+                          Query=@ListProjectsQuery
+                          Result=@ListProjectsResult></ListProjectsPage>
+    </Content>
+</Section>
+
+@code {
+    [Parameter, EditorRequired]
+    public Endpoints.Endpoint ClientEndpoints { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public GetClient.Result GetClientResult { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public ListResults<ListProjects.Result> ListProjectsResult { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public ListProjects.Query ListProjectsQuery { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public WebAPI.Projects.Endpoints.Endpoint ProjectEndpoints { get; set; } = default!;
+}

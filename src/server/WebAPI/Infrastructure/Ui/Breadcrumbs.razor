@@ -1,0 +1,40 @@
+﻿<nav>
+    <ol class="breadcrumb">
+        @foreach (var link in Links)
+        {
+            if (link.IsActive)
+            {
+                <li class="breadcrumb-item active">@link.Name</li>
+            }
+            else
+            {
+                <li class="breadcrumb-item">
+                    <a href="#" hx-get=@link.Endpoint hx-target="#workspace" hx-swap="innerHTML">@link.Name</a>
+                </li>
+            }
+        }
+    </ol>
+</nav>
+
+@code {
+    [Parameter, EditorRequired]
+    public IEnumerable<Link> Links { get; set; } = default!;
+
+    public class Link
+    {
+        public string? Endpoint { get; set; }
+        public string? Name { get; set; }
+        public bool IsActive { get; set; }
+        public Link(string name)
+        {
+            Name = name;
+            IsActive = true;
+        }
+        public Link(string name, string href)
+        {
+            Name = name;
+            Endpoint = href;
+            IsActive = false;
+        }
+    }
+}

@@ -1,0 +1,19 @@
+﻿<button type="button"
+        hx-get=@Endpoint
+        hx-target=@Target
+        hx-swap=@Swap
+        class="@Icon btn btn-primary">
+    @Text
+</button>
+@code {
+    [Parameter, EditorRequired]
+    public string Target { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public string Endpoint { get; set; } = default!;
+    [Parameter]
+    public string Swap { get; set; } = "innerHTML";
+    [Parameter, EditorRequired]
+    public string Text { get; set; } = default!;
+    [Parameter]
+    public string Icon { get; set; } = string.Empty;
+}

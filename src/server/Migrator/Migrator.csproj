@@ -1,0 +1,45 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Scripts\0001.sql" />
+    <None Remove="Scripts\0002.sql" />
+    <None Remove="Scripts\0003.sql" />
+    <None Remove="Scripts\0004.sql" />
+    <None Remove="Scripts\0005.sql" />
+    <None Remove="Scripts\0006.sql" />
+    <None Remove="Scripts\0007.sql" />
+    <None Remove="Scripts\0008.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\0008.sql" />
+    <EmbeddedResource Include="Scripts\0007.sql" />
+    <EmbeddedResource Include="Scripts\0006.sql" />
+    <EmbeddedResource Include="Scripts\0005.sql" />
+    <EmbeddedResource Include="Scripts\0003.sql" />
+    <EmbeddedResource Include="Scripts\0004.sql" />
+    <EmbeddedResource Include="Scripts\0002.sql" />
+    <EmbeddedResource Include="Scripts\0001.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="dbup-sqlserver" Version="5.0.40" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
+    <PackageReference Include="Polly" Version="8.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
