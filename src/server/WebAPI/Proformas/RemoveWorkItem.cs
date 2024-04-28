@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.ExceptionHandling;
+using WebAPI.Infrastructure.Ui;
 
 namespace WebAPI.Proformas;
 
@@ -75,5 +76,35 @@ public static class RemoveWorkItem
         await behavior.Handle(() => handler.Handle(command));
 
         return TypedResults.Ok();
+    }
+
+    public static async Task<RazorComponentResult> HandleAction(
+        [FromServices] TransactionBehavior behavior,
+        [FromServices] Handler handler,
+        [FromServices] ListProformaWeekWorkItems.Runner runner,
+        [FromServices] GetProforma.Runner getProformaRunner,
+        [FromServices] GetProformaWeek.Runner getProformaWeekRunner,
+        Guid proformaId,
+        int week,
+        Guid collaboratorId)
+    {
+        var command = new Command
+        {
+            ProformaId = proformaId,
+            Week = week,
+            CollaboratorId = collaboratorId
+        };
+
+        new Validator().ValidateAndThrow(command);
+
+        await behavior.Handle(() => handler.Handle(command));
+
+        return await ListProformaWeekWorkItems.HandlePage(
+            new ListProformaWeekWorkItems.Query() { ProformaId = command.ProformaId, Week = command.Week },
+            runner,
+            getProformaRunner,
+            getProformaWeekRunner,
+            proformaId, week);
+
     }
 }

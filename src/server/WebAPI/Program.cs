@@ -1,5 +1,6 @@
 using Infrastructure;
 using Microsoft.AspNetCore.Http.HttpResults;
+using System.Text.Json.Serialization;
 using WebAPI;
 using WebAPI.Clients;
 using WebAPI.CollaboratorPayments;
@@ -25,6 +26,12 @@ builder.Services.AddSwaggerGen(options =>
     options.DescribeAllParametersInCamelCase();
     options.CustomSchemaIds(CustomSchemaIdProvider.Get);
 });
+
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
+
 builder.Services.AddEntityFramework(builder.Configuration);
 builder.Services.AddSqlKata(builder.Configuration);
 builder.Services.AddCollaboratorRoles();

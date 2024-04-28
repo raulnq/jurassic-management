@@ -1,0 +1,25 @@
+﻿@using WebAPI.Clients;
+@using WebAPI.CollaboratorRoles
+@using WebAPI.Collaborators
+@using WebAPI.Infrastructure.SqlKata;
+@using WebAPI.Infrastructure.Ui;
+
+<ModalForm HtmxProps=@(new HtmxProps(WebAPI.Proformas.Endpoints.Issue.Replace(new Dictionary<string, object?>(){{"{proformaId}", ProformaId}}), Targets.Workspace))
+           Title="Issue proforma">
+    <Content>
+        <FormRow>
+            <Content>
+                <div class="col">
+                    <DateInput Property=@nameof(IssueProforma.Command.IssueAt)
+                               Label="Date"
+                               Required=true />
+                </div>
+            </Content>
+        </FormRow>
+    </Content>
+</ModalForm>
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid ProformaId { get; set; } = default;
+}

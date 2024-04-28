@@ -28,14 +28,8 @@ public static class ListProformaWeeks
 
         public Task<ListResults<Result>> Run(Query query)
         {
-            return _queryRunner.List<Query, Result>((qf) =>
-            {
-                var statement = qf.Query(Tables.ProformaWeeks);
-
-                statement = statement.Where(Tables.ProformaWeeks.Field(nameof(Query.ProformaId)), query.ProformaId);
-
-                return statement;
-            }, query);
+            return _queryRunner.List<Query, Result>((qf) => qf.Query(Tables.ProformaWeeks)
+                .Where(Tables.ProformaWeeks.Field(nameof(Query.ProformaId)), query.ProformaId), query);
         }
     }
 
@@ -46,5 +40,13 @@ public static class ListProformaWeeks
     {
         query.ProformaId = proformaId;
         return TypedResults.Ok(await runner.Run(query));
+    }
+
+    public static async Task<RazorComponentResult> HandlePage(
+    [AsParameters] Query query,
+    [FromServices] Runner runner)
+    {
+        var result = await runner.Run(query);
+        return new RazorComponentResult<ListProformaWeeksPage>(new { Result = result, Query = query });
     }
 }

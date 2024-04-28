@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
 using WebAPI.Clients;
 using WebAPI.Infrastructure.EntityFramework;
+using WebAPI.Infrastructure.Ui;
 using WebAPI.Projects;
 
 namespace WebAPI.Proformas;
@@ -77,5 +78,32 @@ public static class RegisterProforma
         var result = await behavior.Handle(() => handler.Handle(command));
 
         return TypedResults.Ok(result);
+    }
+
+    public static async Task<RazorComponentResult> HandlePage(
+        [FromServices] SearchClients.Runner runner)
+    {
+        var result = await runner.Run(new SearchClients.Query() { });
+
+        return new RazorComponentResult<RegisterProformaPage>(new
+        {
+            Clients = result
+        });
+    }
+
+    public static async Task<RazorComponentResult> HandleAction(
+    [FromServices] TransactionBehavior behavior,
+    [FromServices] Handler handler,
+    [FromServices] ListProformas.Runner runner,
+    [FromBody] Command command,
+    HttpContext context)
+    {
+        new Validator().ValidateAndThrow(command);
+
+        var registerResult = await behavior.Handle(() => handler.Handle(command));
+
+        context.Response.Headers.TriggerShowSuccessMessageAndCloseModal($"The proforma {registerResult.ProformaId} was added successfully");
+
+        return await ListProformas.HandlePage(new ListProformas.Query() { }, runner);
     }
 }

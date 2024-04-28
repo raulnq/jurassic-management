@@ -1,0 +1,41 @@
+﻿@using WebAPI.Clients
+@using WebAPI.Proformas;
+@using WebAPI.Infrastructure.SqlKata;
+@using WebAPI.Infrastructure.Ui;
+
+<FormRow>
+    <Content>
+        <div class="col-3">
+            <NumberInput Property=@nameof(GetProforma.Result.SubTotal)
+                         Label="SubTotal"
+                         Prefix="$"
+                         Value=@Result.SubTotal
+                         Readonly=true />
+        </div>
+        <div class="col-3">
+            <NumberInput Property=@nameof(GetProforma.Result.Commission)
+                         Label="Commission"
+                         Prefix="+$"
+                         Value=@Result.Commission
+                         Readonly=true />
+        </div>
+        <div class="col-3">
+            <NumberInput Property=@nameof(GetProforma.Result.Discount)
+                         Label="Discount"
+                         Prefix="-$"
+                         Value=@Result.Discount
+                         Readonly=true />
+        </div>
+        <div class="col-3">
+            <NumberInput Property=@nameof(GetProforma.Result.Total)
+                         Label="Total"
+                         Prefix="=$"
+                         Value=@Result.Total
+                         Readonly=true />
+        </div>
+    </Content>
+</FormRow>
+@code {
+    [Parameter, EditorRequired]
+    public GetProforma.Result Result { get; set; } = default!;
+}

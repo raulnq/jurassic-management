@@ -7,6 +7,7 @@ using WebAPI.CollaboratorRoles;
 using WebAPI.Collaborators;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.ExceptionHandling;
+using WebAPI.Infrastructure.Ui;
 
 namespace WebAPI.Proformas;
 
@@ -18,7 +19,6 @@ public static class AddWorkItem
         public Guid ProformaId { get; set; }
         [JsonIgnore]
         public int Week { get; set; }
-        [JsonIgnore]
         public Guid CollaboratorId { get; set; }
         public Guid CollaboratorRoleId { get; set; }
         public decimal Hours { get; set; }
@@ -73,12 +73,10 @@ public static class AddWorkItem
     [FromServices] Handler handler,
     [FromRoute] Guid proformaId,
     [FromRoute] int week,
-    [FromRoute] Guid collaboratorId,
     [FromBody] Command command)
     {
         command.ProformaId = proformaId;
         command.Week = week;
-        command.CollaboratorId = collaboratorId;
 
         new Validator().ValidateAndThrow(command);
 
@@ -86,4 +84,52 @@ public static class AddWorkItem
 
         return TypedResults.Ok();
     }
+
+    public static async Task<RazorComponentResult> HandlePage(
+    [FromServices] SearchCollaboratorRoles.Runner searchCollaboratorRolesRunner,
+    [FromServices] SearchCollaborators.Runner searchCollaboratorsRunner,
+    [FromRoute] Guid proformaId,
+    [FromRoute] int week,
+    HttpContext context)
+    {
+        context.Response.Headers.TriggerOpenModal();
+
+        var searchCollaboratorRolesResult = await searchCollaboratorRolesRunner.Run(new SearchCollaboratorRoles.Query());
+
+        var searchCollaboratorsResult = await searchCollaboratorsRunner.Run(new SearchCollaborators.Query());
+
+        return new RazorComponentResult<AddWorkItemPage>(new
+        {
+            ProformaId = proformaId,
+            Week = week,
+            SearchCollaboratorRolesResult = searchCollaboratorRolesResult,
+            SearchCollaboratorsResult = searchCollaboratorsResult
+        });
+    }
+
+    public static async Task<RazorComponentResult> HandleAction(
+    [FromServices] TransactionBehavior behavior,
+    [FromServices] Handler handler,
+    [FromServices] ListProformaWeekWorkItems.Runner runner,
+    [FromServices] GetProforma.Runner getProformaRunner,
+    [FromServices] GetProformaWeek.Runner getProformaWeekRunner,
+    [FromBody] Command command,
+    [FromRoute] Guid proformaId,
+    [FromRoute] int week,
+    HttpContext context)
+    {
+        command.ProformaId = proformaId;
+
+        command.Week = week;
+
+        new Validator().ValidateAndThrow(command);
+
+        await behavior.Handle(() => handler.Handle(command));
+
+        context.Response.Headers.TriggerShowSuccessMessageAndCloseModal($"The collaborator {command.CollaboratorId} was added successfully");
+
+        return await ListProformaWeekWorkItems.HandlePage(new ListProformaWeekWorkItems.Query() { ProformaId = command.ProformaId, Week = command.Week },
+            runner, getProformaRunner, getProformaWeekRunner, proformaId, week);
+    }
+
 }

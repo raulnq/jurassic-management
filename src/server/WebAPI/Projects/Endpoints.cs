@@ -2,16 +2,13 @@
 
 public static class Endpoints
 {
-    public class Endpoint
-    {
-        public string List = "/ui/clients/{clientId}/projects/list";
+    public const string Search = "/ui/clients/search";
 
-        public string Register = "/ui/clients/{clientId}/projects/register";
+    public const string List = "/ui/clients/{clientId}/projects/list";
 
-        public string Edit = "/ui/clients/{clientId}/projects/{projectId}/edit";
-    }
+    public const string Register = "/ui/clients/{clientId}/projects/add";
 
-    public static readonly Endpoint Instance = new();
+    public const string Edit = "/ui/clients/{clientId}/projects/{projectId}/edit";
 
     public static void RegisterProjectEndpoints(this WebApplication app)
     {
@@ -31,12 +28,14 @@ public static class Endpoints
 
         uigroup.MapGet("/{clientId:guid}/projects/list", ListProjects.HandlePage);
 
-        uigroup.MapGet("/{clientId:guid}/projects/register", AddProject.HandlePage);
+        uigroup.MapGet("/{clientId:guid}/projects/add", AddProject.HandlePage);
 
-        uigroup.MapPost("/{clientId:guid}/projects/register", AddProject.HandleAction);
+        uigroup.MapPost("/{clientId:guid}/projects/add", AddProject.HandleAction);
 
         uigroup.MapGet("/{clientId:guid}/projects/{projectId:guid}/edit", EditProject.HandlePage);
 
         uigroup.MapPost("/{clientId:guid}/projects/{projectId:guid}/edit", EditProject.HandleAction);
+
+        uigroup.MapGet("/search", SearchProjects.HandlePage);
     }
 }

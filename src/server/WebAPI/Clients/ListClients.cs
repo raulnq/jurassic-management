@@ -39,7 +39,7 @@ public static class ListClients
 
                 if (!string.IsNullOrEmpty(query.Name))
                 {
-                    statement = statement.WhereLike(Tables.Clients.Field(nameof(Query.Name)), $"%{query.Name}%");
+                    statement = statement.WhereLike(Tables.Clients.Field(nameof(Client.Name)), $"%{query.Name}%");
                 }
                 return statement;
             }, query);
@@ -58,6 +58,6 @@ public static class ListClients
     [FromServices] Runner runner)
     {
         var result = await runner.Run(query);
-        return new RazorComponentResult<ListClientsPage>(new { Result = result, Endpoints = Endpoints.Instance, Query = query });
+        return new RazorComponentResult<ListClientsPage>(new { Result = result, Query = query });
     }
 }

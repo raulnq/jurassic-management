@@ -47,7 +47,6 @@ public class Client
         PhoneNumber = phoneNumber;
         DocumentNumber = documentNumber;
         Address = address;
-
     }
 
     public void EditExpenses(decimal taxesExpensesPercentage,

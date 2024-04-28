@@ -1,0 +1,41 @@
+﻿@using WebAPI.Infrastructure.SqlKata;
+@using WebAPI.Infrastructure.Ui;
+@using WebAPI.Proformas;
+
+<div id="search-results">
+    <DataTable TResult=ListProformaWeeks.Result
+               Result=@Result
+               Context="item">
+        <TableHeader>
+            <th></th>
+            <th>Week</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Penalty</th>
+            <th>SubTotal</th>
+        </TableHeader>
+        <RowTemplate>
+            <RowToolbar>
+                <Actions>
+                    <ActionLink HtmxProps=@(new HtmxProps(Endpoints.ListWorkItems.Replace(new Dictionary<string, object?>(){{"{proformaId}",item.ProformaId}, {"{week}", item.Week}}).AddListParameters(1, Query.PageSize), "#collaborator-section"))
+                                Icon="bi bi-eye" />
+                </Actions>
+            </RowToolbar>
+            <td>@item.Week</td>
+            <td>@item.Start</td>
+            <td>@item.End</td>
+            <td><div id="week-@item.Week-penalty">@item.Penalty</div></td>
+            <td><div id="week-@item.Week-subtotal">@item.SubTotal</div></td>
+        </RowTemplate>
+    </DataTable>
+    <Pagination Query=@Query
+                Result=@Result
+                HtmxProps=@(new HtmxProps(Endpoints.ListWeeks.Replace("{proformaId}", Query.ProformaId), "#search-results", "outerHTML")) />
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public ListResults<ListProformaWeeks.Result> Result { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public ListProformaWeeks.Query Query { get; set; } = default!;
+}

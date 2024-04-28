@@ -67,7 +67,7 @@ public static class EditCollaboratorRole
     {
         var result = await runner.Run(new GetCollaboratorRole.Query() { CollaboratorRoleId = collaboratorRoleId });
 
-        return new RazorComponentResult<EditCollaboratorRolePage>(new { Endpoints = Endpoints.Instance, Result = result });
+        return new RazorComponentResult<EditCollaboratorRolePage>(new { Result = result });
     }
 
     public static async Task<RazorComponentResult> HandleAction(
@@ -84,10 +84,8 @@ public static class EditCollaboratorRole
 
         await behavior.Handle(() => handler.Handle(command));
 
-        var result = await runner.Run(new GetCollaboratorRole.Query() { CollaboratorRoleId = collaboratorRoleId });
+        context.Response.Headers.TriggerShowEditSuccessMessage($"collaborator role", command.CollaboratorRoleId);
 
-        context.Response.Headers.TriggerShowSuccessMessage($"The collaborator role {result.CollaboratorRoleId} was updated successfully");
-
-        return new RazorComponentResult<EditCollaboratorRolePage>(new { Endpoints = Endpoints.Instance, Result = result });
+        return await HandlePage(runner, command.CollaboratorRoleId);
     }
 }

@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.CollaboratorRoles;
+using WebAPI.Collaborators;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.SqlKata;
 
@@ -11,7 +13,6 @@ public static class ListProformaWeekWorkItems
     {
         public Guid? ProformaId { get; set; }
         public int? Week { get; set; }
-
         public IEnumerable<Guid>? ListOfProformaId { get; set; }
     }
 
@@ -20,7 +21,9 @@ public static class ListProformaWeekWorkItems
         public Guid ProformaId { get; set; }
         public int Week { get; set; }
         public Guid CollaboratorId { get; set; }
+        public string? CollaboratorName { get; set; }
         public Guid CollaboratorRoleId { get; set; }
+        public string? CollaboratorRoleName { get; set; }
         public decimal Hours { get; set; }
         public decimal FeeAmount { get; set; }
         public decimal FreeHours { get; set; }
@@ -42,27 +45,29 @@ public static class ListProformaWeekWorkItems
             {
                 var statement = qf.Query(Tables.ProformaWeekWorkItems)
                 .Select(Tables.ProformaWeekWorkItems.AllFields)
-                .Select(Tables.Collaborators.Field(nameof(Result.WithholdingPercentage)))
-                .Select(Tables.Proformas.Field(nameof(Result.Status)), Tables.Proformas.Field(nameof(Result.Currency)))
-                .Join(Tables.Collaborators, Tables.ProformaWeekWorkItems.Field("CollaboratorId"), Tables.Collaborators.Field("CollaboratorId"))
-                .Join(Tables.Proformas, Tables.Proformas.Field("ProformaId"), Tables.ProformaWeekWorkItems.Field("ProformaId"));
+                .Select(Tables.Collaborators.Field(nameof(Collaborator.WithholdingPercentage)), Tables.Collaborators.Field(nameof(Collaborator.Name), nameof(Result.CollaboratorName)))
+                .Select(Tables.Collaborators.Field(nameof(CollaboratorRole.Name), nameof(Result.CollaboratorRoleName)))
+                .Select(Tables.Proformas.Field(nameof(Proforma.Status)), Tables.Proformas.Field(nameof(Proforma.Currency)))
+                .Join(Tables.Collaborators, Tables.ProformaWeekWorkItems.Field(nameof(ProformaWeekWorkItem.CollaboratorId)), Tables.Collaborators.Field(nameof(Collaborator.CollaboratorId)))
+                .Join(Tables.CollaboratorRoles, Tables.ProformaWeekWorkItems.Field(nameof(ProformaWeekWorkItem.CollaboratorRoleId)), Tables.CollaboratorRoles.Field(nameof(CollaboratorRole.CollaboratorRoleId)))
+                .Join(Tables.Proformas, Tables.Proformas.Field(nameof(Proforma.ProformaId)), Tables.ProformaWeekWorkItems.Field(nameof(ProformaWeekWorkItem.ProformaId)));
 
                 if (query.ProformaId.HasValue)
                 {
                     statement = statement
-                        .Where(Tables.ProformaWeekWorkItems.Field(nameof(Query.ProformaId)), query.ProformaId);
+                        .Where(Tables.ProformaWeekWorkItems.Field(nameof(ProformaWeekWorkItem.ProformaId)), query.ProformaId);
                 }
 
                 if (query.Week.HasValue)
                 {
                     statement = statement
-                        .Where(Tables.ProformaWeekWorkItems.Field(nameof(Query.Week)), query.Week);
+                        .Where(Tables.ProformaWeekWorkItems.Field(nameof(ProformaWeekWorkItem.Week)), query.Week);
                 }
 
-                if (query.ListOfProformaId != null)
+                if (query.ListOfProformaId != null && query.ListOfProformaId.Any())
                 {
                     statement = statement
-                        .WhereIn(Tables.ProformaWeekWorkItems.Field(nameof(Query.ProformaId)), query.ListOfProformaId);
+                        .WhereIn(Tables.ProformaWeekWorkItems.Field(nameof(ProformaWeekWorkItem.ProformaId)), query.ListOfProformaId);
                 }
 
                 return statement;
@@ -79,5 +84,27 @@ public static class ListProformaWeekWorkItems
         query.ProformaId = proformaId;
         query.Week = week;
         return TypedResults.Ok(await runner.Run(query));
+    }
+
+    public static async Task<RazorComponentResult> HandlePage(
+    [AsParameters] Query query,
+    [FromServices] Runner runner,
+    [FromServices] GetProforma.Runner getProformaRunner,
+    [FromServices] GetProformaWeek.Runner getProformaWeekRunner,
+    [FromRoute] Guid proformaId,
+    [FromRoute] int week)
+    {
+        query.ProformaId = proformaId;
+        query.Week = week;
+        var result = await runner.Run(query);
+        var getProformaResult = await getProformaRunner.Run(new GetProforma.Query() { ProformaId = proformaId });
+        var getProformaWeekResult = await getProformaWeekRunner.Run(new GetProformaWeek.Query() { ProformaId = proformaId, Week = week });
+        return new RazorComponentResult<ListProformaWeekWorkItemsPage>(new
+        {
+            Result = result,
+            Query = query,
+            GetProformaResult = getProformaResult,
+            GetProformaWeekResult = getProformaWeekResult
+        });
     }
 }

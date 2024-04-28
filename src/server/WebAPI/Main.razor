@@ -18,19 +18,30 @@
         <div class="row h-100">
             <Sidebar>
                 <Items>
-                    <SidebarLink Endpoint="/ui/collaborators/list?page=1&pageSize=10&ascending=true" Icon="bi bi-people-fill" Target="#workspace" Text="Collaborators" />
-                    <SidebarLink Endpoint="/ui/collaborator-roles/list?page=1&pageSize=10&ascending=true" Icon="bi bi-person-vcard-fill" Target="#workspace" Text="Collaborator Roles" />
-                    <SidebarLink Endpoint="/ui/clients/list?page=1&pageSize=10&ascending=true" Icon="bi bi bi-wallet-fill" Target="#workspace" Text="Clients" />
+                    <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.Collaborators.Endpoints.List.AddListParameters(), Targets.Workspace))
+                                 Icon="bi bi-people-fill"
+                                 Text="Collaborators" />
+                    <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.CollaboratorRoles.Endpoints.List.AddListParameters(), Targets.Workspace))
+                                 Icon="bi bi-person-vcard-fill"
+                                 Text="Collaborator Roles" />
+                    <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.Clients.Endpoints.List.AddListParameters(), Targets.Workspace))
+                                 Icon="bi bi bi-wallet-fill"
+                                 Text="Clients" />
+                    <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.Proformas.Endpoints.List.AddListParameters(), Targets.Workspace))
+                                 Icon="bi bi bi-file-text-fill"
+                                 Text="Proformas" />
                 </Items>
             </Sidebar>
-            <div class="col-10 p-3" id="workspace">
+            <div class="col-1"></div>
+            <div class="col-8 pt-2" id=@(Targets.Workspace.Replace("#",""))>
             </div>
+            <div class="col-1"></div>
         </div>
     </main>
     <Toast Id="success-toast" Type=Toast.ToastType.Success />
     <Toast Id="error-toast" Type=Toast.ToastType.Error />
     <div id="modal" class="modal fade">
-        <div id="dialog" class="modal-dialog"></div>
+        <div id=@(Targets.Dialog.Replace("#","")) class="modal-dialog"></div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script>

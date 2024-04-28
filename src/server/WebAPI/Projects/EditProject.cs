@@ -67,7 +67,7 @@ public static class EditProject
 
         context.Response.Headers.TriggerOpenModal();
 
-        return new RazorComponentResult<EditProjectPage>(new { Endpoints = Endpoints.Instance, Result = result });
+        return new RazorComponentResult<EditProjectPage>(new { Result = result });
     }
 
     public static async Task<RazorComponentResult> HandleAction(
@@ -89,8 +89,8 @@ public static class EditProject
 
         var listResult = await runner.Run(query);
 
-        context.Response.Headers.TriggerShowSuccessMessageAndCloseModal($"The project {projectId} was updated successfully");
+        context.Response.Headers.TriggerShowEditSuccessMessageAndCloseModal("project", command.ProjectId);
 
-        return new RazorComponentResult<ListProjectsPage>(new { Result = listResult, Endpoints = Endpoints.Instance, Query = query });
+        return await ListProjects.HandlePage(new ListProjects.Query() { ClientId = clientId }, runner);
     }
 }

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.ExceptionHandling;
+using WebAPI.Infrastructure.Ui;
 
 namespace WebAPI.Proformas;
 
@@ -77,5 +78,52 @@ public static class EditWorkItem
         await behavior.Handle(() => handler.Handle(command));
 
         return TypedResults.Ok();
+    }
+
+    public static async Task<RazorComponentResult> HandlePage(
+        Guid proformaId,
+        int week,
+        Guid collaboratorId,
+        GetProformaWeekWorkItem.Runner runner,
+        HttpContext context)
+    {
+        var result = await runner.Run(new GetProformaWeekWorkItem.Query() { ProformaId = proformaId, Week = week, CollaboratorId = collaboratorId });
+
+        context.Response.Headers.TriggerOpenModal();
+
+        return new RazorComponentResult<EditWorkItemPage>(new { Result = result });
+    }
+
+    public static async Task<RazorComponentResult> HandleAction(
+        [FromServices] TransactionBehavior behavior,
+        [FromServices] Handler handler,
+        [FromServices] ListProformaWeekWorkItems.Runner runner,
+        [FromServices] GetProforma.Runner getProformaRunner,
+        [FromServices] GetProformaWeek.Runner getProformaWeekRunner,
+        [FromBody] Command command,
+        Guid proformaId,
+        int week,
+        Guid collaboratorId,
+        HttpContext context)
+    {
+        command.ProformaId = proformaId;
+
+        command.Week = week;
+
+        command.CollaboratorId = collaboratorId;
+
+        new Validator().ValidateAndThrow(command);
+
+        await behavior.Handle(() => handler.Handle(command));
+
+        context.Response.Headers.TriggerShowSuccessMessageAndCloseModal($"The collaborator {collaboratorId} was updated successfully");
+
+        return await ListProformaWeekWorkItems.HandlePage(
+            new ListProformaWeekWorkItems.Query() { ProformaId = command.ProformaId, Week = command.Week },
+            runner,
+            getProformaRunner,
+            getProformaWeekRunner,
+            proformaId, week);
+
     }
 }

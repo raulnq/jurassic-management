@@ -24,7 +24,7 @@ public class AppDsl : IAsyncDisposable
 
     public FixedClock Clock { get; set; }
 
-    public AppDsl(Action<IServiceCollection> ConfigureServices = null)
+    public AppDsl(Action<IServiceCollection>? ConfigureServices = null)
     {
         Clock = new FixedClock(DateTimeOffset.UtcNow);
 
@@ -104,7 +104,7 @@ public class AppDsl : IAsyncDisposable
             c.Discount = 0;
         });
 
-        return (result, clientCommand);
+        return (result!, clientCommand);
     }
 
     public async Task<RegisterProforma.Result> RegisterProformaReadyToIssue(DateTime start, int days = 6)
@@ -153,6 +153,6 @@ public class AppDsl : IAsyncDisposable
 
         await Invoice.Issue(c => c.InvoiceId = start!.InvoiceId);
 
-        return start;
+        return start!;
     }
 }

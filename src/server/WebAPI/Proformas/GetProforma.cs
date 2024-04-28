@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.Clients;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.SqlKata;
+using WebAPI.Projects;
 
 namespace WebAPI.Proformas;
 
@@ -18,6 +20,8 @@ public static class GetProforma
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
         public Guid ProjectId { get; set; }
+        public string? ProjectName { get; set; }
+        public string? ClientName { get; set; }
         public decimal Total { get; set; }
         public decimal SubTotal { get; set; }
         public decimal Commission { get; set; }
@@ -45,7 +49,12 @@ public static class GetProforma
         {
             return _queryRunner.Get<Result>((qf) => qf
                 .Query(Tables.Proformas)
-                .Where(Tables.Proformas.Field(nameof(Query.ProformaId)), query.ProformaId));
+                .Select(Tables.Proformas.AllFields)
+                .Select(Tables.Projects.Field(nameof(Project.Name), nameof(Result.ProjectName)))
+                .Select(Tables.Clients.Field(nameof(Client.Name), nameof(Result.ClientName)))
+                .Join(Tables.Projects, Tables.Projects.Field(nameof(Project.ProjectId)), Tables.Proformas.Field(nameof(Proforma.ProjectId)))
+                .Join(Tables.Clients, Tables.Clients.Field(nameof(Client.ClientId)), Tables.Projects.Field(nameof(Project.ClientId)))
+                .Where(Tables.Proformas.Field(nameof(Proforma.ProformaId)), query.ProformaId));
         }
     }
 
@@ -54,5 +63,24 @@ public static class GetProforma
     [FromRoute] Guid proformaId)
     {
         return TypedResults.Ok(await runner.Run(new Query() { ProformaId = proformaId }));
+    }
+
+    public static async Task<RazorComponentResult> HandlePage(
+        [FromServices] Runner runner,
+        [FromServices] ListProformaWeeks.Runner listProformasWeeksRunner,
+        [FromRoute] Guid proformaId)
+    {
+        var result = await runner.Run(new Query() { ProformaId = proformaId });
+
+        var listProformaWeeksQuery = new ListProformaWeeks.Query() { ProformaId = proformaId, PageSize = 5 };
+
+        var listProformaWeeksResult = await listProformasWeeksRunner.Run(listProformaWeeksQuery);
+
+        return new RazorComponentResult<GetProformaPage>(new
+        {
+            Result = result,
+            ListProformaWeeksResult = listProformaWeeksResult,
+            ListProformaWeeksQuery = listProformaWeeksQuery
+        });
     }
 }

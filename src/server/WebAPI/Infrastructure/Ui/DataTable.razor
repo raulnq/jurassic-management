@@ -20,31 +20,12 @@
         }
     </tbody>
 </table>
-<Pagination Query=@Query
-            Result=@Result
-            Endpoint=@Endpoint
-            Target=@Target
-            Swap=@Swap
-            Select=@Select
-            Parameters=@Parameters />
 
 @code {
     [Parameter, EditorRequired]
-    public string Endpoint { get; set; } = default!;
-    [Parameter]
-    public IEnumerable<KeyValuePair<string, object?>> Parameters { get; set; } = default!;
-    [Parameter, EditorRequired]
     public ListResults<TResult> Result { get; set; } = default!;
-    [Parameter, EditorRequired]
-    public ListQuery Query { get; set; } = default!;
     [Parameter, EditorRequired]
     public RenderFragment<TResult> RowTemplate { get; set; } = default!;
     [Parameter, EditorRequired]
     public RenderFragment? TableHeader { get; set; } = default!;
-    [Parameter, EditorRequired]
-    public string Target { get; set; } = default!;
-    [Parameter]
-    public string Swap { get; set; } = "innerHTML";
-    [Parameter]
-    public string Select { get; set; } = default!;
 }

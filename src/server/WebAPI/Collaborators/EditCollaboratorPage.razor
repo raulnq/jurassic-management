@@ -3,35 +3,45 @@
 @using WebAPI.Infrastructure.Ui;
 
 <Heading Text="Collaborators" />
-<Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new("List collaborators", Endpoints.List.AddListParameters()), new("Edit collaborator") }) />
+<Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new("List collaborators", Endpoints.List.AddListParameters()), new("Edit collaborator") })
+             Target=@(Targets.Workspace) />
 <Section>
     <Content>
-        <Form Endpoint=@(Endpoints.Edit.Replace("{collaboratorId}", @Result.CollaboratorId))
-              Target="#workspace">
+        <Form HtmxProps=@(new HtmxProps(Endpoints.Edit.Replace("{collaboratorId}", @Result.CollaboratorId),Targets.Workspace))>
             <Content>
-                <TextInput Property=@nameof(Collaborator.Name)
-                           Label="Name"
-                           Placeholder="Enter name"
-                           Value=@Result.Name
-                           MaxLenght=100
-                           Required=true />
-                <NumberInput Property=@nameof(Collaborator.WithholdingPercentage)
-                             Label="Withholding percentage"
-                             Placeholder="Enter withholding percentage"
-                             Sufix="%"
-                             Max=100
-                             Min=0
-                             Step=0.01m
-                             Value=@Result.WithholdingPercentage
-                             Required=true />
+                <FormRow>
+                    <Content>
+                        <div class="col">
+                            <TextInput Property=@nameof(EditCollaborator.Command.Name)
+                                       Label="Name"
+                                       Placeholder="Enter name"
+                                       Value=@Result.Name
+                                       MaxLenght=100
+                                       Required=true />
+                        </div>
+                    </Content>
+                </FormRow>
+                <FormRow>
+                    <Content>
+                        <div class="col">
+                            <NumberInput Property=@nameof(EditCollaborator.Command.WithholdingPercentage)
+                                         Label="Withholding percentage"
+                                         Placeholder="Enter withholding percentage"
+                                         Sufix="%"
+                                         Max=100
+                                         Min=0
+                                         Step=0.01m
+                                         Value=@Result.WithholdingPercentage
+                                         Required=true />
+                        </div>
+                    </Content>
+                </FormRow>
             </Content>
         </Form>
     </Content>
 </Section>
 
 @code {
-    [Parameter, EditorRequired]
-    public Endpoints.Endpoint Endpoints { get; set; } = default!;
     [Parameter, EditorRequired]
     public GetCollaborator.Result Result { get; set; } = default!;
 }

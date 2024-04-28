@@ -1,5 +1,11 @@
 ﻿<div class="modal-content">
-    <form hx-post=@Endpoint hx-target=@Target hx-swap=@Swap hx-ext="json-enc" hx-indicator="#modal-form-spinner" hx-disabled-elt="#modal-form-button">
+    <form hx-post=@HtmxProps.Endpoint
+          hx-target=@HtmxProps.Target
+          hx-swap=@HtmxProps.Swap
+          hx-ext="json-enc"
+          hx-indicator="#modal-form-spinner"
+          hx-disabled-elt="#modal-form-button"
+          hx-select=@HtmxProps.Select>
         <div class="modal-header">
             <h1 class="modal-title fs-5">@Title</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -20,13 +26,9 @@
 
 @code {
     [Parameter, EditorRequired]
-    public string Endpoint { get; set; } = default!;
-    [Parameter, EditorRequired]
-    public string Target { get; set; } = default!;
-    [Parameter]
-    public string Swap { get; set; } = "outerHTML";
-    [Parameter, EditorRequired]
     public RenderFragment? Content { get; set; } = default!;
     [Parameter, EditorRequired]
     public string Title { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public HtmxProps HtmxProps { get; set; } = default!;
 }

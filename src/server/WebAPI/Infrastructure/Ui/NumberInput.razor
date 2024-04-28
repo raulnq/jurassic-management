@@ -1,43 +1,20 @@
-﻿@if (string.IsNullOrEmpty(Prefix) && string.IsNullOrEmpty(Sufix))
-{
-    <div class="form-group">
-        <label for=@Property>@Label</label>
-        @if (Required)
+﻿<div class="form-group">
+    <label for=@Property class="form-label">@Label</label>
+    @if (string.IsNullOrEmpty(Prefix) && string.IsNullOrEmpty(Sufix))
+    {
+        @if (Readonly)
         {
             <input type="number"
                    class="form-control text-end"
                    id=@Property
                    name=@Property
-                   placeholder=@Placeholder
                    value=@Value
-                   step=@Step
-                   min=@Min
-                   max=@Max
-                   required />
+                   disabled
+                   readonly />
         }
         else
         {
-            <input type="number"
-                   class="form-control text-end"
-                   id=@Property
-                   name=@Property
-                   placeholder=@Placeholder
-                   value=@Value
-                   step=@Step
-                   min=@Min
-                   max=@Max />
-        }
-    </div>
-}
-else
-{
-    <div class="form-group">
-        <label for=@Property>@Label</label>
-        <div class="input-group">
-            @if (!string.IsNullOrEmpty(Prefix))
-            {
-                <span class="input-group-text">@Prefix</span>
-            }
+
             @if (Required)
             {
                 <input type="number"
@@ -63,21 +40,68 @@ else
                        min=@Min
                        max=@Max />
             }
+        }
+    }
+    else
+    {
+        <div class="input-group">
+            @if (!string.IsNullOrEmpty(Prefix))
+            {
+                <span class="input-group-text">@Prefix</span>
+            }
+            @if (Readonly)
+            {
+                <input type="number"
+                       class="form-control text-end"
+                       id=@Property
+                       name=@Property
+                       value=@Value
+                       disabled
+                       readonly />
+            }
+            else
+            {
+                @if (Required)
+                {
+                    <input type="number"
+                           class="form-control text-end"
+                           id=@Property
+                           name=@Property
+                           placeholder=@Placeholder
+                           value=@Value
+                           step=@Step
+                           min=@Min
+                           max=@Max
+                           required />
+                }
+                else
+                {
+                    <input type="number"
+                           class="form-control text-end"
+                           id=@Property
+                           name=@Property
+                           placeholder=@Placeholder
+                           value=@Value
+                           step=@Step
+                           min=@Min
+                           max=@Max />
+                }
+            }
+
             @if (!string.IsNullOrEmpty(Sufix))
             {
                 <span class="input-group-text">@Sufix</span>
             }
-
         </div>
-    </div>
-}
+    }
+</div>
 
 @code {
     [Parameter, EditorRequired]
     public string Property { get; set; } = default!;
     [Parameter, EditorRequired]
     public string Label { get; set; } = default!;
-    [Parameter, EditorRequired]
+    [Parameter]
     public string Placeholder { get; set; } = default!;
     [Parameter]
     public string Prefix { get; set; } = default!;
@@ -93,4 +117,6 @@ else
     public decimal? Step { get; set; } = default!;
     [Parameter]
     public bool Required { get; set; } = default!;
+    [Parameter]
+    public bool Readonly { get; set; } = default!;
 }

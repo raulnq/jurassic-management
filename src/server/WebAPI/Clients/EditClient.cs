@@ -93,11 +93,9 @@ public static class EditClient
 
         return new RazorComponentResult<EditClientPage>(new
         {
-            ClientEndpoints = Endpoints.Instance,
             GetClientResult = getClientResult,
             ListProjectsResult = listProjectResult,
             ListProjectsQuery = listProjectQuery,
-            ProjectEndpoints = Projects.Endpoints.Instance
         });
     }
 
@@ -116,21 +114,8 @@ public static class EditClient
 
         await behavior.Handle(() => handler.Handle(command));
 
-        var getClientResult = await getClientRunner.Run(new GetClient.Query() { ClientId = clientId });
+        context.Response.Headers.TriggerShowEditSuccessMessage("client", command.ClientId);
 
-        var listProjectQuery = new ListProjects.Query() { ClientId = clientId };
-
-        var listProjectResult = await listProjectsRunner.Run(new ListProjects.Query() { ClientId = clientId });
-
-        context.Response.Headers.TriggerShowSuccessMessage($"The client {getClientResult.ClientId} was updated successfully");
-
-        return new RazorComponentResult<EditClientPage>(new
-        {
-            ClientEndpoints = Endpoints.Instance,
-            GetClientResult = getClientResult,
-            ListProjectsResult = listProjectResult,
-            ListProjectsQuery = listProjectQuery,
-            ProjectEndpoints = WebAPI.Projects.Endpoints.Instance
-        });
+        return await HandlePage(getClientRunner, listProjectsRunner, command.ClientId);
     }
 }

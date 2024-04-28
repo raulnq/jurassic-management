@@ -27,7 +27,7 @@ public static class GetProject
         {
             return _queryRunner.Get<Result>((qf) => qf
                 .Query(Tables.Projects)
-                .Where(Tables.Projects.Field(nameof(Query.ProjectId)), query.ProjectId));
+                .Where(Tables.Projects.Field(nameof(Project.ProjectId)), query.ProjectId));
         }
     }
 

@@ -3,38 +3,31 @@
 @using WebAPI.Infrastructure.Ui;
 
 <Heading Text="Collaborator Roles" />
-<Breadcrumbs Links=@(new []{new Breadcrumbs.Link("List collaborators roles")}) />
+<Breadcrumbs Links=@(new []{new Breadcrumbs.Link("List collaborators roles")})
+             Target=@(Targets.Workspace) />
 <Toolbar>
     <Actions>
         <ActionButton Text="Register Collaborator Role"
-                      Endpoint=@Endpoints.Register
-                      Target="#workspace"
-                      Icon="bi bi-plus-lg" />
+                      Icon="bi bi-plus-lg"
+                      HtmxProps=@(new HtmxProps(Endpoints.Register, Targets.Workspace)) />
     </Actions>
 </Toolbar>
 <Section>
     <Content>
-        <div class="row g-3">
-            <div class="col">
-                <TextFilter Label="Name"
-                            Name="Name"
-                            Target="#search-results"
-                            Endpoint=@Endpoints.List
-                            Query=@Query
-                            Select="#search-results"
-                            Swap="outerHTML" />
-            </div>
-        </div>
+        <FormRow>
+            <Content>
+                <div class="col">
+                    <SearchFilter Label="Name"
+                                  Property=@nameof(ListCollaboratorRoles.Query.Name)
+                                  Query=@Query
+                                  HtmxProps=@(new HtmxProps(Endpoints.List, "#search-results", "outerHTML", "#search-results")) />
+                </div>
+            </Content>
+        </FormRow>
         <div id="search-results">
             <DataTable TResult=ListCollaboratorRoles.Result
                        Result=@Result
-                       Query=@Query
-                       Context="item"
-                       Endpoint=@Endpoints.List
-                       Target="#search-results"
-                       Swap="outerHTML"
-                       Select="#search-results"
-                       Parameters=@(new []{ new KeyValuePair<string, object?>(nameof(Query.Name), Query.Name)})>
+                       Context="item">
                 <TableHeader>
                     <th></th>
                     <th>CollaboratorRoleId</th>
@@ -43,17 +36,22 @@
                     <th>Profit Percentage</th>
                 </TableHeader>
                 <RowTemplate>
-                    <th>
-                        <ActionLink Target="#workspace"
-                                    Endpoint=@(Endpoints.Edit.Replace("{collaboratorRoleId}", @item.CollaboratorRoleId))
-                                    Icon="bi bi-eye" />
-                    </th>
+                    <RowToolbar>
+                        <Actions>
+                            <ActionLink HtmxProps=@(new HtmxProps(Endpoints.Edit.Replace("{collaboratorRoleId}", @item.CollaboratorRoleId), Targets.Workspace))
+                                        Icon="bi bi-eye" />
+                        </Actions>
+                    </RowToolbar>
                     <td>@item.CollaboratorRoleId</td>
                     <td>@item.Name</td>
                     <td>$ @item.FeeAmount</td>
                     <td>@item.ProfitPercentage %</td>
                 </RowTemplate>
             </DataTable>
+            <Pagination Query=@Query
+                        Result=@Result
+                        HtmxProps=@(new HtmxProps(Endpoints.List, "#search-results", "outerHTML", "#search-results"))
+                        Parameters=@(new[] { new KeyValuePair<string, object?>(nameof(Query.Name), Query.Name) }) />
         </div>
     </Content>
 </Section>
@@ -62,6 +60,4 @@
     public ListResults<ListCollaboratorRoles.Result> Result { get; set; } = default!;
     [Parameter, EditorRequired]
     public ListCollaboratorRoles.Query Query { get; set; } = default!;
-    [Parameter, EditorRequired]
-    public Endpoints.Endpoint Endpoints { get; set; } = default!;
 }

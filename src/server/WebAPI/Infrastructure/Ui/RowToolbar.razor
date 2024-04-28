@@ -1,0 +1,9 @@
+﻿<td>
+    <div class="hstack gap-1">
+        @Actions
+    </div>
+</td>
+@code {
+    [Parameter, EditorRequired]
+    public RenderFragment? Actions { get; set; } = default!;
+}

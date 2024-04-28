@@ -35,7 +35,7 @@ public static class GetClient
         {
             return _queryRunner.Get<Result>((qf) => qf
                 .Query(Tables.Clients)
-                .Where(Tables.Clients.Field(nameof(Query.ClientId)), query.ClientId));
+                .Where(Tables.Clients.Field(nameof(Client.ClientId)), query.ClientId));
         }
     }
 

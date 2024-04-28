@@ -1,0 +1,40 @@
+﻿@using WebAPI.Clients;
+@using WebAPI.CollaboratorRoles
+@using WebAPI.Collaborators
+@using WebAPI.Infrastructure.SqlKata;
+@using WebAPI.Infrastructure.Ui;
+
+<ModalForm HtmxProps=@(new HtmxProps(WebAPI.Proformas.Endpoints.EditWorkItem.Replace(new Dictionary<string, object?>(){{"{proformaId}", Result.ProformaId}, {"{week}", Result.Week}, {"{collaboratorId}", Result.CollaboratorId}}),"#collaborator-search-results","outerHTML","#collaborator-search-results"))
+           Title="Edit collaborator">
+    <Content>
+        <FormRow>
+            <Content>
+                <div class="col-6">
+                    <NumberInput Property=@nameof(AddWorkItem.Command.Hours)
+                                 Label="Hours"
+                                 Placeholder="Enter hours"
+                                 Sufix="hr"
+                                 Min=0
+                                 Step=0.01m
+                                 Value=@Result.Hours
+                                 Required=true />
+                </div>
+                <div class="col-6">
+                    <NumberInput Property=@nameof(AddWorkItem.Command.FreeHours)
+                                 Label="Free Hours"
+                                 Placeholder="Enter free hours"
+                                 Sufix="hr"
+                                 Min=0
+                                 Step=0.01m
+                                 Value=@Result.FreeHours
+                                 Required=true />
+                </div>
+            </Content>
+        </FormRow>
+    </Content>
+</ModalForm>
+
+@code {
+    [Parameter, EditorRequired]
+    public GetProformaWeekWorkItem.Result Result { get; set; } = default!;
+}

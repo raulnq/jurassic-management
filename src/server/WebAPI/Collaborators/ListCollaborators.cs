@@ -31,7 +31,7 @@ public static class ListCollaborators
 
                 if (!string.IsNullOrEmpty(query.Name))
                 {
-                    statement = statement.WhereLike(Tables.Collaborators.Field(nameof(Query.Name)), $"%{query.Name}%");
+                    statement = statement.WhereLike(Tables.Collaborators.Field(nameof(Collaborator.Name)), $"%{query.Name}%");
                 }
                 return statement;
             }, query);
@@ -50,6 +50,6 @@ public static class ListCollaborators
         [FromServices] Runner runner)
     {
         var result = await runner.Run(query);
-        return new RazorComponentResult<ListCollaboratorsPage>(new { Result = result, Endpoints = Endpoints.Instance, Query = query });
+        return new RazorComponentResult<ListCollaboratorsPage>(new { Result = result, Query = query });
     }
 }

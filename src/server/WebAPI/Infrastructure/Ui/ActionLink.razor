@@ -1,23 +1,75 @@
-﻿<a class="icon-link" href="#" hx-get=@Endpoint hx-target=@Target hx-swap=@Swap>
+﻿@if (IsDisabled)
+{
+    <a class="icon-link disabled"
+       href="#">
 
-    @if (!string.IsNullOrEmpty(Icon))
+        @if (!string.IsNullOrEmpty(Icon))
+        {
+            <i class=@Icon></i>
+        }
+        @if (!string.IsNullOrEmpty(Text))
+        {
+            @Text
+        }
+    </a>
+}
+else
+{
+    if (string.IsNullOrEmpty(HtmxProps.HttpMethod))
     {
-        <i class=@Icon></i>
+        <a class="icon-link"
+           href="#"
+           hx-get=@HtmxProps.Endpoint
+           hx-target=@HtmxProps.Target
+           hx-swap=@HtmxProps.Swap
+           hx-select=@HtmxProps.Select
+           hx-confirm=@HtmxProps.Confirm>
+
+            @if (!string.IsNullOrEmpty(Icon))
+            {
+                <i class=@Icon></i>
+            }
+            @if (!string.IsNullOrEmpty(Text))
+            {
+                @Text
+            }
+        </a>
     }
-    @if (!string.IsNullOrEmpty(Text))
+    else
     {
-        @Text
+        switch (HtmxProps.HttpMethod)
+        {
+            case "DELETE":
+                <a class="icon-link"
+                   href="#"
+                   hx-delete=@HtmxProps.Endpoint
+                   hx-target=@HtmxProps.Target
+                   hx-swap=@HtmxProps.Swap
+                   hx-select=@HtmxProps.Select
+                   hx-confirm=@HtmxProps.Confirm>
+
+                    @if (!string.IsNullOrEmpty(Icon))
+                    {
+                        <i class=@Icon></i>
+                    }
+                    @if (!string.IsNullOrEmpty(Text))
+                    {
+                        @Text
+                    }
+                </a>
+                break;
+        }
     }
-</a>
+
+}
+
 @code {
-    [Parameter, EditorRequired]
-    public string Target { get; set; } = default!;
-    [Parameter, EditorRequired]
-    public string Endpoint { get; set; } = default!;
-    [Parameter]
-    public string Swap { get; set; } = "innerHTML";
     [Parameter]
     public string Icon { get; set; } = default!;
     [Parameter]
     public string Text { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public HtmxProps HtmxProps { get; set; } = default!;
+    [Parameter]
+    public bool IsDisabled { get; set; } = false;
 }

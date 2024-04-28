@@ -19,7 +19,7 @@ internal class ApplicationFactory : WebApplicationFactory<Program>, IHttpClienFa
 
     public FixedClock Clock { get; set; } = null!;
 
-    public Action<IServiceCollection> ConfigureServices { get; set; }
+    public Action<IServiceCollection>? ConfigureServices { get; set; }
 
     protected override IHost CreateHost(IHostBuilder builder)
     {
@@ -35,13 +35,14 @@ internal class ApplicationFactory : WebApplicationFactory<Program>, IHttpClienFa
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.ConfigureServices(services =>
-        {
-            services.RemoveAll<IClock>();
-            services.AddSingleton<IClock>(Clock);
-            //services.RemoveAll<ApiKeySettings>();
-            //services.AddSingleton(ApiKeys);
-            ConfigureServices?.Invoke(services);
-        });
+        if (ConfigureServices != null)
+            builder.ConfigureServices(services =>
+            {
+                services.RemoveAll<IClock>();
+                services.AddSingleton<IClock>(Clock);
+                //services.RemoveAll<ApiKeySettings>();
+                //services.AddSingleton(ApiKeys);
+                ConfigureServices?.Invoke(services);
+            });
     }
 }

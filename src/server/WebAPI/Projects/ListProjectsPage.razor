@@ -1,27 +1,28 @@
 ﻿@using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
+@using WebAPI.Projects;
 
 <div id="search-results">
     <DataTable TResult=ListProjects.Result
                Result=@Result
-               Query=@Query
-               Context="item"
-               Endpoint=@(Endpoints.Edit.Replace("{clientId}", Query.ClientId))
-               Target="#search-results"
-               Swap="outerHTML">
+               Context="item">
         <TableHeader>
             <th></th>
             <th>Name</th>
         </TableHeader>
         <RowTemplate>
-            <th>
-                <ActionLink Target="#dialog"
-                            Endpoint=@(Endpoints.Edit.Replace(new Dictionary<string, object?>(){{"{clientId}",item.ClientId}, {"projectId", item.ProjectId}}))
-                            Icon="bi bi-eye" />
-            </th>
+            <RowToolbar>
+                <Actions>
+                    <ActionLink HtmxProps=@(new HtmxProps(Endpoints.Edit.Replace(new Dictionary<string, object?>(){{"{clientId}",item.ClientId}, {"projectId", item.ProjectId}}), Targets.Dialog))
+                                Icon="bi bi-eye" />
+                </Actions>
+            </RowToolbar>
             <td>@item.Name</td>
         </RowTemplate>
     </DataTable>
+    <Pagination Query=@Query
+                Result=@Result
+                HtmxProps=@(new HtmxProps(Endpoints.List.Replace("{clientId}", Query.ClientId),"#search-results", "outerHTML")) />
 </div>
 
 @code {
@@ -29,6 +30,4 @@
     public ListResults<ListProjects.Result> Result { get; set; } = default!;
     [Parameter, EditorRequired]
     public ListProjects.Query Query { get; set; } = default!;
-    [Parameter, EditorRequired]
-    public Endpoints.Endpoint Endpoints { get; set; } = default!;
 }

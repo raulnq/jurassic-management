@@ -2,16 +2,11 @@
 
 public static class Endpoints
 {
-    public class Endpoint
-    {
-        public string List = "/ui/collaborators/list";
+    public const string List = "/ui/collaborators/list";
 
-        public string Register = "/ui/collaborators/register";
+    public const string Register = "/ui/collaborators/register";
 
-        public string Edit = "/ui/collaborators/{collaboratorId}/edit";
-    }
-
-    public static readonly Endpoint Instance = new();
+    public const string Edit = "/ui/collaborators/{collaboratorId}/edit";
 
     public static void RegisterCollaboratorEndpoints(this WebApplication app)
     {

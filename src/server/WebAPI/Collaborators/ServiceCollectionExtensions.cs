@@ -12,6 +12,8 @@ public static class ServiceCollectionExtensions
 
         services.AddTransient<EditCollaborator.Handler>();
 
+        services.AddTransient<SearchCollaborators.Runner>();
+
         return services;
     }
 }

@@ -92,7 +92,7 @@ public static class RegisterClient
 
     public static Task<RazorComponentResult> HandlePage()
     {
-        return Task.FromResult<RazorComponentResult>(new RazorComponentResult<RegisterClientPage>(new { Endpoints = Endpoints.Instance }));
+        return Task.FromResult<RazorComponentResult>(new RazorComponentResult<RegisterClientPage>(new { }));
     }
 
     public static async Task<RazorComponentResult> HandleAction(
@@ -106,12 +106,8 @@ public static class RegisterClient
 
         var registerResult = await behavior.Handle(() => handler.Handle(command));
 
-        var query = new ListClients.Query();
+        context.Response.Headers.TriggerShowRegisterSuccessMessage("client", registerResult.ClientId);
 
-        var listResult = await runner.Run(query);
-
-        context.Response.Headers.TriggerShowSuccessMessage($"The client {registerResult.ClientId} was created successfully");
-
-        return new RazorComponentResult<ListClientsPage>(new { Result = listResult, Endpoints = Endpoints.Instance, Query = query });
+        return await ListClients.HandlePage(new ListClients.Query(), runner);
     }
 }

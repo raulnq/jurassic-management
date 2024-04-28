@@ -1,13 +1,10 @@
-﻿@using WebAPI.Clients;
-@using WebAPI.Infrastructure.SqlKata;
+﻿@using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
 
-<ModalForm Endpoint=@(Endpoints.Register.Replace("{clientId}", ClientId))
-           Swap="outerHTML"
-           Target="#search-results"
+<ModalForm HtmxProps=@(new HtmxProps(Endpoints.Register.Replace("{clientId}", ClientId), "#search-results", "outerHTML"))
            Title="Add project">
     <Content>
-        <TextInput Property=@nameof(Project.Name)
+        <TextInput Property=@nameof(AddProject.Command.Name)
                    Label="Name"
                    Placeholder="Enter name"
                    MaxLenght=100
@@ -16,8 +13,6 @@
 </ModalForm>
 
 @code {
-    [Parameter, EditorRequired]
-    public Endpoints.Endpoint Endpoints { get; set; } = default!;
     [Parameter, EditorRequired]
     public Guid ClientId { get; set; } = default!;
 }

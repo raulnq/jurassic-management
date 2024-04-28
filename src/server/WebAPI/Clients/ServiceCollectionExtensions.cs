@@ -12,6 +12,8 @@ public static class ServiceCollectionExtensions
 
         services.AddTransient<EditClient.Handler>();
 
+        services.AddTransient<SearchClients.Runner>();
+
         return services;
     }
 }

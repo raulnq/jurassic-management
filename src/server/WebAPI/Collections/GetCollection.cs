@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.SqlKata;
-using WebAPI.Proformas;
 
 namespace WebAPI.Collections;
 

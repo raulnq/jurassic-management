@@ -3,38 +3,31 @@
 @using WebAPI.Infrastructure.Ui;
 
 <Heading Text="Clients" />
-<Breadcrumbs Links=@(new []{new Breadcrumbs.Link("List clients")}) />
+<Breadcrumbs Links=@(new []{new Breadcrumbs.Link("List clients")})
+             Target=@(Targets.Workspace) />
 <Toolbar>
     <Actions>
         <ActionButton Text="Register Client"
-                      Endpoint=@Endpoints.Register
-                      Target="#workspace"
-                      Icon="bi bi-plus-lg" />
+                      Icon="bi bi-plus-lg"
+                      HtmxProps=@(new HtmxProps(Endpoints.Register, Targets.Workspace)) />
     </Actions>
 </Toolbar>
 <Section>
     <Content>
-        <div class="row g-3">
-            <div class="col">
-                <TextFilter Label="Name"
-                            Name="Name"
-                            Target="#search-results"
-                            Endpoint=@Endpoints.List
-                            Query=@Query
-                            Select="#search-results"
-                            Swap="outerHTML" />
-            </div>
-        </div>
+        <FormRow>
+            <Content>
+                <div class="col">
+                    <SearchFilter Label="Name"
+                                  Property=@(nameof(ListClients.Query.Name))
+                                  Query=@Query
+                                  HtmxProps=@(new HtmxProps(Endpoints.List, "#search-results", "outerHTML", "#search-results")) />
+                </div>
+            </Content>
+        </FormRow>
         <div id="search-results">
             <DataTable TResult=ListClients.Result
                        Result=@Result
-                       Query=@Query
-                       Context="item"
-                       Endpoint=@Endpoints.List
-                       Target="#search-results"
-                       Swap="outerHTML"
-                       Select="#search-results"
-                       Parameters=@(new []{ new KeyValuePair<string, object?>(nameof(Query.Name), Query.Name)})>
+                       Context="item">
                 <TableHeader>
                     <th></th>
                     <th>ClientId</th>
@@ -43,17 +36,22 @@
                     <th>Document Number</th>
                 </TableHeader>
                 <RowTemplate>
-                    <th>
-                        <ActionLink Target="#workspace"
-                                    Endpoint=@(Endpoints.Edit.Replace("{clientId}", @item.ClientId))
-                                    Icon="bi bi-eye" />
-                    </th>
+                    <RowToolbar>
+                        <Actions>
+                            <ActionLink Icon="bi bi-eye"
+                                        HtmxProps=@(new HtmxProps(Endpoints.Edit.Replace("{clientId}", @item.ClientId),Targets.Workspace)) />
+                        </Actions>
+                    </RowToolbar>
                     <td>@item.ClientId</td>
                     <td>@item.Name</td>
                     <td>@item.PhoneNumber</td>
                     <td>@item.DocumentNumber</td>
                 </RowTemplate>
             </DataTable>
+            <Pagination Query=@Query
+                        Result=@Result
+                        HtmxProps=@(new HtmxProps(Endpoints.List, "#search-results", "outerHTML", "#search-results"))
+                        Parameters=@(new []{ new KeyValuePair<string, object?>(nameof(Query.Name), Query.Name)}) />
         </div>
     </Content>
 </Section>
@@ -62,6 +60,4 @@
     public ListResults<ListClients.Result> Result { get; set; } = default!;
     [Parameter, EditorRequired]
     public ListClients.Query Query { get; set; } = default!;
-    [Parameter, EditorRequired]
-    public Endpoints.Endpoint Endpoints { get; set; } = default!;
 }

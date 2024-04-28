@@ -27,7 +27,7 @@ public static class GetCollaborator
         {
             return _queryRunner.Get<Result>((qf) => qf
                 .Query(Tables.Collaborators)
-                .Where(Tables.Collaborators.Field(nameof(Query.CollaboratorId)), query.CollaboratorId));
+                .Where(Tables.Collaborators.Field(nameof(Collaborator.CollaboratorId)), query.CollaboratorId));
         }
     }
 

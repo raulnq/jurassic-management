@@ -46,7 +46,7 @@ public class ProformasDsl
 
         setup?.Invoke(request);
 
-        var (status, error) = await _httpDriver.Post($"{_uri}/{request.ProformaId}/weeks/{request.Week}/collaborators/{request.CollaboratorId}", request);
+        var (status, error) = await _httpDriver.Post($"{_uri}/{request.ProformaId}/weeks/{request.Week}/work-items", request);
 
         (status, error).Check(errorDetail, errors: errors);
 
@@ -63,7 +63,7 @@ public class ProformasDsl
 
         setup?.Invoke(request);
 
-        var (status, error) = await _httpDriver.Put($"{_uri}/{request.ProformaId}/weeks/{request.Week}/collaborators/{request.CollaboratorId}", request);
+        var (status, error) = await _httpDriver.Put($"{_uri}/{request.ProformaId}/weeks/{request.Week}/work-items/{request.CollaboratorId}", request);
 
         (status, error).Check(errorDetail, errors: errors);
 
@@ -79,7 +79,7 @@ public class ProformasDsl
 
         setup?.Invoke(request);
 
-        var (status, error) = await _httpDriver.Delete($"{_uri}/{request.ProformaId}/weeks/{request.Week}/collaborators/{request.CollaboratorId}");
+        var (status, error) = await _httpDriver.Delete($"{_uri}/{request.ProformaId}/weeks/{request.Week}/work-items/{request.CollaboratorId}");
 
         (status, error).Check(errorDetail, errors: errors);
 
@@ -145,7 +145,7 @@ public class ProformasDsl
 
         setup?.Invoke(request);
 
-        var (status, result, error) = await _httpDriver.Get<GetProformaWeekWorkItem.Query, GetProformaWeekWorkItem.Result>($"{_uri}/{request.ProformaId}/weeks/{request.Week}/collaborators/{request.CollaboratorId}", request);
+        var (status, result, error) = await _httpDriver.Get<GetProformaWeekWorkItem.Query, GetProformaWeekWorkItem.Result>($"{_uri}/{request.ProformaId}/weeks/{request.Week}/work-items/{request.CollaboratorId}", request);
 
         (status, result, error).Check(errorDetail, successAssert: result =>
         {

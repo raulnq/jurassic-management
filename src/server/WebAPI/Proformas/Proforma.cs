@@ -91,6 +91,7 @@ public class Proforma
     {
         EnsureTotalGreaterThenZero();
         //TODO: Validate empty weeks/work items?
+        EnsureStatus(ProformaStatus.Pending);
         Status = ProformaStatus.Issued;
         IssuedAt = issueAt;
     }
@@ -103,8 +104,18 @@ public class Proforma
         }
     }
 
+    public void EnsureStatus(ProformaStatus status)
+    {
+        if (status != Status)
+        {
+            throw new DomainException($"proforma-status-not-{status.ToString().ToLower()}");
+        }
+    }
+
     public void AddWorkItem(int week, Guid collaboratorId, CollaboratorRole collaboratorRole, decimal hours, decimal freeHours)
     {
+        EnsureStatus(ProformaStatus.Pending);
+
         var weekItem = Weeks.FirstOrDefault(w => w.Week == week);
 
         if (weekItem == null)
@@ -119,6 +130,8 @@ public class Proforma
 
     public void EditWorkItem(int week, Guid collaboratorId, decimal hours, decimal freeHours)
     {
+        EnsureStatus(ProformaStatus.Pending);
+
         var item = Weeks.FirstOrDefault(w => w.Week == week);
 
         if (item == null)
@@ -133,6 +146,8 @@ public class Proforma
 
     public void RemoveWorkItem(int week, Guid collaboratorId)
     {
+        EnsureStatus(ProformaStatus.Pending);
+
         var item = Weeks.FirstOrDefault(w => w.Week == week);
 
         if (item == null)

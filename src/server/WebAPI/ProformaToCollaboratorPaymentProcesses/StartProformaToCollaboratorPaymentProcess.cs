@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
 using WebAPI.CollaboratorPayments;
 using WebAPI.Infrastructure.EntityFramework;
-using WebAPI.Invoices;
 using WebAPI.Proformas;
 
 namespace WebAPI.ProformaToCollaboratorPaymentProcesses;

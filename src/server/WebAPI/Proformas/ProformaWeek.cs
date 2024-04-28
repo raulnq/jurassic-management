@@ -15,7 +15,7 @@ public class ProformaWeek
 
     private ProformaWeek()
     {
-
+        WorkItems = [];
     }
 
     public ProformaWeek(Guid platformId, int week, DateTime start, DateTime end, decimal minimumHours, decimal penaltyMinimumHours)

@@ -65,7 +65,7 @@ public static class EditCollaborator
     {
         var result = await runner.Run(new GetCollaborator.Query() { CollaboratorId = collaboratorId });
 
-        return new RazorComponentResult<EditCollaboratorPage>(new { Endpoints = Endpoints.Instance, Result = result });
+        return new RazorComponentResult<EditCollaboratorPage>(new { Result = result });
     }
 
     public static async Task<RazorComponentResult> HandleAction(
@@ -84,8 +84,8 @@ public static class EditCollaborator
 
         var result = await runner.Run(new GetCollaborator.Query() { CollaboratorId = collaboratorId });
 
-        context.Response.Headers.TriggerShowSuccessMessage($"The collaborator {result.CollaboratorId} was updated successfully");
+        context.Response.Headers.TriggerShowEditSuccessMessage($"collaborator", result.CollaboratorId);
 
-        return new RazorComponentResult<EditCollaboratorPage>(new { Endpoints = Endpoints.Instance, Result = result });
+        return await HandlePage(runner, command.CollaboratorId);
     }
 }

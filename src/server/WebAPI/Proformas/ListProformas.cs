@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.Clients;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.SqlKata;
+using WebAPI.Projects;
 
 namespace WebAPI.Proformas;
 
@@ -9,13 +11,15 @@ public static class ListProformas
 {
     public class Query : ListQuery
     {
-        public ProformaStatus? Status { get; set; }
+        public string? Status { get; set; }
         public IEnumerable<Guid>? ProformaId { get; set; }
     }
 
     public class Result
     {
         public Guid ProformaId { get; set; }
+        public string? ProjectName { get; set; }
+        public string? ClientName { get; set; }
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
         public Guid ProjectId { get; set; }
@@ -46,14 +50,21 @@ public static class ListProformas
         {
             return _queryRunner.List<Query, Result>((qf) =>
             {
-                var statement = qf.Query(Tables.Proformas);
-                if (query.Status.HasValue)
+                var statement = qf.Query(Tables.Proformas)
+                .Select(Tables.Proformas.AllFields)
+                .Select(Tables.Projects.Field(nameof(Project.Name), nameof(Result.ProjectName)))
+                .Select(Tables.Clients.Field(nameof(Client.Name), nameof(Result.ClientName)))
+                .Join(Tables.Projects, Tables.Projects.Field(nameof(Project.ProjectId)), Tables.Proformas.Field(nameof(Proforma.ProjectId)))
+                .Join(Tables.Clients, Tables.Clients.Field(nameof(Client.ClientId)), Tables.Projects.Field(nameof(Project.ClientId)))
+                ;
+
+                if (!string.IsNullOrEmpty(query.Status))
                 {
-                    statement = statement.Where(Tables.Proformas.Field(nameof(query.Status)), query.Status.Value.ToString());
+                    statement = statement.Where(Tables.Proformas.Field(nameof(Proforma.Status)), query.Status);
                 }
-                if (query.ProformaId != null)
+                if (query.ProformaId != null && query.ProformaId.Any())
                 {
-                    statement = statement.WhereIn(Tables.Proformas.Field(nameof(query.ProformaId)), query.ProformaId);
+                    statement = statement.WhereIn(Tables.Proformas.Field(nameof(Proforma.ProformaId)), query.ProformaId);
                 }
                 return statement;
             }, query);
@@ -65,5 +76,13 @@ public static class ListProformas
     [AsParameters] Query query)
     {
         return TypedResults.Ok(await runner.Run(query));
+    }
+
+    public static async Task<RazorComponentResult> HandlePage(
+    [AsParameters] Query query,
+    [FromServices] Runner runner)
+    {
+        var result = await runner.Run(query);
+        return new RazorComponentResult<ListProformasPage>(new { Result = result, Query = query });
     }
 }

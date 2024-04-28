@@ -17,9 +17,9 @@ public class DbMigrator
                             .AddEnvironmentVariables()
                             .Build();
 
-        _connectionString = configuration["DbConnectionString"];
+        _connectionString = configuration["DbConnectionString"]!;
 
-        _schema = configuration["DbSchema"];
+        _schema = configuration["DbSchema"]!;
 
         if (string.IsNullOrEmpty(_connectionString))
         {

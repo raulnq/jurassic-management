@@ -32,11 +32,11 @@ public static class ListProjects
 
                 if (!string.IsNullOrEmpty(query.Name))
                 {
-                    statement = statement.WhereLike(Tables.Projects.Field(nameof(Query.Name)), $"%{query.Name}%");
+                    statement = statement.WhereLike(Tables.Projects.Field(nameof(Project.Name)), $"%{query.Name}%");
                 }
                 if (query.ClientId.HasValue)
                 {
-                    statement = statement.Where(Tables.Projects.Field(nameof(Query.ClientId)), query.ClientId);
+                    statement = statement.Where(Tables.Projects.Field(nameof(Project.ClientId)), query.ClientId);
                 }
                 return statement;
             }, query);
@@ -55,6 +55,6 @@ public static class ListProjects
     [FromServices] Runner runner)
     {
         var result = await runner.Run(query);
-        return new RazorComponentResult<ListProjectsPage>(new { Result = result, Endpoints = Endpoints.Instance, Query = query });
+        return new RazorComponentResult<ListProjectsPage>(new { Result = result, Query = query });
     }
 }

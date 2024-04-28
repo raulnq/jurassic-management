@@ -68,7 +68,7 @@ public static class RegisterCollaboratorRole
 
     public static Task<RazorComponentResult> HandlePage()
     {
-        return Task.FromResult<RazorComponentResult>(new RazorComponentResult<RegisterCollaboratorRolePage>(new { Endpoints = Endpoints.Instance }));
+        return Task.FromResult<RazorComponentResult>(new RazorComponentResult<RegisterCollaboratorRolePage>(new { }));
     }
 
     public static async Task<RazorComponentResult> HandleAction(
@@ -82,12 +82,8 @@ public static class RegisterCollaboratorRole
 
         var registerResult = await behavior.Handle(() => handler.Handle(command));
 
-        var query = new ListCollaboratorRoles.Query();
+        context.Response.Headers.TriggerShowRegisterSuccessMessage($"collaborator role", registerResult.CollaboratorRoleId);
 
-        var listResult = await runner.Run(query);
-
-        context.Response.Headers.TriggerShowSuccessMessage($"The collaborator role {registerResult.CollaboratorRoleId} was created successfully");
-
-        return new RazorComponentResult<ListCollaboratorRolesPage>(new { Result = listResult, Endpoints = Endpoints.Instance, Query = query });
+        return await ListCollaboratorRoles.HandlePage(new ListCollaboratorRoles.Query() { }, runner);
     }
 }

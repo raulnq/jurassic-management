@@ -1,4 +1,9 @@
-﻿<form hx-post=@Endpoint hx-target=@Target hx-swap=@Swap hx-ext="json-enc" hx-indicator="#form-spinner" hx-disabled-elt="#form-button">
+﻿<form hx-post=@HtmxProps.Endpoint
+      hx-target=@HtmxProps.Target
+      hx-swap=@HtmxProps.Swap
+      hx-ext="json-enc"
+      hx-indicator="#form-spinner"
+      hx-disabled-elt="#form-button">
     @Content
     <button id="form-button" type="submit" class="btn btn-primary">
         <span>Save Changes</span>
@@ -7,11 +12,7 @@
 </form>
 @code {
     [Parameter, EditorRequired]
-    public string Endpoint { get; set; } = default!;
-    [Parameter, EditorRequired]
-    public string Target { get; set; } = default!;
-    [Parameter]
-    public string Swap { get; set; } = "innerHTML";
-    [Parameter, EditorRequired]
     public RenderFragment? Content { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public HtmxProps HtmxProps { get; set; } = default!;
 }

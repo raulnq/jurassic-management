@@ -67,7 +67,7 @@ public static class AddProject
     {
         context.Response.Headers.TriggerOpenModal();
 
-        return Task.FromResult<RazorComponentResult>(new RazorComponentResult<AddProjectPage>(new { Endpoints = Endpoints.Instance, ClientId = clientId }));
+        return Task.FromResult<RazorComponentResult>(new RazorComponentResult<AddProjectPage>(new { ClientId = clientId }));
     }
 
     public static async Task<RazorComponentResult> HandleAction(
@@ -82,15 +82,11 @@ public static class AddProject
 
         new Validator().ValidateAndThrow(command);
 
-        var registerResult = await behavior.Handle(() => handler.Handle(command));
+        var result = await behavior.Handle(() => handler.Handle(command));
 
-        var query = new ListProjects.Query() { ClientId = command.ClientId };
+        context.Response.Headers.TriggerShowRegisterSuccessMessageAndCloseModal($"project", result.ProjectId);
 
-        var listResult = await runner.Run(query);
-
-        context.Response.Headers.TriggerShowSuccessMessageAndCloseModal($"The project {registerResult.ProjectId} was added successfully");
-
-        return new RazorComponentResult<ListProjectsPage>(new { Result = listResult, Endpoints = Endpoints.Instance, Query = query });
+        return await ListProjects.HandlePage(new ListProjects.Query() { ClientId = command.ClientId }, runner);
     }
 
 }

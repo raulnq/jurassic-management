@@ -1,0 +1,69 @@
+﻿@using WebAPI.Infrastructure.SqlKata;
+@using WebAPI.Infrastructure.Ui;
+@using WebAPI.Proformas;
+
+<div id="collaborator-section">
+    <Section Title="Work">
+        <Content>
+            <Toolbar>
+                <Actions>
+                    <ActionButton Text="Add Collaborator"
+                                  Icon="bi bi-plus-lg"
+                                  IsDisabled=@(GetProformaResult.Status !=ProformaStatus.Pending.ToString())
+                                  HtmxProps=@(new HtmxProps(Endpoints.AddWorkItem.Replace(new Dictionary<string, object?>(){{"{proformaId}",Query.ProformaId}, {"{week}", Query.Week}}), Targets.Dialog)) />
+                </Actions>
+            </Toolbar>
+            <div id="collaborator-search-results">
+                <DataTable TResult=ListProformaWeekWorkItems.Result
+                           Result=@Result
+                           Context="item">
+                    <TableHeader>
+                        <th></th>
+                        <th>Collaborator</th>
+                        <th>Role</th>
+                        <th>Hours</th>
+                        <th>Free Hours</th>
+                        <th>SubTotal</th>
+                        <th>Fee Amount</th>
+                    </TableHeader>
+                    <RowTemplate>
+                        <RowToolbar>
+                            <Actions>
+                                <ActionLink HtmxProps=@(new HtmxProps(Endpoints.EditWorkItem.Replace(new Dictionary<string, object?>(){{"{proformaId}",item.ProformaId}, {"{week}", item.Week}, {"{collaboratorId}", item.CollaboratorId}}), Targets.Dialog))
+                                            IsDisabled=@(GetProformaResult.Status !=ProformaStatus.Pending.ToString())
+                                            Icon="bi bi-eye" />
+                                <ActionLink HtmxProps=@(new HtmxProps(Endpoints.RemoveWorkItem.Replace(new Dictionary<string, object?>(){{"{proformaId}",item.ProformaId}, {"{week}", item.Week}, {"{collaboratorId}", item.CollaboratorId}}), "#collaborator-search-results", "outerHTML", "#collaborator-search-results"){ Confirm = "Are you sure?", HttpMethod="DELETE"})
+                                            IsDisabled=@(GetProformaResult.Status !=ProformaStatus.Pending.ToString())
+                                            Icon="bi bi-x-circle" />
+                            </Actions>
+                        </RowToolbar>
+                        <td>@item.CollaboratorName</td>
+                        <td>@item.CollaboratorRoleName</td>
+                        <td>@item.Hours</td>
+                        <td>@item.FreeHours</td>
+                        <td>@item.SubTotal</td>
+                        <td>@item.FeeAmount</td>
+                    </RowTemplate>
+                </DataTable>
+                <Pagination Query=@Query
+                            Result=@Result
+                            HtmxProps=@(new HtmxProps(Endpoints.ListWorkItems.Replace(new Dictionary<string, object?>(){{"{proformaId}",Query.ProformaId}, {"{week}", Query.Week}}), "#collaborator-search-results", "outerHTML", "#collaborator-search-results")) />
+            </div>
+        </Content>
+    </Section>
+</div>
+<div id="totals-section" hx-swap-oob="true">
+    <TotalsSectionPage Result=@GetProformaResult />
+</div>
+<div id="week-@GetProformaWeekResult.Week-penalty" hx-swap-oob="true">@GetProformaWeekResult.Penalty</div>
+<div id="week-@GetProformaWeekResult.Week-subtotal" hx-swap-oob="true">@GetProformaWeekResult.SubTotal</div>
+@code {
+    [Parameter, EditorRequired]
+    public ListResults<ListProformaWeekWorkItems.Result> Result { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public ListProformaWeekWorkItems.Query Query { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public GetProforma.Result GetProformaResult { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public GetProformaWeek.Result GetProformaWeekResult { get; set; } = default!;
+}

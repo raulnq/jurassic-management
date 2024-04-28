@@ -66,7 +66,7 @@ public static class RegisterCollaborator
 
     public static Task<RazorComponentResult> HandlePage()
     {
-        return Task.FromResult<RazorComponentResult>(new RazorComponentResult<RegisterCollaboratorPage>(new { Endpoints = Endpoints.Instance }));
+        return Task.FromResult<RazorComponentResult>(new RazorComponentResult<RegisterCollaboratorPage>(new { }));
     }
 
     public static async Task<RazorComponentResult> HandleAction(
@@ -82,10 +82,8 @@ public static class RegisterCollaborator
 
         var query = new ListCollaborators.Query();
 
-        var listResult = await runner.Run(new ListCollaborators.Query());
+        context.Response.Headers.TriggerShowRegisterSuccessMessage($"collaborator", registerResult.CollaboratorId);
 
-        context.Response.Headers.TriggerShowSuccessMessage($"The collaborator {registerResult.CollaboratorId} was created successfully");
-
-        return new RazorComponentResult<ListCollaboratorsPage>(new { Result = listResult, Endpoints = Endpoints.Instance, Query = query });
+        return await ListCollaborators.HandlePage(new ListCollaborators.Query() { }, runner);
     }
 }
