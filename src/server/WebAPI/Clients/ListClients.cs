@@ -58,6 +58,7 @@ public static class ListClients
     [FromServices] Runner runner)
     {
         var result = await runner.Run(query);
+
         return new RazorComponentResult<ListClientsPage>(new { Result = result, Query = query });
     }
 }

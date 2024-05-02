@@ -2,7 +2,7 @@
 @using WebAPI.Infrastructure.Ui;
 @using WebAPI.Projects;
 
-<div id="search-results">
+<div id=@Targets.ProjectList>
     <DataTable TResult=ListProjects.Result
                Result=@Result
                Context="item">
@@ -13,8 +13,8 @@
         <RowTemplate>
             <RowToolbar>
                 <Actions>
-                    <ActionLink HtmxProps=@(new HtmxProps(Endpoints.Edit.Replace(new Dictionary<string, object?>(){{"{clientId}",item.ClientId}, {"projectId", item.ProjectId}}), Targets.Dialog))
-                                Icon="bi bi-eye" />
+                    <ActionLink HtmxProps=@(new HtmxProps(Endpoints.GetEdit(item.ClientId, item.ProjectId), Infrastructure.Ui.Targets.Dialog))
+                                Icon=@Icons.Edit />
                 </Actions>
             </RowToolbar>
             <td>@item.Name</td>
@@ -22,7 +22,7 @@
     </DataTable>
     <Pagination Query=@Query
                 Result=@Result
-                HtmxProps=@(new HtmxProps(Endpoints.List.Replace("{clientId}", Query.ClientId),"#search-results", "outerHTML")) />
+                HtmxProps=@(new HtmxProps(Endpoints.GetList(Query.ClientId!.Value),$"#{Targets.ProjectList}", Swap.OuterHTML)) />
 </div>
 
 @code {
@@ -30,4 +30,5 @@
     public ListResults<ListProjects.Result> Result { get; set; } = default!;
     [Parameter, EditorRequired]
     public ListProjects.Query Query { get; set; } = default!;
+
 }

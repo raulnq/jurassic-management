@@ -70,7 +70,9 @@ public static class EditWorkItem
     [FromBody] Command command)
     {
         command.ProformaId = proformaId;
+
         command.Week = week;
+
         command.CollaboratorId = collaboratorId;
 
         new Validator().ValidateAndThrow(command);
@@ -106,15 +108,7 @@ public static class EditWorkItem
         Guid collaboratorId,
         HttpContext context)
     {
-        command.ProformaId = proformaId;
-
-        command.Week = week;
-
-        command.CollaboratorId = collaboratorId;
-
-        new Validator().ValidateAndThrow(command);
-
-        await behavior.Handle(() => handler.Handle(command));
+        await Handle(behavior, handler, proformaId, week, collaboratorId, command);
 
         context.Response.Headers.TriggerShowSuccessMessageAndCloseModal($"The collaborator {collaboratorId} was updated successfully");
 

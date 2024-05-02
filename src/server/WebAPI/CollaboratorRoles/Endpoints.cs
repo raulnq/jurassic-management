@@ -8,6 +8,11 @@ public static class Endpoints
 
     public const string Edit = "/ui/collaborator-roles/{collaboratorRoleId}/edit";
 
+    public static string GetEdit(Guid collaboratorRoleId)
+    {
+        return Edit.Replace("{collaboratorRoleId}", collaboratorRoleId.ToString());
+    }
+
     public static void RegisterCollaboratorRoleEndpoints(this WebApplication app)
     {
         var group = app.MapGroup("/collaborator-roles")

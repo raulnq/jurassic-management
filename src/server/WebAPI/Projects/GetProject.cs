@@ -33,6 +33,7 @@ public static class GetProject
 
     public static async Task<Ok<Result>> Handle(
     [FromServices] Runner runner,
+    [FromRoute] Guid clientId,
     [FromRoute] Guid projectId)
     {
         return TypedResults.Ok(await runner.Run(new Query() { ProjectId = projectId }));

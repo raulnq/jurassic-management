@@ -4,10 +4,10 @@
 
 <Heading Text="Collaborators" />
 <Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new("List collaborators", Endpoints.List.AddListParameters()), new("Edit collaborator") })
-             Target=@(Targets.Workspace) />
+             Target=@(Infrastructure.Ui.Targets.Workspace) />
 <Section>
     <Content>
-        <Form HtmxProps=@(new HtmxProps(Endpoints.Edit.Replace("{collaboratorId}", @Result.CollaboratorId),Targets.Workspace))>
+        <Form HtmxProps=@(new HtmxProps(Endpoints.GetEdit(@Result.CollaboratorId),Infrastructure.Ui.Targets.Workspace))>
             <Content>
                 <FormRow>
                     <Content>

@@ -51,6 +51,7 @@ public static class ListCollaboratorRoles
     [FromServices] Runner runner)
     {
         var result = await runner.Run(query);
+
         return new RazorComponentResult<ListCollaboratorRolesPage>(new { Result = result, Query = query });
     }
 }

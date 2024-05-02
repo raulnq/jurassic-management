@@ -4,12 +4,12 @@
 
 <Heading Text="Collaborator Roles" />
 <Breadcrumbs Links=@(new []{new Breadcrumbs.Link("List collaborators roles")})
-             Target=@(Targets.Workspace) />
+             Target=@(Infrastructure.Ui.Targets.Workspace) />
 <Toolbar>
     <Actions>
         <ActionButton Text="Register Collaborator Role"
-                      Icon="bi bi-plus-lg"
-                      HtmxProps=@(new HtmxProps(Endpoints.Register, Targets.Workspace)) />
+                      Icon=@Icons.Add
+                      HtmxProps=@(new HtmxProps(Endpoints.Register, Infrastructure.Ui.Targets.Workspace)) />
     </Actions>
 </Toolbar>
 <Section>
@@ -20,11 +20,11 @@
                     <SearchFilter Label="Name"
                                   Property=@nameof(ListCollaboratorRoles.Query.Name)
                                   Query=@Query
-                                  HtmxProps=@(new HtmxProps(Endpoints.List, "#search-results", "outerHTML", "#search-results")) />
+                                  HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.CollaboratorRoleList}", Swap.OuterHTML, $"#{Targets.CollaboratorRoleList}")) />
                 </div>
             </Content>
         </FormRow>
-        <div id="search-results">
+        <div id=@Targets.CollaboratorRoleList>
             <DataTable TResult=ListCollaboratorRoles.Result
                        Result=@Result
                        Context="item">
@@ -38,8 +38,8 @@
                 <RowTemplate>
                     <RowToolbar>
                         <Actions>
-                            <ActionLink HtmxProps=@(new HtmxProps(Endpoints.Edit.Replace("{collaboratorRoleId}", @item.CollaboratorRoleId), Targets.Workspace))
-                                        Icon="bi bi-eye" />
+                            <ActionLink HtmxProps=@(new HtmxProps(Endpoints.GetEdit(@item.CollaboratorRoleId), Infrastructure.Ui.Targets.Workspace))
+                                        Icon=@Icons.Edit />
                         </Actions>
                     </RowToolbar>
                     <td>@item.CollaboratorRoleId</td>
@@ -50,7 +50,7 @@
             </DataTable>
             <Pagination Query=@Query
                         Result=@Result
-                        HtmxProps=@(new HtmxProps(Endpoints.List, "#search-results", "outerHTML", "#search-results"))
+                        HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.CollaboratorRoleList}", Swap.OuterHTML, $"#{Targets.CollaboratorRoleList}"))
                         Parameters=@(new[] { new KeyValuePair<string, object?>(nameof(Query.Name), Query.Name) }) />
         </div>
     </Content>

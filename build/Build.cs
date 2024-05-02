@@ -188,6 +188,7 @@ class Build : NukeBuild
     .DependsOn(RunOrStartSQLServer)
     .DependsOn(RunOrStartSeq)
     .DependsOn(RunOrStartStorage)
+    .DependsOn(RunOrStartRabbitMQ)
     .Executes(() =>
     {
         Serilog.Log.Information("Development env started");
@@ -196,6 +197,8 @@ class Build : NukeBuild
     Target StopEnv => _ => _
     .DependsOn(StopSQLServer)
     .DependsOn(StopSeq)
+    .DependsOn(StopStorage)
+    .DependsOn(StopRabbitMQ)
     .Executes(() =>
     {
         Serilog.Log.Information("Development env stoped");
@@ -204,9 +207,55 @@ class Build : NukeBuild
     Target RemoveEnv => _ => _
     .DependsOn(RemoveSQLServer)
     .DependsOn(RemoveSeq)
+    .DependsOn(RemoveStorage)
+    .DependsOn(RemoveRabbitMQ)
     .Executes(() =>
     {
         Serilog.Log.Information("Development env removed");
     });
 
+    string RabbitMQUser = "admin";
+    string RabbitMQPassword = "Rabbitmq123$";
+    string RabbitMQAdminPort = "15671";
+    string RabbitMQPort = "5671";
+
+    Target RunOrStartRabbitMQ => _ => _
+    .Executes(() =>
+    {
+        try
+        {
+            DockerRun(x => x
+            .SetName($"{DockerPrefix}-rabbitmq")
+            .SetHostname($"{DockerPrefix}-host")
+            .AddEnv($"RABBITMQ_DEFAULT_USER={RabbitMQUser}", $"RABBITMQ_DEFAULT_PASS={RabbitMQPassword}")
+            .SetImage("rabbitmq:3-management")
+            .EnableDetach()
+            .AddPublish($"{RabbitMQAdminPort}:15672")
+            .AddPublish($"{RabbitMQPort}:5672")
+            );
+        }
+        catch (Exception)
+        {
+            DockerStart(x => x
+            .AddContainers($"{DockerPrefix}-rabbitmq")
+            );
+        }
+    });
+
+    Target StopRabbitMQ => _ => _
+    .Executes(() =>
+    {
+        DockerStop(x => x
+        .AddContainers($"{DockerPrefix}-rabbitmq")
+        );
+    });
+
+    Target RemoveRabbitMQ => _ => _
+    .DependsOn(StopRabbitMQ)
+    .Executes(() =>
+    {
+        DockerRm(x => x
+        .AddContainers($"{DockerPrefix}-rabbitmq")
+        );
+    });
 }

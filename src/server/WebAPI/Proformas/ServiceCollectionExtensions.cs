@@ -1,6 +1,6 @@
 ﻿namespace WebAPI.Proformas;
 
-public static class ServiceCollectionExtensions
+public static partial class ServiceCollectionExtensions
 {
     public static IServiceCollection AddProformas(this IServiceCollection services)
     {
@@ -25,6 +25,14 @@ public static class ServiceCollectionExtensions
         services.AddTransient<GetProformaWeek.Runner>();
 
         services.AddTransient<GetProforma.Runner>();
+
+        services.AddTransient<CountProformas.Runner>();
+
+        services.AddTransient<MarkProformaAsInvoiced.Handler>();
+
+        services.AddTransient<CancelProforma.Handler>();
+
+        services.AddTransient<SearchProformas.Runner>();
 
         return services;
     }

@@ -78,11 +78,7 @@ public static class EditCollaboratorRole
     [FromBody] Command command,
     HttpContext context)
     {
-        command.CollaboratorRoleId = collaboratorRoleId;
-
-        new Validator().ValidateAndThrow(command);
-
-        await behavior.Handle(() => handler.Handle(command));
+        await Handle(behavior, handler, collaboratorRoleId, command);
 
         context.Response.Headers.TriggerShowEditSuccessMessage($"collaborator role", command.CollaboratorRoleId);
 

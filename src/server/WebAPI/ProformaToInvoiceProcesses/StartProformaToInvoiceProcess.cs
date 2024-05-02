@@ -4,6 +4,7 @@ using MassTransit;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
+using WebAPI.Clients;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Invoices;
 using WebAPI.Proformas;
@@ -61,6 +62,7 @@ public static class StartProformaToInvoiceProcess
     [FromServices] Handler handler,
     [FromServices] RegisterInvoice.Handler registerInvoiceHandler,
     [FromServices] ListProformas.Runner listProformasHandler,
+    [FromServices] MarkProformaAsInvoiced.Handler markProformaAsInvoicedHandler,
     [FromServices] IClock clock,
     [FromBody] Command command)
     {
@@ -82,9 +84,25 @@ public static class StartProformaToInvoiceProcess
 
             await registerInvoiceHandler.Handle(new RegisterInvoice.Command() { InvoiceId = result.InvoiceId, CreatedAt = command.CreatedAt, SubTotal = proformas.Items.Sum(p => p.Total), Taxes = 0, Currency = currency.ToEnum<Currency>() });
 
+            foreach (var proforma in command.Proformas)
+            {
+                await markProformaAsInvoicedHandler.Handle(new MarkProformaAsInvoiced.Command() { ProformaId = proforma.ProformaId });
+            }
+
             return result;
         });
 
         return TypedResults.Ok(result);
+    }
+
+    public static async Task<RazorComponentResult> HandlePage(
+    [FromServices] SearchClients.Runner runner)
+    {
+        var result = await runner.Run(new SearchClients.Query() { });
+
+        return new RazorComponentResult<StartProformaToInvoiceProcessPage>(new
+        {
+            Clients = result
+        });
     }
 }

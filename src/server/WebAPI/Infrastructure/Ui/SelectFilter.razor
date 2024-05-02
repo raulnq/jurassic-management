@@ -1,39 +1,20 @@
 ﻿@using WebAPI.Infrastructure.SqlKata
 @typeparam TKey where TKey : notnull
-@if (string.IsNullOrEmpty(HtmxProps.Select))
-{
-    <select class="form-select"
-            name=@Property
-            id=@Property
-            hx-trigger="input changed"
-            hx-get="@HtmxProps.Endpoint.AddListParameters(1, @Query.PageSize,@Query.Ascending)"
-            hx-swap=@HtmxProps.Swap
-            hx-target=@HtmxProps.Target>
-        <option value="" selected></option>
-        @foreach (var item in Source)
-        {
-            <option value=@item.Key>@item.Value</option>
-        }
-    </select>
-}
-else
-{
-    <select class="form-select"
-            name=@Property
-            id=@Property
-            hx-trigger="input changed"
-            hx-get="@HtmxProps.Endpoint.AddListParameters(1, @Query.PageSize,@Query.Ascending)"
-            hx-swap=@HtmxProps.Swap
-            hx-target=@HtmxProps.Target
-            hx-select=@HtmxProps.Select>
-        <option value="" selected></option>
-        @foreach (var item in Source)
-        {
-            <option value=@item.Key>@item.Value</option>
-        }
-    </select>
-}
-
+<select class="form-select"
+        name=@Property
+        id=@Property
+        hx-trigger="input changed"
+        hx-get="@HtmxProps.Endpoint.AddListParameters(1, @Query.PageSize,@Query.Ascending)"
+        hx-swap=@HtmxProps.Swap
+        hx-target=@HtmxProps.Target
+        hx-include=@HtmxProps.Include
+        hx-select=@HtmxProps.Select>
+    <option value="" selected>@EmptyOption</option>
+    @foreach (var item in Source)
+    {
+        <option value=@item.Key>@item.Value</option>
+    }
+</select>
 
 @code {
 
@@ -41,16 +22,10 @@ else
     public string Label { get; set; } = default!;
     [Parameter, EditorRequired]
     public string Property { get; set; } = default!;
-    // [Parameter, EditorRequired]
-    // public string Target { get; set; } = default!;
-    // [Parameter]
-    // public string Swap { get; set; } = "innerHTML";
-    // [Parameter, EditorRequired]
-    // public string Endpoint { get; set; } = default!;
+    [Parameter]
+    public string EmptyOption { get; set; } = default!;
     [Parameter, EditorRequired]
     public ListQuery Query { get; set; } = default!;
-    // [Parameter]
-    // public string Select { get; set; } = default!;
     [Parameter]
     public Dictionary<TKey, string> Source { get; set; } = new Dictionary<TKey, string>();
 

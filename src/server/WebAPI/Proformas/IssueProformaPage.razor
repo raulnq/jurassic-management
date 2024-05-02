@@ -4,7 +4,7 @@
 @using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
 
-<ModalForm HtmxProps=@(new HtmxProps(WebAPI.Proformas.Endpoints.Issue.Replace(new Dictionary<string, object?>(){{"{proformaId}", ProformaId}}), Targets.Workspace))
+<ModalForm HtmxProps=@(new HtmxProps(WebAPI.Proformas.Endpoints.GetIssue(ProformaId), Infrastructure.Ui.Targets.Workspace))
            Title="Issue proforma">
     <Content>
         <FormRow>

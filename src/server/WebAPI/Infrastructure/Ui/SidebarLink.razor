@@ -2,6 +2,7 @@
     <a class="nav-link text-white" href="#"
        hx-get=@HtmxProps.Endpoint
        hx-target=@HtmxProps.Target
+       hx-on:click=@HtmxProps.OnClick
        hx-swap=@HtmxProps.Swap>
         @if (!string.IsNullOrEmpty(Icon))
         {

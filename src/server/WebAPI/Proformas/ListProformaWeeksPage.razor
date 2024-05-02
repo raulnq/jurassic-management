@@ -2,9 +2,10 @@
 @using WebAPI.Infrastructure.Ui;
 @using WebAPI.Proformas;
 
-<div id="search-results">
+<div id=@Targets.WeekList>
     <DataTable TResult=ListProformaWeeks.Result
                Result=@Result
+               PreRenderRow="false"
                Context="item">
         <TableHeader>
             <th></th>
@@ -15,22 +16,24 @@
             <th>SubTotal</th>
         </TableHeader>
         <RowTemplate>
-            <RowToolbar>
-                <Actions>
-                    <ActionLink HtmxProps=@(new HtmxProps(Endpoints.ListWorkItems.Replace(new Dictionary<string, object?>(){{"{proformaId}",item.ProformaId}, {"{week}", item.Week}}).AddListParameters(1, Query.PageSize), "#collaborator-section"))
-                                Icon="bi bi-eye" />
-                </Actions>
-            </RowToolbar>
-            <td>@item.Week</td>
-            <td>@item.Start</td>
-            <td>@item.End</td>
-            <td><div id="week-@item.Week-penalty">@item.Penalty</div></td>
-            <td><div id="week-@item.Week-subtotal">@item.SubTotal</div></td>
+            <tr>
+                <RowToolbar>
+                    <Actions>
+                        <ActionLink HtmxProps=@(new HtmxProps(Endpoints.GetListWorkItems(item.ProformaId, item.Week).AddListParameters(1, Query.PageSize), $"#{Targets.Collaborator}"){ OnClick="highlight_row(this);"})
+                                    Icon=@Icons.View />
+                    </Actions>
+                </RowToolbar>
+                <td>@item.Week</td>
+                <td>@item.Start</td>
+                <td>@item.End</td>
+                <td><div id="@Targets.WeekColumnPenalty-@item.Week">@item.Penalty</div></td>
+                <td><div id="@Targets.WeekColumnSubTotal-@item.Week">@item.SubTotal</div></td>
+            </tr>
         </RowTemplate>
     </DataTable>
     <Pagination Query=@Query
                 Result=@Result
-                HtmxProps=@(new HtmxProps(Endpoints.ListWeeks.Replace("{proformaId}", Query.ProformaId), "#search-results", "outerHTML")) />
+                HtmxProps=@(new HtmxProps(Endpoints.GetListWeeks(Query.ProformaId!.Value), $"#{Targets.WeekList}", Swap.OuterHTML)) />
 </div>
 
 @code {

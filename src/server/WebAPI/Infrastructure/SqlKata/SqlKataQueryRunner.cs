@@ -24,6 +24,13 @@ public class SqlKataQueryRunner
         return result;
     }
 
+    public async Task<TResult> GetOrDefault<TResult>(Func<QueryFactory, Query> statementBuilder)
+    {
+        var result = await statementBuilder(_queryFactory).FirstOrDefaultAsync<TResult>();
+
+        return result;
+    }
+
     public async Task<ListResults<TResult>> List<TQuery, TResult>(Func<QueryFactory, Query> statementBuilder, TQuery query)
         where TQuery : ListQuery
     {
@@ -62,6 +69,13 @@ public class SqlKataQueryRunner
         var statement = statementBuilder(_queryFactory);
 
         return statement.ExistsAsync();
+    }
+
+    public Task<int> Count(Func<QueryFactory, Query> statementBuilder)
+    {
+        var statement = statementBuilder(_queryFactory);
+
+        return statement.CountAsync<int>();
     }
 
     private Task<int> Count(Query statement)

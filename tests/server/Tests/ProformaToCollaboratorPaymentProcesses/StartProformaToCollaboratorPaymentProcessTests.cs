@@ -7,7 +7,7 @@ public class StartProformaToCollaboratorPaymentProcessTests : BaseTest
     [Fact]
     public async Task start_should_be_ok()
     {
-        var proforma = await _appDsl.IssueProforma(_appDsl.Clock.Now.DateTime);
+        var proforma = await _appDsl.IssuedProforma(_appDsl.Clock.Now.DateTime);
 
         await _appDsl.ProformaToCollaboratorPaymentProcess.Start(c =>
         {

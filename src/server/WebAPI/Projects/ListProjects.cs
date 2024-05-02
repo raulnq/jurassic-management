@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.SqlKata;
 
@@ -10,6 +11,7 @@ public static class ListProjects
     public class Query : ListQuery
     {
         public string? Name { get; set; }
+        [JsonIgnore]
         public Guid? ClientId { get; set; }
     }
 
@@ -45,15 +47,21 @@ public static class ListProjects
 
     public static async Task<Ok<ListResults<Result>>> Handle(
     [FromServices] Runner runner,
-    [AsParameters] Query query)
+    [FromRoute] Guid clientId,
+    [AsParameters] Query query
+        )
     {
+        query.ClientId = clientId;
+
         return TypedResults.Ok(await runner.Run(query));
     }
 
     public static async Task<RazorComponentResult> HandlePage(
     [AsParameters] Query query,
+    [FromRoute] Guid clientId,
     [FromServices] Runner runner)
     {
+        query.ClientId = clientId;
         var result = await runner.Run(query);
         return new RazorComponentResult<ListProjectsPage>(new { Result = result, Query = query });
     }

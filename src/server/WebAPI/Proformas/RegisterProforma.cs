@@ -22,6 +22,8 @@ public static class RegisterProforma
         public Currency Currency { get; set; }
         [JsonIgnore]
         public DateTimeOffset CreatedAt { get; set; }
+        [JsonIgnore]
+        public int Count { get; set; }
     }
 
     public class Result
@@ -53,7 +55,7 @@ public static class RegisterProforma
 
             var client = await _context.Get<Client>(project.ClientId);
 
-            var proforma = new Proforma(NewId.Next().ToSequentialGuid(), command.Start, command.End, command.ProjectId, client, command.CreatedAt, command.Discount, command.Currency);
+            var proforma = new Proforma(NewId.Next().ToSequentialGuid(), command.Start, command.End, command.ProjectId, client, command.CreatedAt, command.Discount, command.Currency, command.Count);
 
             _context.Set<Proforma>().Add(proforma);
 
@@ -69,9 +71,12 @@ public static class RegisterProforma
     [FromServices] TransactionBehavior behavior,
     [FromServices] Handler handler,
     [FromServices] IClock clock,
+    [FromServices] CountProformas.Runner runner,
     [FromBody] Command command)
     {
         new Validator().ValidateAndThrow(command);
+
+        command.Count = await runner.Run(new CountProformas.Query() { End = command.End });
 
         command.CreatedAt = clock.Now;
 
@@ -94,16 +99,16 @@ public static class RegisterProforma
     public static async Task<RazorComponentResult> HandleAction(
     [FromServices] TransactionBehavior behavior,
     [FromServices] Handler handler,
-    [FromServices] ListProformas.Runner runner,
+    [FromServices] ListProformas.Runner listProformasRunner,
+    [FromServices] CountProformas.Runner countProformaRunner,
     [FromBody] Command command,
+    [FromServices] IClock clock,
     HttpContext context)
     {
-        new Validator().ValidateAndThrow(command);
+        var register = await Handle(behavior, handler, clock, countProformaRunner, command);
 
-        var registerResult = await behavior.Handle(() => handler.Handle(command));
+        context.Response.Headers.TriggerShowSuccessMessageAndCloseModal($"The proforma {register.Value!.ProformaId} was added successfully");
 
-        context.Response.Headers.TriggerShowSuccessMessageAndCloseModal($"The proforma {registerResult.ProformaId} was added successfully");
-
-        return await ListProformas.HandlePage(new ListProformas.Query() { }, runner);
+        return await ListProformas.HandlePage(new ListProformas.Query() { }, listProformasRunner);
     }
 }

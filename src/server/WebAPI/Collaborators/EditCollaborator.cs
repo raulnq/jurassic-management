@@ -76,15 +76,9 @@ public static class EditCollaborator
     [FromBody] Command command,
     HttpContext context)
     {
-        command.CollaboratorId = collaboratorId;
+        await Handle(behavior, handler, collaboratorId, command);
 
-        new Validator().ValidateAndThrow(command);
-
-        await behavior.Handle(() => handler.Handle(command));
-
-        var result = await runner.Run(new GetCollaborator.Query() { CollaboratorId = collaboratorId });
-
-        context.Response.Headers.TriggerShowEditSuccessMessage($"collaborator", result.CollaboratorId);
+        context.Response.Headers.TriggerShowEditSuccessMessage($"collaborator", command.CollaboratorId);
 
         return await HandlePage(runner, command.CollaboratorId);
     }

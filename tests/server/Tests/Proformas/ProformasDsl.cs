@@ -102,6 +102,22 @@ public class ProformasDsl
         return request;
     }
 
+    public async Task<CancelProforma.Command> Cancel(Action<CancelProforma.Command>? setup = null, string? errorDetail = null, IDictionary<string, string[]>? errors = null)
+    {
+        var faker = new Faker<CancelProforma.Command>()
+            ;
+
+        var request = faker.Generate();
+
+        setup?.Invoke(request);
+
+        var (status, error) = await _httpDriver.Post($"{_uri}/{request.ProformaId}/cancel", request);
+
+        (status, error).Check(errorDetail, errors: errors);
+
+        return request;
+    }
+
 
     public async Task<(ListProformas.Query, ListResults<ListProformas.Result>?)> List(Action<ListProformas.Query>? setup = null, string? errorDetail = null)
     {
@@ -241,5 +257,15 @@ public class ProformasDsl
         proforma.Commission.ShouldBe(commission);
 
         proforma.Total.ShouldBe(total);
+    }
+
+    public async Task ShouldBe(Guid proformaId, ProformaStatus status)
+    {
+        var (_, proforma) = await Get(q =>
+        {
+            q.ProformaId = proformaId;
+        });
+
+        proforma!.Status.ShouldBe(status.ToString());
     }
 }

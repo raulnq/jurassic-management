@@ -8,6 +8,12 @@ public static class Endpoints
 
     public const string Edit = "/ui/clients/{clientId}/edit";
 
+    public static string GetEdit(Guid clientId)
+    {
+        return Edit.Replace("{clientId}", clientId.ToString());
+    }
+
+
     public static void RegisterClientEndpoints(this WebApplication app)
     {
         var group = app.MapGroup("/clients")

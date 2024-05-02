@@ -76,13 +76,9 @@ public static class RegisterCollaborator
     [FromBody] Command command,
     HttpContext context)
     {
-        new Validator().ValidateAndThrow(command);
+        var result = await Handle(behavior, handler, command);
 
-        var registerResult = await behavior.Handle(() => handler.Handle(command));
-
-        var query = new ListCollaborators.Query();
-
-        context.Response.Headers.TriggerShowRegisterSuccessMessage($"collaborator", registerResult.CollaboratorId);
+        context.Response.Headers.TriggerShowRegisterSuccessMessage($"collaborator", result.Value!.CollaboratorId);
 
         return await ListCollaborators.HandlePage(new ListCollaborators.Query() { }, runner);
     }

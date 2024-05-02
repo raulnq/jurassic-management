@@ -7,7 +7,9 @@ namespace WebAPI.Proformas;
 public enum ProformaStatus
 {
     Pending = 0,
-    Issued = 1
+    Issued = 1,
+    Invoiced = 2,
+    Cancel = 3
 }
 
 public enum Currency
@@ -22,6 +24,7 @@ public class Proforma
     public Guid ProjectId { get; private set; }
     public DateTime Start { get; private set; }
     public DateTime End { get; private set; }
+    public string Number { get; private set; }
     public List<ProformaWeek> Weeks { get; private set; }
     public decimal Total { get; private set; }
     public decimal SubTotal { get; private set; }
@@ -38,18 +41,20 @@ public class Proforma
     public decimal BankingExpensesAmount { get; private set; }
     public ProformaStatus Status { get; private set; }
     public DateTimeOffset? IssuedAt { get; private set; }
+    public DateTimeOffset? CanceledAt { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
     public Currency Currency { get; private set; }
 
     private Proforma() { Weeks = []; }
 
-    public Proforma(Guid proformaId, DateTime start, DateTime end, Guid projectId, Client client, DateTimeOffset createdAt, decimal discount, Currency currency)
+    public Proforma(Guid proformaId, DateTime start, DateTime end, Guid projectId, Client client, DateTimeOffset createdAt, decimal discount, Currency currency, int count)
     {
         ProformaId = proformaId;
         CreatedAt = createdAt;
         Status = ProformaStatus.Pending;
         Start = start;
         End = end;
+        Number = $"{End.ToString("yyyyMMdd")}-{count + 1}";
         ProjectId = projectId;
         Currency = currency;
         Weeks = [];
@@ -91,9 +96,31 @@ public class Proforma
     {
         EnsureTotalGreaterThenZero();
         //TODO: Validate empty weeks/work items?
+        EnsureIssueAtGreaterOrEqualThanEnd(issueAt);
         EnsureStatus(ProformaStatus.Pending);
         Status = ProformaStatus.Issued;
         IssuedAt = issueAt;
+    }
+
+    public void Cancel(DateTimeOffset canceledAt)
+    {
+        EnsureStatus(ProformaStatus.Pending);
+        Status = ProformaStatus.Cancel;
+        CanceledAt = canceledAt;
+    }
+
+    public void MarkAsInvoiced()
+    {
+        EnsureStatus(ProformaStatus.Issued);
+        Status = ProformaStatus.Invoiced;
+    }
+
+    private void EnsureIssueAtGreaterOrEqualThanEnd(DateTimeOffset issueAt)
+    {
+        if (End > issueAt)
+        {
+            throw new DomainException("proforma-issue-date-lower-than-end-date");
+        }
     }
 
     public void EnsureTotalGreaterThenZero()

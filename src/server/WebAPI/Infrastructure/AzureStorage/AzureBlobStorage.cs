@@ -11,7 +11,7 @@ namespace Infrastructure
         {
             _container = new BlobContainerClient(connectionString, container);
 
-            _container.CreateIfNotExistsAsync();
+            _container.CreateIfNotExistsAsync(PublicAccessType.Blob);
         }
 
         protected async Task<string> Upload(string name, Stream stream, string contentType)

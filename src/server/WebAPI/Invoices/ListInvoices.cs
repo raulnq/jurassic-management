@@ -9,7 +9,7 @@ public static class ListInvoices
 {
     public class Query : ListQuery
     {
-        public InvoiceStatus? Status { get; set; }
+        public string? Status { get; set; }
         public IEnumerable<Guid>? InvoiceId { get; set; }
     }
 
@@ -36,11 +36,11 @@ public static class ListInvoices
             {
                 var statement = qf.Query(Tables.Invoices);
 
-                if (query.Status.HasValue)
+                if (!string.IsNullOrEmpty(query.Status))
                 {
-                    statement = statement.Where(Tables.Invoices.Field(nameof(Query.Status)), query.Status.ToString());
+                    statement = statement.Where(Tables.Invoices.Field(nameof(Query.Status)), query.Status);
                 }
-                if (query.InvoiceId != null)
+                if (query.InvoiceId != null && query.InvoiceId.Any())
                 {
                     statement = statement.WhereIn(Tables.Invoices.Field(nameof(query.InvoiceId)), query.InvoiceId);
                 }
@@ -54,5 +54,13 @@ public static class ListInvoices
     [AsParameters] Query query)
     {
         return TypedResults.Ok(await runner.Run(query));
+    }
+
+    public static async Task<RazorComponentResult> HandlePage(
+    [AsParameters] Query query,
+    [FromServices] Runner runner)
+    {
+        var result = await runner.Run(query);
+        return new RazorComponentResult<ListInvoicesPage>(new { Result = result, Query = query });
     }
 }

@@ -9,7 +9,7 @@ public class PayCollaboratorPaymentTests : BaseTest
     {
         var today = _appDsl.Clock.Now.DateTime;
 
-        var proforma = await _appDsl.IssueProforma(_appDsl.Clock.Now.DateTime);
+        var proforma = await _appDsl.IssuedProforma(_appDsl.Clock.Now.DateTime);
 
         var (_, start) = await _appDsl.ProformaToCollaboratorPaymentProcess.Start(c =>
         {

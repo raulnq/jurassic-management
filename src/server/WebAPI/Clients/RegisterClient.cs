@@ -102,11 +102,9 @@ public static class RegisterClient
     [FromBody] Command command,
     HttpContext context)
     {
-        new Validator().ValidateAndThrow(command);
+        var result = await Handle(behavior, handler, command);
 
-        var registerResult = await behavior.Handle(() => handler.Handle(command));
-
-        context.Response.Headers.TriggerShowRegisterSuccessMessage("client", registerResult.ClientId);
+        context.Response.Headers.TriggerShowRegisterSuccessMessage("client", result.Value!.ClientId);
 
         return await ListClients.HandlePage(new ListClients.Query(), runner);
     }

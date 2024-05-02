@@ -18,18 +18,21 @@
         <div class="row h-100">
             <Sidebar>
                 <Items>
-                    <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.Collaborators.Endpoints.List.AddListParameters(), Targets.Workspace))
+                    <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.Collaborators.Endpoints.List.AddListParameters(), Targets.Workspace){OnClick="highlight_sidebarlink(this);"})
                                  Icon="bi bi-people-fill"
                                  Text="Collaborators" />
-                    <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.CollaboratorRoles.Endpoints.List.AddListParameters(), Targets.Workspace))
+                    <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.CollaboratorRoles.Endpoints.List.AddListParameters(), Targets.Workspace){OnClick="highlight_sidebarlink(this);"})
                                  Icon="bi bi-person-vcard-fill"
                                  Text="Collaborator Roles" />
-                    <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.Clients.Endpoints.List.AddListParameters(), Targets.Workspace))
+                    <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.Clients.Endpoints.List.AddListParameters(), Targets.Workspace){OnClick="highlight_sidebarlink(this);"})
                                  Icon="bi bi bi-wallet-fill"
                                  Text="Clients" />
-                    <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.Proformas.Endpoints.List.AddListParameters(), Targets.Workspace))
+                    <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.Proformas.Endpoints.List.AddListParameters(), Targets.Workspace){OnClick="highlight_sidebarlink(this);"})
                                  Icon="bi bi bi-file-text-fill"
                                  Text="Proformas" />
+                    <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.Invoices.Endpoints.List.AddListParameters(), Targets.Workspace){OnClick="highlight_sidebarlink(this);"})
+                                 Icon="bi bi-receipt"
+                                 Text="Invoices" />
                 </Items>
             </Sidebar>
             <div class="col-1"></div>
@@ -79,6 +82,31 @@
                 document.getElementById("dialog").innerHTML = ""
             })
         })()
+
+        function highlight_row(el) {
+            var row = el.closest('tr');
+            var rows = el.closest('table').getElementsByTagName('tr');
+            for (var index = 0; index < rows.length; index++) {
+                rows[index].classList.remove('table-active');
+            }
+            rows[row.rowIndex].classList.add("table-active");
+        }
+        function highlight_sidebarlink(el) {
+            var li = el.closest('li');
+            let lis = Array.from(li.closest('ul').children)
+            let liId = lis.indexOf(li);
+            for (var index = 0; index < lis.length; index++) {
+                lis[index].children[0].classList.remove('active');
+            }
+            lis[liId].children[0].classList.add("active");
+        }
+        function clean_select(id) {
+            var selectobject = document.getElementById(id);
+            for (var i = 0; i < selectobject.length; i++) {
+                selectobject.remove(i);
+            }
+        }
+
     </script>
 </body>
 </html>

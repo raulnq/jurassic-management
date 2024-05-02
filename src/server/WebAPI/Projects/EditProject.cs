@@ -46,6 +46,7 @@ public static class EditProject
     [FromServices] TransactionBehavior behavior,
     [FromServices] Handler handler,
     [FromRoute] Guid projectId,
+    [FromRoute] Guid clientId,
     [FromBody] Command command)
     {
         command.ProjectId = projectId;
@@ -79,18 +80,10 @@ public static class EditProject
         Guid projectId,
         HttpContext context)
     {
-        command.ProjectId = projectId;
-
-        new Validator().ValidateAndThrow(command);
-
-        await behavior.Handle(() => handler.Handle(command));
-
-        var query = new ListProjects.Query() { ClientId = clientId };
-
-        var listResult = await runner.Run(query);
+        await Handle(behavior, handler, projectId, clientId, command);
 
         context.Response.Headers.TriggerShowEditSuccessMessageAndCloseModal("project", command.ProjectId);
 
-        return await ListProjects.HandlePage(new ListProjects.Query() { ClientId = clientId }, runner);
+        return await ListProjects.HandlePage(new ListProjects.Query() { ClientId = clientId }, clientId, runner);
     }
 }

@@ -2,6 +2,7 @@
 using MassTransit;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.Ui;
 
@@ -11,6 +12,7 @@ public static class AddProject
 {
     public class Command
     {
+        [JsonIgnore]
         public Guid ClientId { get; set; }
         public string? Name { get; set; }
     }
@@ -54,8 +56,11 @@ public static class AddProject
     public static async Task<Ok<Result>> Handle(
     [FromServices] TransactionBehavior behavior,
     [FromServices] Handler handler,
+    [FromRoute] Guid clientId,
     [FromBody] Command command)
     {
+        command.ClientId = clientId;
+
         new Validator().ValidateAndThrow(command);
 
         var result = await behavior.Handle(() => handler.Handle(command));
@@ -78,15 +83,11 @@ public static class AddProject
         Guid clientId,
         HttpContext context)
     {
-        command.ClientId = clientId;
+        var result = await Handle(behavior, handler, clientId, command);
 
-        new Validator().ValidateAndThrow(command);
+        context.Response.Headers.TriggerShowRegisterSuccessMessageAndCloseModal($"project", result.Value!.ProjectId);
 
-        var result = await behavior.Handle(() => handler.Handle(command));
-
-        context.Response.Headers.TriggerShowRegisterSuccessMessageAndCloseModal($"project", result.ProjectId);
-
-        return await ListProjects.HandlePage(new ListProjects.Query() { ClientId = command.ClientId }, runner);
+        return await ListProjects.HandlePage(new ListProjects.Query() { ClientId = command.ClientId }, clientId, runner);
     }
 
 }

@@ -4,12 +4,12 @@
 
 <Heading Text="Clients" />
 <Breadcrumbs Links=@(new []{new Breadcrumbs.Link("List clients")})
-             Target=@(Targets.Workspace) />
+             Target=@(Infrastructure.Ui.Targets.Workspace) />
 <Toolbar>
     <Actions>
         <ActionButton Text="Register Client"
-                      Icon="bi bi-plus-lg"
-                      HtmxProps=@(new HtmxProps(Endpoints.Register, Targets.Workspace)) />
+                      Icon=@Icons.Add
+                      HtmxProps=@(new HtmxProps(Endpoints.Register, Infrastructure.Ui.Targets.Workspace)) />
     </Actions>
 </Toolbar>
 <Section>
@@ -20,11 +20,11 @@
                     <SearchFilter Label="Name"
                                   Property=@(nameof(ListClients.Query.Name))
                                   Query=@Query
-                                  HtmxProps=@(new HtmxProps(Endpoints.List, "#search-results", "outerHTML", "#search-results")) />
+                                  HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.ClientList}", Swap.OuterHTML, $"#{Targets.ClientList}")) />
                 </div>
             </Content>
         </FormRow>
-        <div id="search-results">
+        <div id=@Targets.ClientList>
             <DataTable TResult=ListClients.Result
                        Result=@Result
                        Context="item">
@@ -38,8 +38,8 @@
                 <RowTemplate>
                     <RowToolbar>
                         <Actions>
-                            <ActionLink Icon="bi bi-eye"
-                                        HtmxProps=@(new HtmxProps(Endpoints.Edit.Replace("{clientId}", @item.ClientId),Targets.Workspace)) />
+                            <ActionLink Icon=@Icons.Edit
+                                        HtmxProps=@(new HtmxProps(Endpoints.GetEdit(item.ClientId), Infrastructure.Ui.Targets.Workspace)) />
                         </Actions>
                     </RowToolbar>
                     <td>@item.ClientId</td>
@@ -50,7 +50,7 @@
             </DataTable>
             <Pagination Query=@Query
                         Result=@Result
-                        HtmxProps=@(new HtmxProps(Endpoints.List, "#search-results", "outerHTML", "#search-results"))
+                        HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.ClientList}", Swap.OuterHTML, $"#{Targets.ClientList}"))
                         Parameters=@(new []{ new KeyValuePair<string, object?>(nameof(Query.Name), Query.Name)}) />
         </div>
     </Content>

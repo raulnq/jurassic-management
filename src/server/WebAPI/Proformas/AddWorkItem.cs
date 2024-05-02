@@ -76,6 +76,7 @@ public static class AddWorkItem
     [FromBody] Command command)
     {
         command.ProformaId = proformaId;
+
         command.Week = week;
 
         new Validator().ValidateAndThrow(command);
@@ -118,13 +119,7 @@ public static class AddWorkItem
     [FromRoute] int week,
     HttpContext context)
     {
-        command.ProformaId = proformaId;
-
-        command.Week = week;
-
-        new Validator().ValidateAndThrow(command);
-
-        await behavior.Handle(() => handler.Handle(command));
+        await Handle(behavior, handler, proformaId, week, command);
 
         context.Response.Headers.TriggerShowSuccessMessageAndCloseModal($"The collaborator {command.CollaboratorId} was added successfully");
 

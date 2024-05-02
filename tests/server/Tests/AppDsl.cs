@@ -133,11 +133,15 @@ public class AppDsl : IAsyncDisposable
         return proforma;
     }
 
-    public async Task<RegisterProforma.Result> IssueProforma(DateTime start, int days = 6)
+    public async Task<RegisterProforma.Result> IssuedProforma(DateTime start, int days = 6)
     {
         var proforma = await RegisterProformaReadyToIssue(start, days);
 
-        await Proformas.Issue(c => c.ProformaId = proforma.ProformaId);
+        await Proformas.Issue(c =>
+        {
+            c.ProformaId = proforma.ProformaId;
+            c.IssueAt = start.AddDays(days + 1);
+        });
 
         return proforma;
     }

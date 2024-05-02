@@ -1,4 +1,5 @@
 ﻿using Tests.Infrastructure;
+using WebAPI.Proformas;
 
 namespace Tests.InvoiceToCollectionProcesses;
 
@@ -7,7 +8,7 @@ public class StartInvoiceToCollectionProcessTests : BaseTest
     [Fact]
     public async Task start_should_be_ok()
     {
-        var proforma = await _appDsl.IssueProforma(_appDsl.Clock.Now.DateTime);
+        var proforma = await _appDsl.IssuedProforma(_appDsl.Clock.Now.DateTime);
 
         var invoice = await _appDsl.IssueInvoice(proforma.ProformaId);
 
@@ -15,12 +16,14 @@ public class StartInvoiceToCollectionProcessTests : BaseTest
         {
             c.InvoiceId = new[] { invoice.InvoiceId };
         });
+
+        await _appDsl.Proformas.ShouldBe(proforma.ProformaId, ProformaStatus.Invoiced);
     }
 
     [Fact]
     public async Task start_should_throw_an_error_when_invoice_not_issue()
     {
-        var proforma = await _appDsl.IssueProforma(_appDsl.Clock.Now.DateTime);
+        var proforma = await _appDsl.IssuedProforma(_appDsl.Clock.Now.DateTime);
 
         var (_, start) = await _appDsl.ProformaToInvoiceProcess.Start(c =>
         {

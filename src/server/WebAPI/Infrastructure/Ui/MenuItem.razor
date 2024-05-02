@@ -1,10 +1,30 @@
-﻿<li>
-    <a class="dropdown-item @GetClass()"
-       href="#"
-       hx-get=@HtmxProps.Endpoint
-       hx-target=@HtmxProps.Target
-       hx-swap=@HtmxProps.Swap>@Text</a>
-</li>
+﻿@if (string.IsNullOrEmpty(HtmxProps.HttpMethod))
+{
+    <li>
+        <a class="dropdown-item @GetClass()"
+           href="#"
+           hx-get=@HtmxProps.Endpoint
+           hx-target=@HtmxProps.Target
+           hx-confirm=@HtmxProps.Confirm
+           hx-swap=@HtmxProps.Swap>@Text</a>
+    </li>
+}
+else
+{
+    switch (HtmxProps.HttpMethod)
+    {
+        case "POST":
+            <li>
+                <a class="dropdown-item @GetClass()"
+                   href="#"
+                   hx-post=@HtmxProps.Endpoint
+                   hx-target=@HtmxProps.Target
+                   hx-confirm=@HtmxProps.Confirm
+                   hx-swap=@HtmxProps.Swap>@Text</a>
+            </li>
+            break;
+    }
+}
 
 @code {
 

@@ -10,6 +10,8 @@ public static class Endpoints
 
     public const string Issue = "/ui/proformas/{proformaId}/issue";
 
+    public const string Cancel = "/ui/proformas/{proformaId}/cancel";
+
     public const string ListWeeks = "/ui/proformas/{proformaId}/weeks/list";
 
     public const string AddWorkItem = "/ui/proformas/{proformaId}/weeks/{week}/work-items/add";
@@ -19,6 +21,52 @@ public static class Endpoints
     public const string RemoveWorkItem = "/ui/proformas/{proformaId}/weeks/{week}/work-items/{collaboratorId}/remove";
 
     public const string ListWorkItems = "/ui/proformas/{proformaId}/weeks/{week}/work-items/list";
+
+    public const string Search = "/ui/proformas/search";
+
+    public static string GetView(Guid proformaId)
+    {
+        return View.Replace("{proformaId}", proformaId.ToString());
+    }
+
+    public static string GetIssue(Guid proformaId)
+    {
+        return Issue.Replace("{proformaId}", proformaId.ToString());
+    }
+
+    public static string GetCancel(Guid proformaId)
+    {
+        return Cancel.Replace("{proformaId}", proformaId.ToString());
+    }
+
+    public static string GetListWeeks(Guid proformaId)
+    {
+        return ListWeeks.Replace("{proformaId}", proformaId.ToString());
+    }
+
+    public static string GetAddWorkItem(Guid proformaId, int week)
+    {
+        return AddWorkItem.Replace("{proformaId}", proformaId.ToString()).Replace("{week}", week.ToString());
+    }
+
+    public static string GetListWorkItems(Guid proformaId, int week)
+    {
+        return ListWorkItems.Replace("{proformaId}", proformaId.ToString()).Replace("{week}", week.ToString());
+    }
+
+    public static string GetEditWorkItem(Guid proformaId, int week, Guid collaboratorId)
+    {
+        return EditWorkItem.Replace("{proformaId}", proformaId.ToString())
+            .Replace("{week}", week.ToString())
+            .Replace("{collaboratorId}", collaboratorId.ToString());
+    }
+
+    public static string GetRemoveWorkItem(Guid proformaId, int week, Guid collaboratorId)
+    {
+        return RemoveWorkItem.Replace("{proformaId}", proformaId.ToString())
+            .Replace("{week}", week.ToString())
+            .Replace("{collaboratorId}", collaboratorId.ToString());
+    }
 
     public static void RegisterProformaEndpoints(this WebApplication app)
     {
@@ -41,6 +89,8 @@ public static class Endpoints
 
         group.MapPost("/{proformaId:guid}/issue", IssueProforma.Handle);
 
+        group.MapPost("/{proformaId:guid}/cancel", CancelProforma.Handle);
+
         group.MapPost("/{proformaId:guid}/weeks/{week:int}/work-items", Proformas.AddWorkItem.Handle);
 
         group.MapPut("/{proformaId:guid}/weeks/{week:int}/work-items/{collaboratorId:guid}", Proformas.EditWorkItem.Handle);
@@ -62,6 +112,8 @@ public static class Endpoints
 
         uigroup.MapPost("/{proformaId:guid}/issue", IssueProforma.HandleAction);
 
+        uigroup.MapPost("/{proformaId:guid}/cancel", CancelProforma.HandleAction);
+
         uigroup.MapGet("/{proformaId:guid}/weeks/list", ListProformaWeeks.HandlePage);
 
         uigroup.MapGet("/{proformaId:guid}/weeks/{week:int}/work-items/list", ListProformaWeekWorkItems.HandlePage);
@@ -75,5 +127,7 @@ public static class Endpoints
         uigroup.MapPost("/{proformaId:guid}/weeks/{week:int}/work-items/{collaboratorId:guid}/edit", Proformas.EditWorkItem.HandleAction);
 
         uigroup.MapDelete("/{proformaId:guid}/weeks/{week:int}/work-items/{collaboratorId:guid}/remove", Proformas.RemoveWorkItem.HandleAction);
+
+        uigroup.MapGet("/search", SearchProformas.HandlePage);
     }
 }

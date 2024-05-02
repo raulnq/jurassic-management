@@ -23,6 +23,7 @@ else
            hx-target=@HtmxProps.Target
            hx-swap=@HtmxProps.Swap
            hx-select=@HtmxProps.Select
+           hx-on:click=@HtmxProps.OnClick
            hx-confirm=@HtmxProps.Confirm>
 
             @if (!string.IsNullOrEmpty(Icon))
@@ -45,6 +46,7 @@ else
                    hx-delete=@HtmxProps.Endpoint
                    hx-target=@HtmxProps.Target
                    hx-swap=@HtmxProps.Swap
+                   hx-on:click=@HtmxProps.OnClick
                    hx-select=@HtmxProps.Select
                    hx-confirm=@HtmxProps.Confirm>
 

@@ -2,12 +2,19 @@
 
 public static class Endpoints
 {
+    public const string Register = "/ui/proforma-to-invoice-processes/register";
+
     public static void RegisterProformaToInvoiceProcessEndpoints(this WebApplication app)
     {
         var group = app.MapGroup("/proforma-to-invoice-processes")
         .WithTags("proforma-to-invoice-processes");
 
         group.MapPost("/", StartProformaToInvoiceProcess.Handle);
+
+        var uigroup = app.MapGroup("/ui/proforma-to-invoice-processes")
+        .ExcludeFromDescription();
+
+        uigroup.MapGet("/register", StartProformaToInvoiceProcess.HandlePage);
 
     }
 }

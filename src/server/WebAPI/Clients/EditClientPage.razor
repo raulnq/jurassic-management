@@ -5,10 +5,10 @@
 
 <Heading Text="Clients" />
 <Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new("List clients", WebAPI.Clients.Endpoints.List.AddListParameters()), new("Edit client") })
-             Target=@(Targets.Workspace) />
+             Target=@(Infrastructure.Ui.Targets.Workspace) />
 <Section>
     <Content>
-        <Form HtmxProps=@(new HtmxProps(WebAPI.Clients.Endpoints.Edit.Replace("{clientId}", GetClientResult.ClientId),Targets.Workspace))>
+        <Form HtmxProps=@(new HtmxProps(WebAPI.Clients.Endpoints.GetEdit(GetClientResult.ClientId), Infrastructure.Ui.Targets.Workspace))>
             <Content>
                 <FormRow>
                     <Content>
@@ -138,8 +138,8 @@
         <Toolbar>
             <Actions>
                 <ActionButton Text="Add Project"
-                              Icon="bi bi-plus-lg"
-                              HtmxProps=@(new HtmxProps(WebAPI.Projects.Endpoints.Register.Replace("{clientId}", GetClientResult.ClientId),Targets.Dialog)) />
+                              Icon=@Icons.Add
+                              HtmxProps=@(new HtmxProps(WebAPI.Projects.Endpoints.GetRegister(GetClientResult.ClientId), Infrastructure.Ui.Targets.Dialog)) />
             </Actions>
         </Toolbar>
         <ListProjectsPage Query=@ListProjectsQuery

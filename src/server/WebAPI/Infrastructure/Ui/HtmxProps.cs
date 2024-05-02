@@ -6,8 +6,17 @@ public class HtmxProps
     public string Swap { get; set; } = "innerHTML";
     public string Endpoint { get; set; } = default!;
     public string Select { get; set; } = default!;
+    public string Vals { get; set; } = default!;
     public string Confirm { get; set; } = default!;
     public string HttpMethod { get; set; } = default!;
+    public string OnClick { get; set; } = default!;
+    public string OnChange { get; set; } = default!;
+    public string Include { get; set; } = default!;
+
+    public HtmxProps()
+    {
+
+    }
     public HtmxProps(string endpoint, string target)
     {
         Endpoint = endpoint;

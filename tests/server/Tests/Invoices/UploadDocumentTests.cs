@@ -7,7 +7,7 @@ public class UploadDocumentTests : BaseTest
     [Fact]
     public async Task upload_should_be_ok()
     {
-        var proforma = await _appDsl.IssueProforma(_appDsl.Clock.Now.DateTime);
+        var proforma = await _appDsl.IssuedProforma(_appDsl.Clock.Now.DateTime);
 
         var (_, start) = await _appDsl.ProformaToInvoiceProcess.Start(c =>
         {

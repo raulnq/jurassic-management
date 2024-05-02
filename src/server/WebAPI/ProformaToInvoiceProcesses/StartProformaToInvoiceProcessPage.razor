@@ -1,0 +1,51 @@
+﻿@using WebAPI.Infrastructure.SqlKata;
+@using WebAPI.Infrastructure.Ui;
+
+<Heading Text="Proformas" />
+<Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new("List invoices",WebAPI.Invoices.Endpoints.List.AddListParameters()), new("Register invoice") })
+             Target=@(Infrastructure.Ui.Targets.Workspace) />
+<Section>
+    <Content>
+        <Form HtmxProps=@(new HtmxProps(Endpoints.Register, Infrastructure.Ui.Targets.Workspace))>
+            <Content>
+                <FormRow>
+                    <Content>
+                        <div class="col-6">
+                            <SelectInput Property="ClientId"
+                                         Label="Client"
+                                         HtmxProps=@(new HtmxProps(@WebAPI.Projects.Endpoints.Search, $"#ProjectId"){OnChange=$"clean_select('{nameof(StartProformaToInvoiceProcess.Command.ProformaId)}')"})
+                                         Source=@Clients.ToDictionary(c=>c.ClientId, c=>c.Name)
+                                         Required=true>
+                            </SelectInput>
+                        </div>
+                        <div class="col-6">
+                            <SelectInput Property="ProjectId"
+                                         Label="Project"
+                                         Required=true
+                                         HtmxProps=@(new HtmxProps(@WebAPI.Proformas.Endpoints.Search, $"#{nameof(StartProformaToInvoiceProcess.Command.ProformaId)}"){Vals="{\"Status\": \"Issued\"}"})
+                                         TKey=Guid>
+                            </SelectInput>
+                        </div>
+                    </Content>
+                </FormRow>
+                <FormRow>
+                    <Content>
+                        <div class="col">
+                            <SelectInput Property=@(nameof(StartProformaToInvoiceProcess.Command.ProformaId))
+                                         Label="Proformas"
+                                         Required=true
+                                         Multiple=true
+                                         TKey=Guid>
+                            </SelectInput>
+                        </div>
+                    </Content>
+                </FormRow>
+            </Content>
+        </Form>
+    </Content>
+</Section>
+
+@code {
+    [Parameter, EditorRequired]
+    public List<WebAPI.Clients.SearchClients.Result> Clients { get; set; } = default!;
+}

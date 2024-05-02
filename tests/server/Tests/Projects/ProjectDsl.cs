@@ -10,7 +10,7 @@ namespace Tests.Projects;
 public class ProjectDsl
 {
     private readonly HttpDriver _httpDriver;
-    private static readonly string _uri = "projects";
+    private static readonly string _uri = "clients";
     public ProjectDsl(HttpDriver httpDriver)
     {
         _httpDriver = httpDriver;
@@ -26,7 +26,7 @@ public class ProjectDsl
 
         setup?.Invoke(request);
 
-        var (status, result, error) = await _httpDriver.Post<AddProject.Command, AddProject.Result>(_uri, request);
+        var (status, result, error) = await _httpDriver.Post<AddProject.Command, AddProject.Result>($"{_uri}/{request.ClientId}/projects", request);
 
         (status, result, error).Check(errorDetail, errors: errors, successAssert: result =>
         {
@@ -45,7 +45,7 @@ public class ProjectDsl
 
         setup?.Invoke(request);
 
-        var (status, error) = await _httpDriver.Put($"{_uri}/{request.ProjectId}", request);
+        var (status, error) = await _httpDriver.Put($"{_uri}/{Guid.NewGuid()}/projects/{request.ProjectId}", request);
 
         (status, error).Check(errorDetail, errors: errors);
 
@@ -61,7 +61,7 @@ public class ProjectDsl
 
         setup?.Invoke(request);
 
-        var (status, result, error) = await _httpDriver.Get<ListProjects.Query, ListResults<ListProjects.Result>>(_uri, request);
+        var (status, result, error) = await _httpDriver.Get<ListProjects.Query, ListResults<ListProjects.Result>>($"{_uri}/{Guid.NewGuid()}/projects", request);
 
         (status, result, error).Check(errorDetail, successAssert: result =>
         {
@@ -77,7 +77,7 @@ public class ProjectDsl
 
         setup?.Invoke(request);
 
-        var (status, result, error) = await _httpDriver.Get<GetProject.Query, GetProject.Result>($"{_uri}/{request.ProjectId}", request);
+        var (status, result, error) = await _httpDriver.Get<GetProject.Query, GetProject.Result>($"{_uri}/{Guid.NewGuid()}/projects/{request.ProjectId}", request);
 
         (status, result, error).Check(errorDetail, successAssert: result =>
         {

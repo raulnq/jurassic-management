@@ -15,7 +15,15 @@
         {
             @foreach (var item in Result.Items)
             {
-                <tr @key="@item">@RowTemplate(item)</tr>
+                @if (PreRenderRow)
+                {
+                    <tr @key="@item">@RowTemplate(item)</tr>
+                }
+                else
+                {
+                    @RowTemplate(item)
+                }
+
             }
         }
     </tbody>
@@ -28,4 +36,6 @@
     public RenderFragment<TResult> RowTemplate { get; set; } = default!;
     [Parameter, EditorRequired]
     public RenderFragment? TableHeader { get; set; } = default!;
+    [Parameter]
+    public bool PreRenderRow { get; set; } = true;
 }

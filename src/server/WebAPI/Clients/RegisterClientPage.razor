@@ -4,10 +4,10 @@
 
 <Heading Text="Clients" />
 <Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new("List clients", Endpoints.List.AddListParameters()), new("Register client") })
-             Target=@(Targets.Workspace) />
+             Target=@(Infrastructure.Ui.Targets.Workspace) />
 <Section>
     <Content>
-        <Form HtmxProps=@(new HtmxProps(@Endpoints.Register,Targets.Workspace))>
+        <Form HtmxProps=@(new HtmxProps(Endpoints.Register, Infrastructure.Ui.Targets.Workspace))>
             <Content>
                 <FormRow>
                     <Content>

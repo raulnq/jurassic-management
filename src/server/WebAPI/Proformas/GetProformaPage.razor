@@ -1,19 +1,33 @@
 ﻿@using WebAPI.Clients
+@using WebAPI.ProformaDocuments
 @using WebAPI.Proformas;
 @using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
 
 <Heading Text="Proformas" />
 <Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new("List proformas", Endpoints.List.AddListParameters()), new("Edit proforma") })
-             Target=@(Targets.Workspace)>
+             Target=@(Infrastructure.Ui.Targets.Workspace)>
     <MenuItems>
         <MenuItem Text="Issue"
                   IsDisabled=@(Result.Status!=ProformaStatus.Pending.ToString())
-                  HtmxProps=@(new HtmxProps(Endpoints.Issue.Replace("{proformaId}", @Result.ProformaId),Targets.Dialog)) />
+                  HtmxProps=@(new HtmxProps(Endpoints.GetIssue(Result.ProformaId), Infrastructure.Ui.Targets.Dialog)) />
+        <MenuItem HtmxProps=@(new HtmxProps(Endpoints.GetCancel(Result.ProformaId), Infrastructure.Ui.Targets.Workspace){ Confirm = "Are you sure?", HttpMethod="POST"})
+                  IsDisabled=@(Result.Status !=ProformaStatus.Pending.ToString())
+                  Text="Cancel" />
     </MenuItems>
 </Breadcrumbs>
 <Toolbar>
     <Actions>
+        <Divider />
+        <Text Property=@nameof(GetProforma.Result.Number)
+              Value=@Result.Number
+              Label="Number" />
+        <Divider />
+        <Link Property=@nameof(GetProformaDocument.Result.Url)
+              Value="View"
+              Href=@GetProformaDocumentResult?.Url
+              IsDisabled=@(GetProformaDocumentResult==null)
+              Label="PDF" />
         <Divider />
         <Text Property=@nameof(GetProforma.Result.Status)
               Value=@Result.Status
@@ -67,20 +81,18 @@
                 </div>
             </Content>
         </FormRow>
-        <div id="totals-section">
+        <div id=@Targets.ProformaTotals>
             <TotalsSectionPage Result=@Result />
         </div>
     </Content>
 </Section>
 <Section Title="Weeks">
     <Content>
-        <div id="weeks-section">
-            <ListProformaWeeksPage Query=@ListProformaWeeksQuery
-                                   Result=@ListProformaWeeksResult />
-        </div>
+        <ListProformaWeeksPage Query=@ListProformaWeeksQuery
+                               Result=@ListProformaWeeksResult />
     </Content>
 </Section>
-<div id="collaborator-section">
+<div id=@Targets.Collaborator>
 </div>
 
 @code {
@@ -90,4 +102,6 @@
     public ListResults<ListProformaWeeks.Result> ListProformaWeeksResult { get; set; } = default!;
     [Parameter, EditorRequired]
     public ListProformaWeeks.Query ListProformaWeeksQuery { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public GetProformaDocument.Result? GetProformaDocumentResult { get; set; }
 }

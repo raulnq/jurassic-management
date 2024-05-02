@@ -108,11 +108,7 @@ public static class EditClient
     [FromBody] Command command,
     HttpContext context)
     {
-        command.ClientId = clientId;
-
-        new Validator().ValidateAndThrow(command);
-
-        await behavior.Handle(() => handler.Handle(command));
+        await Handle(behavior, handler, clientId, command);
 
         context.Response.Headers.TriggerShowEditSuccessMessage("client", command.ClientId);
 

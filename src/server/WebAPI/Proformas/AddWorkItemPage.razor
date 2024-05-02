@@ -4,7 +4,7 @@
 @using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
 
-<ModalForm HtmxProps=@(new HtmxProps(WebAPI.Proformas.Endpoints.AddWorkItem.Replace(new Dictionary<string, object?>(){{"{proformaId}", ProformaId}, {"{week}", Week}}),"#collaborator-search-results","outerHTML","#collaborator-search-results"))
+<ModalForm HtmxProps=@(new HtmxProps(WebAPI.Proformas.Endpoints.GetAddWorkItem(ProformaId, Week),$"#{Targets.CollaboratorList}",Swap.OuterHTML,$"#{Targets.CollaboratorList}"))
            Title="Add collaborator">
     <Content>
         <FormRow>

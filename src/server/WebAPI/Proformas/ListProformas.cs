@@ -12,6 +12,7 @@ public static class ListProformas
     public class Query : ListQuery
     {
         public string? Status { get; set; }
+        public string? Number { get; set; }
         public IEnumerable<Guid>? ProformaId { get; set; }
     }
 
@@ -22,6 +23,7 @@ public static class ListProformas
         public string? ClientName { get; set; }
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
+        public string Number { get; set; } = default!;
         public Guid ProjectId { get; set; }
         public decimal Total { get; set; }
         public decimal SubTotal { get; set; }
@@ -40,6 +42,7 @@ public static class ListProformas
         public DateTimeOffset? IssuedAt { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
         public string Currency { get; set; } = default!;
+        public DateTimeOffset? CanceledAt { get; set; }
     }
 
     public class Runner : BaseRunner
@@ -61,6 +64,10 @@ public static class ListProformas
                 if (!string.IsNullOrEmpty(query.Status))
                 {
                     statement = statement.Where(Tables.Proformas.Field(nameof(Proforma.Status)), query.Status);
+                }
+                if (!string.IsNullOrEmpty(query.Number))
+                {
+                    statement = statement.WhereLike(Tables.Proformas.Field(nameof(Proforma.Number)), $"%{query.Number}%");
                 }
                 if (query.ProformaId != null && query.ProformaId.Any())
                 {

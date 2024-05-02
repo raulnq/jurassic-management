@@ -13,6 +13,7 @@ using WebAPI.Infrastructure.OpenApi;
 using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Invoices;
 using WebAPI.InvoiceToCollectionProcesses;
+using WebAPI.ProformaDocuments;
 using WebAPI.Proformas;
 using WebAPI.ProformaToCollaboratorPaymentProcesses;
 using WebAPI.ProformaToInvoiceProcesses;
@@ -34,6 +35,10 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 
 builder.Services.AddEntityFramework(builder.Configuration);
 builder.Services.AddSqlKata(builder.Configuration);
+builder.Services.AddRebus(builder.Configuration, onCreated: bus =>
+{
+    return bus.SubscribeToProforma();
+});
 builder.Services.AddCollaboratorRoles();
 builder.Services.AddCollaborators();
 builder.Services.AddProjects();
@@ -46,6 +51,7 @@ builder.Services.AddInvoiceToCollectionProcesses();
 builder.Services.AddCollections();
 builder.Services.AddProformaToCollaboratorPaymentProcesses();
 builder.Services.AddCollaboratorPayments(builder.Configuration);
+builder.Services.AddProformaDocuments(builder.Configuration);
 builder.Services.AddSingleton<IClock>(new SystemClock());
 builder.Services.AddExceptionHandler<DefaultExceptionHandler>();
 builder.Services.AddRazorComponents();
