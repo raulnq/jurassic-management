@@ -9,11 +9,11 @@ public class IssueProformaTests : BaseTest
     {
         var today = _appDsl.Clock.Now.DateTime;
 
-        var result = await _appDsl.RegisterProformaReadyToIssue(today);
+        var (proformaResult, _, _) = await _appDsl.RegisterProformaReadyToIssue(today);
 
         await _appDsl.Proformas.Issue(c =>
         {
-            c.ProformaId = result.ProformaId;
+            c.ProformaId = proformaResult.ProformaId;
             c.IssueAt = today.AddDays(7);
         });
     }

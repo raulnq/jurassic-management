@@ -6,6 +6,8 @@ public static class ServiceCollectionExtensions
     {
         services.AddTransient<StartProformaToInvoiceProcess.Handler>();
 
+        services.AddTransient<ListProformaToInvoiceProcessItems.Runner>();
+
         return services;
     }
 }

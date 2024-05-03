@@ -29,11 +29,11 @@ public class EntityTypeConfiguration : IEntityTypeConfiguration<Invoice>
             .HasColumnType("decimal(19, 4)");
 
         builder
-            .Property(c => c.Status)
-            .HasConversion(s => s.ToString(), value => value.ToEnum<InvoiceStatus>());
-
-        builder
             .Property(c => c.Currency)
             .HasConversion(s => s.ToString(), value => value.ToEnum<Currency>());
+
+        builder
+            .Property(c => c.Status)
+            .HasConversion(s => s.ToString(), value => value.ToEnum<InvoiceStatus>());
     }
 }

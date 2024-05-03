@@ -54,12 +54,6 @@ public static class CancelProforma
         }
     }
 
-    public class ProformaIssued
-    {
-        public Guid ProformaId { get; set; }
-    }
-
-
     public static async Task<Ok> Handle(
     [FromServices] TransactionBehavior behavior,
     [FromServices] Handler handler,
@@ -94,11 +88,9 @@ public static class CancelProforma
             CanceledAt = clock.Now
         };
 
-        new Validator().ValidateAndThrow(command);
+        await Handle(behavior, handler, proformaId, clock, command);
 
-        await behavior.Handle(() => handler.Handle(command));
-
-        context.Response.Headers.TriggerShowSuccessMessage($"The proforma {proformaId} was cancel successfully");
+        context.Response.Headers.TriggerShowSuccessMessage($"The proforma {command.ProformaId} was cancel successfully");
 
         return await GetProforma.HandlePage(getProformaRunner, listProformasWeeksRunner, getProformaDocumentRunner, command.ProformaId);
     }

@@ -35,8 +35,10 @@
                 <TableHeader>
                     <th></th>
                     <th>InvoiceId</th>
+                    <th>Client</th>
                     <th>Total</th>
                     <th>Status</th>
+                    <th>Number</th>
                 </TableHeader>
                 <RowTemplate>
                     <RowToolbar>
@@ -46,8 +48,10 @@
                         </Actions>
                     </RowToolbar>
                     <td>@item.InvoiceId</td>
+                    <td>@item.ClientName</td>
                     <td>@item.Currency @item.Total</td>
                     <td>@item.Status</td>
+                    <td>@item.Number</td>
                 </RowTemplate>
             </DataTable>
             <Pagination Query=@Query

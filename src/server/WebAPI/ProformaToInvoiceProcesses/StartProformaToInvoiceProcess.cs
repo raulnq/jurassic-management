@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
 using WebAPI.Clients;
 using WebAPI.Infrastructure.EntityFramework;
+using WebAPI.Infrastructure.Ui;
 using WebAPI.Invoices;
 using WebAPI.Proformas;
 
@@ -16,6 +17,8 @@ public static class StartProformaToInvoiceProcess
     public class Command
     {
         public IEnumerable<Guid>? ProformaId { get; set; }
+        public Guid ClientId { get; set; }
+        public Currency Currency { get; set; }
         [JsonIgnore]
         public IEnumerable<ListProformas.Result>? Proformas { get; set; }
         [JsonIgnore]
@@ -46,7 +49,7 @@ public static class StartProformaToInvoiceProcess
 
         public Task<Result> Handle(Command command)
         {
-            var process = new ProformaToInvoiceProcess(NewId.Next().ToSequentialGuid(), command.Proformas!.Select(p => (p.ProformaId, p.Status!.ToEnum<ProformaStatus>())), command.CreatedAt);
+            var process = new ProformaToInvoiceProcess(NewId.Next().ToSequentialGuid(), command.ClientId, command.Currency, command.Proformas!.Select(p => (p.ProformaId, p.Status!.ToEnum<ProformaStatus>())), command.CreatedAt);
 
             _context.Set<ProformaToInvoiceProcess>().Add(process);
 
@@ -72,8 +75,6 @@ public static class StartProformaToInvoiceProcess
 
         var proformas = await listProformasHandler.Run(new ListProformas.Query() { ProformaId = command.ProformaId, PageSize = 50 });
 
-        //TODO: Todas las proformas tienen que ser de la misma moneda
-
         var currency = proformas.Items.First().Currency;
 
         command.Proformas = proformas.Items;
@@ -82,7 +83,15 @@ public static class StartProformaToInvoiceProcess
         {
             var result = await handler.Handle(command);
 
-            await registerInvoiceHandler.Handle(new RegisterInvoice.Command() { InvoiceId = result.InvoiceId, CreatedAt = command.CreatedAt, SubTotal = proformas.Items.Sum(p => p.Total), Taxes = 0, Currency = currency.ToEnum<Currency>() });
+            await registerInvoiceHandler.Handle(new RegisterInvoice.Command()
+            {
+                InvoiceId = result.InvoiceId,
+                CreatedAt = command.CreatedAt,
+                SubTotal = proformas.Items.Sum(p => p.Total),
+                Taxes = 0,
+                Currency = command.Currency,
+                ClientId = command.ClientId,
+            });
 
             foreach (var proforma in command.Proformas)
             {
@@ -104,5 +113,23 @@ public static class StartProformaToInvoiceProcess
         {
             Clients = result
         });
+    }
+
+    public static async Task<RazorComponentResult> HandleAction(
+    [FromServices] TransactionBehavior behavior,
+    [FromServices] Handler handler,
+    [FromServices] ListProformas.Runner listProformasRunner,
+    [FromServices] RegisterInvoice.Handler registerInvoiceHandler,
+    [FromServices] MarkProformaAsInvoiced.Handler markProformaAsInvoicedHandler,
+    [FromServices] ListInvoices.Runner listInvoicesRunner,
+    [FromBody] Command command,
+    [FromServices] IClock clock,
+    HttpContext context)
+    {
+        var register = await Handle(behavior, handler, registerInvoiceHandler, listProformasRunner, markProformaAsInvoicedHandler, clock, command);
+
+        context.Response.Headers.TriggerShowRegisterSuccessMessage($"invoice", register.Value!.InvoiceId);
+
+        return await ListInvoices.HandlePage(new ListInvoices.Query() { }, listInvoicesRunner);
     }
 }

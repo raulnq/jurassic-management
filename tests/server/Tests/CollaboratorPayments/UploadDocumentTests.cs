@@ -9,11 +9,11 @@ public class UploadDocumentTests : BaseTest
     {
         var today = _appDsl.Clock.Now.DateTime;
 
-        var proforma = await _appDsl.IssuedProforma(today);
+        var (proformaResult, proformaCommand, clientResult) = await _appDsl.IssuedProforma(today);
 
         var (_, start) = await _appDsl.ProformaToCollaboratorPaymentProcess.Start(c =>
         {
-            c.ProformaId = new[] { proforma.ProformaId };
+            c.ProformaId = new[] { proformaResult.ProformaId };
         });
 
         await _appDsl.CollaboratorPayment.Pay(c =>

@@ -30,6 +30,8 @@ public static partial class ServiceCollectionExtensions
 
         services.AddTransient<MarkProformaAsInvoiced.Handler>();
 
+        services.AddTransient<MarkProformaAsIssued.Handler>();
+
         services.AddTransient<CancelProforma.Handler>();
 
         services.AddTransient<SearchProformas.Runner>();

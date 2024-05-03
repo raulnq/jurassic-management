@@ -3,7 +3,7 @@
 
 @foreach (var item in Result)
 {
-    <option value="@item.ProjectId">Proforma @item.Number started at @item.Start.ToString("dd/MM/yyy") and ended At @item.End.ToString("dd/MM/yyy") with a total of @item.Total</option>
+    <option value="@item.ProformaId">Proforma @item.Number started at @item.Start.ToString("dd/MM/yyy") and ended At @item.End.ToString("dd/MM/yyy") with a total of @item.Currency @item.Total</option>
 }
 
 @code {

@@ -1,0 +1,124 @@
+﻿@using WebAPI.Clients
+@using WebAPI.Invoices
+@using WebAPI.ProformaToInvoiceProcesses
+@using WebAPI.Proformas;
+@using WebAPI.Infrastructure.SqlKata;
+@using WebAPI.Infrastructure.Ui;
+
+<Heading Text="Invoices" />
+<Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new("List invoices", Endpoints.List.AddListParameters()), new("Edit invoice") })
+             Target=@(Infrastructure.Ui.Targets.Workspace)>
+    <MenuItems>
+        <MenuItem Text="Upload document"
+                  IsDisabled=@(Result.Status!=InvoiceStatus.Pending.ToString())
+                  HtmxProps=@(new HtmxProps(Endpoints.GetUpload(Result.InvoiceId), Infrastructure.Ui.Targets.Dialog)) />
+        <MenuItem Text="Issue"
+                  IsDisabled=@(Result.Status!=InvoiceStatus.Pending.ToString())
+                  HtmxProps=@(new HtmxProps(Endpoints.GetIssue(Result.InvoiceId), Infrastructure.Ui.Targets.Dialog)) />
+        <MenuItem HtmxProps=@(new HtmxProps(Endpoints.GetCancel(Result.InvoiceId), Infrastructure.Ui.Targets.Workspace){ Confirm = "Are you sure?", HttpMethod="POST"})
+                  IsDisabled=@(Result.Status !=InvoiceStatus.Pending.ToString())
+                  Text="Cancel" />
+    </MenuItems>
+</Breadcrumbs>
+<Toolbar>
+    <Actions>
+        <Divider />
+        <Link Property=@nameof(GetInvoice.Result.DocumentUrl)
+              Value="View"
+              Href=@Result.DocumentUrl
+              IsDisabled=@(string.IsNullOrEmpty(Result.DocumentUrl))
+              Label="PDF" />
+        <Divider />
+        <Text Property=@nameof(GetInvoice.Result.Status)
+              Value=@Result.Status
+              Label="Status" />
+        <Divider />
+    </Actions>
+</Toolbar>
+<Section>
+    <Content>
+        <FormRow>
+            <Content>
+                <div class="col-8">
+                    <SelectInput Property=@nameof(GetInvoice.Result.ClientName)
+                                 Label="Client"
+                                 TKey=Guid
+                                 Value=@Result.ClientName
+                                 Readonly=true>
+                    </SelectInput>
+                </div>
+                <div class="col-4">
+                    <SelectInput Property=@nameof(GetInvoice.Result.Currency)
+                                 Label="Currency"
+                                 TKey=int
+                                 Value=@Result.Currency
+                                 Readonly=true>
+                    </SelectInput>
+                </div>
+            </Content>
+        </FormRow>
+        <FormRow>
+            <Content>
+                <div class="col-4">
+                    <TextInput Property=@nameof(GetInvoice.Result.Number)
+                               Label="Number"
+                               Value=@Result.Number
+                               Readonly=true>
+                    </TextInput>
+                </div>
+                <div class="col-4">
+                    <DateInput Property=@nameof(GetInvoice.Result.IssueAt)
+                               Label="Issued At"
+                               Value=@Result.IssueAt
+                               Readonly=true />
+                </div>
+                <div class="col-4">
+                    <DateInput Property=@nameof(GetInvoice.Result.CreatedAt)
+                               Label="Created At"
+                               Value=@Result.CreatedAt
+                               Readonly=true />
+                </div>
+            </Content>
+        </FormRow>
+        <FormRow>
+            <Content>
+                <div class="col-4">
+                    <NumberInput Property=@nameof(GetInvoice.Result.SubTotal)
+                                 Label="SubTotal"
+                                 Prefix="$"
+                                 Value=@Result.SubTotal
+                                 Readonly=true />
+                </div>
+                <div class="col-4">
+                    <NumberInput Property=@nameof(GetInvoice.Result.Taxes)
+                                 Label="Commission"
+                                 Prefix="+$"
+                                 Value=@Result.Taxes
+                                 Readonly=true />
+                </div>
+                <div class="col-4">
+                    <NumberInput Property=@nameof(GetInvoice.Result.Total)
+                                 Label="Commission"
+                                 Prefix="=$"
+                                 Value=@Result.Total
+                                 Readonly=true />
+                </div>
+            </Content>
+        </FormRow>
+    </Content>
+</Section>
+<Section Title="Proformas">
+    <Content>
+        <ListProformaToInvoiceProcessItemsPage Query=@ListProformaToInvoiceProcessItemsQuery
+                                               Result=@ListProformaToInvoiceProcessItemsResult />
+    </Content>
+</Section>
+
+@code {
+    [Parameter, EditorRequired]
+    public GetInvoice.Result Result { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public ListResults<ListProformaToInvoiceProcessItems.Result> ListProformaToInvoiceProcessItemsResult { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public ListProformaToInvoiceProcessItems.Query ListProformaToInvoiceProcessItemsQuery { get; set; } = default!;
+}

@@ -12,7 +12,7 @@ public class HtmxProps
     public string OnClick { get; set; } = default!;
     public string OnChange { get; set; } = default!;
     public string Include { get; set; } = default!;
-
+    public string Encoding { get; set; } = default!;
     public HtmxProps()
     {
 

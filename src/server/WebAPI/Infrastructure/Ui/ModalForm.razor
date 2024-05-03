@@ -1,27 +1,59 @@
-﻿<div class="modal-content">
-    <form hx-post=@HtmxProps.Endpoint
-          hx-target=@HtmxProps.Target
-          hx-swap=@HtmxProps.Swap
-          hx-ext="json-enc"
-          hx-indicator="#modal-form-spinner"
-          hx-disabled-elt="#modal-form-button"
-          hx-select=@HtmxProps.Select>
-        <div class="modal-header">
-            <h1 class="modal-title fs-5">@Title</h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-            @Content
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button id="modal-form-button" type="submit" class="btn btn-primary">
-                <span>Save Changes</span>
-                <span id="modal-form-spinner" class="spinner-border spinner-border-sm htmx-indicator" aria-hidden="true" />
-            </button>
-        </div>
-    </form>
-</div>
+﻿@if (HtmxProps.Encoding == "multipart/form-data")
+{
+    <div class="modal-content">
+        <form hx-post=@HtmxProps.Endpoint
+              hx-target=@HtmxProps.Target
+              hx-swap=@HtmxProps.Swap
+              hx-indicator="#modal-form-spinner"
+              hx-disabled-elt="#modal-form-button"
+              hx-encoding=@HtmxProps.Encoding
+              hx-select=@HtmxProps.Select>
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">@Title</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @Content
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button id="modal-form-button" type="submit" class="btn btn-primary">
+                    <span>Save Changes</span>
+                    <span id="modal-form-spinner" class="spinner-border spinner-border-sm htmx-indicator" aria-hidden="true" />
+                </button>
+            </div>
+        </form>
+    </div>
+
+}
+else
+{
+    <div class="modal-content">
+        <form hx-post=@HtmxProps.Endpoint
+              hx-target=@HtmxProps.Target
+              hx-swap=@HtmxProps.Swap
+              hx-ext="json-enc"
+              hx-indicator="#modal-form-spinner"
+              hx-disabled-elt="#modal-form-button"
+              hx-select=@HtmxProps.Select>
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">@Title</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @Content
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button id="modal-form-button" type="submit" class="btn btn-primary">
+                    <span>Save Changes</span>
+                    <span id="modal-form-spinner" class="spinner-border spinner-border-sm htmx-indicator" aria-hidden="true" />
+                </button>
+            </div>
+        </form>
+    </div>
+
+}
 
 
 @code {

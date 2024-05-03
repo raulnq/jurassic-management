@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
+using WebAPI.Infrastructure.Ui;
+using WebAPI.ProformaToInvoiceProcesses;
 
 
 namespace WebAPI.Invoices;
@@ -14,6 +16,7 @@ public static class IssueInvoice
         [JsonIgnore]
         public Guid InvoiceId { get; set; }
         public DateTime IssueAt { get; set; }
+        public string Number { get; set; } = default!;
     }
 
     public class Validator : AbstractValidator<Command>
@@ -21,6 +24,7 @@ public static class IssueInvoice
         public Validator()
         {
             RuleFor(command => command.InvoiceId).NotEmpty();
+            RuleFor(command => command.Number).NotEmpty().MaximumLength(50);
         }
     }
 
@@ -37,7 +41,7 @@ public static class IssueInvoice
         {
             var invoice = await _context.Get<Invoice>(command.InvoiceId);
 
-            invoice.Issue(command.IssueAt);
+            invoice.Issue(command.IssueAt, command.Number);
         }
     }
 
@@ -54,5 +58,33 @@ public static class IssueInvoice
         await behavior.Handle(() => handler.Handle(command));
 
         return TypedResults.Ok();
+    }
+
+    public static Task<RazorComponentResult> HandlePage(
+    [FromRoute] Guid invoiceId,
+    HttpContext context)
+    {
+        context.Response.Headers.TriggerOpenModal();
+
+        return Task.FromResult<RazorComponentResult>(new RazorComponentResult<IssueInvoicePage>(new
+        {
+            InvoiceId = invoiceId,
+        }));
+    }
+
+    public static async Task<RazorComponentResult> HandleAction(
+    [FromServices] TransactionBehavior behavior,
+    [FromServices] Handler handler,
+    [FromServices] GetInvoice.Runner getInvoiceRunner,
+    [FromServices] ListProformaToInvoiceProcessItems.Runner listProformaToInvoiceProcessItemsRunner,
+    [FromBody] Command command,
+    Guid invoiceId,
+    HttpContext context)
+    {
+        await Handle(behavior, handler, invoiceId, command);
+
+        context.Response.Headers.TriggerShowSuccessMessageAndCloseModal($"The invoice {invoiceId} was issued successfully");
+
+        return await GetInvoice.HandlePage(getInvoiceRunner, listProformaToInvoiceProcessItemsRunner, invoiceId);
     }
 }

@@ -1,0 +1,36 @@
+﻿@using WebAPI.Infrastructure.SqlKata;
+@using WebAPI.Infrastructure.Ui;
+@using WebAPI.Proformas;
+
+<div id=@Targets.ProcessItemsWeekList>
+    <DataTable TResult=ListProformaToInvoiceProcessItems.Result
+               Result=@Result
+               Context="item">
+        <TableHeader>
+            <th>ProformaId</th>
+            <th>Project</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Number</th>
+            <th>Total</th>
+        </TableHeader>
+        <RowTemplate>
+            <td>@item.ProformaId</td>
+            <td>@item.ProformaProjectName</td>
+            <td>@item.ProformaStart</td>
+            <td>@item.ProformaEnd</td>
+            <td>@item.ProformaNumber</td>
+            <td>@item.ProformaCurrency @item.ProformTotal</td>
+        </RowTemplate>
+    </DataTable>
+    <Pagination Query=@Query
+                Result=@Result
+                HtmxProps=@(new HtmxProps(Endpoints.GetListItems(Query.InvoiceId!.Value), $"#{Targets.ProcessItemsWeekList}", Swap.OuterHTML)) />
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public ListResults<ListProformaToInvoiceProcessItems.Result> Result { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public ListProformaToInvoiceProcessItems.Query Query { get; set; } = default!;
+}

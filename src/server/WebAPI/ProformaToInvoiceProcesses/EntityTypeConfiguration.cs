@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 using WebAPI.Infrastructure.EntityFramework;
+using Infrastructure;
+using WebAPI.Proformas;
 
 namespace WebAPI.ProformaToInvoiceProcesses;
 
@@ -13,6 +15,10 @@ public class EntityTypeConfiguration : IEntityTypeConfiguration<ProformaToInvoic
 
         builder
             .HasKey(field => field.InvoiceId);
+
+        builder
+        .Property(c => c.Currency)
+        .HasConversion(s => s.ToString(), value => value.ToEnum<Currency>());
 
         builder
             .HasMany(p => p.Items)

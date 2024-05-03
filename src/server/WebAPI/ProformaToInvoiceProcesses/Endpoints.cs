@@ -4,6 +4,14 @@ public static class Endpoints
 {
     public const string Register = "/ui/proforma-to-invoice-processes/register";
 
+    public const string ListItems = "/ui/proforma-to-invoice-processes/{invoiceId}/items/list";
+
+    public static string GetListItems(Guid invoiceId)
+    {
+        return ListItems.Replace("{invoiceId}", invoiceId.ToString());
+    }
+
+
     public static void RegisterProformaToInvoiceProcessEndpoints(this WebApplication app)
     {
         var group = app.MapGroup("/proforma-to-invoice-processes")
@@ -16,5 +24,8 @@ public static class Endpoints
 
         uigroup.MapGet("/register", StartProformaToInvoiceProcess.HandlePage);
 
+        uigroup.MapPost("/register", StartProformaToInvoiceProcess.HandleAction);
+
+        uigroup.MapGet("/{invoiceId:guid}/items/list", ListProformaToInvoiceProcessItems.HandlePage);
     }
 }

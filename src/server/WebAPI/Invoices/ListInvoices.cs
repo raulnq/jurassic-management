@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.Clients;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.SqlKata;
 
@@ -16,6 +17,9 @@ public static class ListInvoices
     public class Result
     {
         public Guid InvoiceId { get; set; }
+        public Guid ClientId { get; set; }
+        public string? ClientName { get; set; }
+        public string? Number { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
         public DateTime? IssueAt { get; set; }
         public decimal SubTotal { get; set; }
@@ -34,15 +38,18 @@ public static class ListInvoices
         {
             return _queryRunner.List<Query, Result>((qf) =>
             {
-                var statement = qf.Query(Tables.Invoices);
+                var statement = qf.Query(Tables.Invoices)
+                .Select(Tables.Invoices.AllFields)
+                .Select(Tables.Clients.Field(nameof(Client.Name), nameof(Result.ClientName)))
+                .Join(Tables.Clients, Tables.Invoices.Field(nameof(Invoice.ClientId)), Tables.Clients.Field(nameof(Invoice.ClientId)));
 
                 if (!string.IsNullOrEmpty(query.Status))
                 {
-                    statement = statement.Where(Tables.Invoices.Field(nameof(Query.Status)), query.Status);
+                    statement = statement.Where(Tables.Invoices.Field(nameof(Invoice.Status)), query.Status);
                 }
                 if (query.InvoiceId != null && query.InvoiceId.Any())
                 {
-                    statement = statement.WhereIn(Tables.Invoices.Field(nameof(query.InvoiceId)), query.InvoiceId);
+                    statement = statement.WhereIn(Tables.Invoices.Field(nameof(Invoice.InvoiceId)), query.InvoiceId);
                 }
                 return statement;
             }, query);

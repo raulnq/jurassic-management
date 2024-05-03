@@ -14,16 +14,35 @@
 }
 else
 {
-    <div class="form-group">
-        <label for=@Property class="form-label">@Label</label>
-        <input type="text"
-               class="form-control"
-               id=@Property
-               name=@Property
-               placeholder=@Placeholder
-               value=@Value
-               maxlength=@MaxLenght />
-    </div>
+    if (Readonly)
+    {
+        <div class="form-group">
+            <label for=@Property class="form-label">@Label</label>
+            <input type="text"
+                   class="form-control"
+                   id=@Property
+                   name=@Property
+                   placeholder=@Placeholder
+                   value=@Value
+                   maxlength=@MaxLenght
+                   readonly
+                   disabled />
+        </div>
+    }
+    else
+    {
+        <div class="form-group">
+            <label for=@Property class="form-label">@Label</label>
+            <input type="text"
+                   class="form-control"
+                   id=@Property
+                   name=@Property
+                   placeholder=@Placeholder
+                   value=@Value
+                   maxlength=@MaxLenght />
+        </div>
+    }
+
 }
 
 
@@ -40,4 +59,6 @@ else
     public int? MaxLenght { get; set; } = default!;
     [Parameter]
     public bool Required { get; set; } = default!;
+    [Parameter]
+    public bool Readonly { get; set; } = default!;
 }

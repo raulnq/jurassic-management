@@ -24,7 +24,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PDFPreviewer", "src\server\PDFPreviewer\PDFPreviewer.csproj", "{C429585E-1069-4023-8964-C95676928A54}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PDFPreviewer", "src\server\PDFPreviewer\PDFPreviewer.csproj", "{C429585E-1069-4023-8964-C95676928A54}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

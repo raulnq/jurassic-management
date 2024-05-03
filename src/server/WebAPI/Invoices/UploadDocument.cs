@@ -3,6 +3,8 @@ using Invoices;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Infrastructure.EntityFramework;
+using WebAPI.Infrastructure.Ui;
+using WebAPI.ProformaToInvoiceProcesses;
 
 
 namespace WebAPI.Invoices;
@@ -64,5 +66,34 @@ public static class UploadDocument
 
             return TypedResults.Ok();
         }
+    }
+
+    public static Task<RazorComponentResult> HandlePage(
+    [FromRoute] Guid invoiceId,
+    HttpContext context)
+    {
+        context.Response.Headers.TriggerOpenModal();
+
+        return Task.FromResult<RazorComponentResult>(new RazorComponentResult<UploadDocumentPage>(new
+        {
+            InvoiceId = invoiceId,
+        }));
+    }
+
+    public static async Task<RazorComponentResult> HandleAction(
+    [FromServices] TransactionBehavior behavior,
+    [FromServices] Handler handler,
+    [FromServices] GetInvoice.Runner getInvoiceRunner,
+    [FromServices] ListProformaToInvoiceProcessItems.Runner listProformaToInvoiceProcessItemsRunner,
+    [FromServices] InvoiceStorage storage,
+    IFormFile file,
+    Guid invoiceId,
+    HttpContext context)
+    {
+        await Handle(behavior, handler, storage, invoiceId, file);
+
+        context.Response.Headers.TriggerShowSuccessMessageAndCloseModal($"The document for the {invoiceId} was uploaded successfully");
+
+        return await GetInvoice.HandlePage(getInvoiceRunner, listProformaToInvoiceProcessItemsRunner, invoiceId);
     }
 }

@@ -1,5 +1,6 @@
 ﻿@using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
+@using WebAPI.Proformas
 
 <Heading Text="Proformas" />
 <Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new("List invoices",WebAPI.Invoices.Endpoints.List.AddListParameters()), new("Register invoice") })
@@ -11,19 +12,19 @@
                 <FormRow>
                     <Content>
                         <div class="col-6">
-                            <SelectInput Property="ClientId"
+                            <SelectInput Property=@nameof(StartProformaToInvoiceProcess.Command.ClientId)
                                          Label="Client"
-                                         HtmxProps=@(new HtmxProps(@WebAPI.Projects.Endpoints.Search, $"#ProjectId"){OnChange=$"clean_select('{nameof(StartProformaToInvoiceProcess.Command.ProformaId)}')"})
+                                         HtmxProps=@(new HtmxProps(@WebAPI.Proformas.Endpoints.Search, $"#{nameof(StartProformaToInvoiceProcess.Command.ProformaId)}"){Vals="{\"Status\": \"Issued\"}", Include=$"#{nameof(StartProformaToInvoiceProcess.Command.Currency)}"})
                                          Source=@Clients.ToDictionary(c=>c.ClientId, c=>c.Name)
                                          Required=true>
                             </SelectInput>
                         </div>
                         <div class="col-6">
-                            <SelectInput Property="ProjectId"
-                                         Label="Project"
-                                         Required=true
-                                         HtmxProps=@(new HtmxProps(@WebAPI.Proformas.Endpoints.Search, $"#{nameof(StartProformaToInvoiceProcess.Command.ProformaId)}"){Vals="{\"Status\": \"Issued\"}"})
-                                         TKey=Guid>
+                            <SelectInput Property=@nameof(StartProformaToInvoiceProcess.Command.Currency)
+                                         Label="Currency"
+                                         Source=@(Enum.GetValues<Currency>().ToDictionary(i=>i.ToString(), i=>i.ToString()))
+                                         HtmxProps=@(new HtmxProps(@WebAPI.Proformas.Endpoints.Search, $"#{nameof(StartProformaToInvoiceProcess.Command.ProformaId)}"){Vals="{\"Status\": \"Issued\"}", Include=$"#{nameof(StartProformaToInvoiceProcess.Command.ClientId)}"})
+                                         Required=true>
                             </SelectInput>
                         </div>
                     </Content>

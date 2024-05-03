@@ -102,6 +102,12 @@ public class Proforma
         IssuedAt = issueAt;
     }
 
+    public void MarkAsIssued()
+    {
+        EnsureStatus(ProformaStatus.Invoiced);
+        Status = ProformaStatus.Issued;
+    }
+
     public void Cancel(DateTimeOffset canceledAt)
     {
         EnsureStatus(ProformaStatus.Pending);

@@ -87,7 +87,7 @@ public class AppDsl : IAsyncDisposable
         return _applicationFactory.DisposeAsync();
     }
 
-    public async Task<(RegisterProforma.Result, RegisterClient.Command)> RegisterProforma(DateTime start, int days = 6, Action<RegisterClient.Command>? clientSetup = null)
+    public async Task<(RegisterProforma.Result, RegisterClient.Command, RegisterProforma.Command, RegisterClient.Result)> RegisterProforma(DateTime start, int days = 6, Action<RegisterClient.Command>? clientSetup = null)
     {
         var (clientCommand, client) = await Client.Register(clientSetup);
 
@@ -96,7 +96,7 @@ public class AppDsl : IAsyncDisposable
             c.ClientId = client!.ClientId;
         });
 
-        var (_, result) = await Proformas.Register(c =>
+        var (command, result) = await Proformas.Register(c =>
         {
             c.ProjectId = project!.ProjectId;
             c.Start = start;
@@ -104,12 +104,12 @@ public class AppDsl : IAsyncDisposable
             c.Discount = 0;
         });
 
-        return (result!, clientCommand);
+        return (result!, clientCommand, command, client!);
     }
 
-    public async Task<RegisterProforma.Result> RegisterProformaReadyToIssue(DateTime start, int days = 6)
+    public async Task<(RegisterProforma.Result, RegisterProforma.Command, RegisterClient.Result)> RegisterProformaReadyToIssue(DateTime start, int days = 6)
     {
-        var (proforma, client) = await RegisterProforma(start, days);
+        var (proformaResult, clientCommand, proformaCommand, clientResult) = await RegisterProforma(start, days);
 
         var (_, collaborator) = await Collaborator.Register();
 
@@ -121,41 +121,47 @@ public class AppDsl : IAsyncDisposable
         {
             await Proformas.AddWorkItem(c =>
             {
-                c.ProformaId = proforma!.ProformaId;
+                c.ProformaId = proformaResult!.ProformaId;
                 c.Week = i;
                 c.CollaboratorId = collaborator!.CollaboratorId;
                 c.CollaboratorRoleId = collaboratorRole!.CollaboratorRoleId;
-                c.Hours = client.PenaltyMinimumHours;
+                c.Hours = clientCommand.PenaltyMinimumHours;
                 c.FreeHours = 0;
             });
         }
 
-        return proforma;
+        return (proformaResult, proformaCommand, clientResult);
     }
 
-    public async Task<RegisterProforma.Result> IssuedProforma(DateTime start, int days = 6)
+    public async Task<(RegisterProforma.Result, RegisterProforma.Command, RegisterClient.Result)> IssuedProforma(DateTime start, int days = 6)
     {
-        var proforma = await RegisterProformaReadyToIssue(start, days);
+        var (proformaResult, proformaCommand, clientResult) = await RegisterProformaReadyToIssue(start, days);
 
         await Proformas.Issue(c =>
         {
-            c.ProformaId = proforma.ProformaId;
+            c.ProformaId = proformaResult.ProformaId;
             c.IssueAt = start.AddDays(days + 1);
         });
 
-        return proforma;
+        return (proformaResult, proformaCommand, clientResult);
     }
 
-    public async Task<StartProformaToInvoiceProcess.Result> IssueInvoice(Guid proformaId)
+    public async Task<StartProformaToInvoiceProcess.Result> IssuedInvoice(Guid proformaId, Guid clientId, Currency currency, DateTime today)
     {
         var (_, start) = await ProformaToInvoiceProcess.Start(c =>
         {
+            c.Currency = currency;
+            c.ClientId = clientId;
             c.ProformaId = new[] { proformaId };
         });
 
         await Invoice.Upload("blank.pdf", c => c.InvoiceId = start!.InvoiceId);
 
-        await Invoice.Issue(c => c.InvoiceId = start!.InvoiceId);
+        await Invoice.Issue(c =>
+        {
+            c.InvoiceId = start!.InvoiceId;
+            c.IssueAt = today.AddDays(1);
+        });
 
         return start!;
     }

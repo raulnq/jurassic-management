@@ -16,6 +16,8 @@ public static class ServiceCollectionExtensions
 
         services.AddTransient<GetInvoice.Runner>();
 
+        services.AddTransient<CancelInvoice.Handler>();
+
         var connectionString = configuration["AzureStorageConnectionString"];
 
         if (string.IsNullOrEmpty(connectionString))

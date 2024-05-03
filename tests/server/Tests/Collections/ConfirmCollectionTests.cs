@@ -9,9 +9,11 @@ public class ConfirmCollectionTests : BaseTest
     {
         var today = _appDsl.Clock.Now.DateTime;
 
-        var proforma = await _appDsl.IssuedProforma(today);
+        var (proformaResult, proformaCommand, clientResult) = await _appDsl.IssuedProforma(today);
 
-        var invoice = await _appDsl.IssueInvoice(proforma.ProformaId);
+        var (proformaResult1, proformaCommand2, clientResult3) = await _appDsl.IssuedProforma(today);
+
+        var invoice = await _appDsl.IssuedInvoice(proformaResult.ProformaId, clientResult.ClientId, proformaCommand.Currency, today);
 
         var (_, start) = await _appDsl.InvoiceToCollectionProcess.Start(c =>
         {

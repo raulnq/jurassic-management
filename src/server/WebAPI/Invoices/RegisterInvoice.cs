@@ -9,6 +9,7 @@ public static class RegisterInvoice
 {
     public class Command
     {
+        public Guid ClientId { get; set; }
         public Currency Currency { get; set; }
         public decimal SubTotal { get; set; }
         public decimal Taxes { get; set; }
@@ -42,7 +43,7 @@ public static class RegisterInvoice
 
         public Task<Result> Handle(Command command)
         {
-            var invoice = new Invoice(command.InvoiceId, command.SubTotal, command.Taxes, command.Currency, command.CreatedAt);
+            var invoice = new Invoice(command.InvoiceId, command.ClientId, command.SubTotal, command.Taxes, command.Currency, command.CreatedAt);
 
             _context.Set<Invoice>().Add(invoice);
 

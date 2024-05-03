@@ -7,7 +7,7 @@ public class EditWorkItemTests : BaseTest
     [Fact]
     public async Task edit_should_be_ok()
     {
-        var (result, _) = await _appDsl.RegisterProforma(_appDsl.Clock.Now.DateTime, clientSetup: c =>
+        var (result, _, _, _) = await _appDsl.RegisterProforma(_appDsl.Clock.Now.DateTime, clientSetup: c =>
         {
             c.AdministrativeExpensesPercentage = 1;
             c.TaxesExpensesPercentage = 1;
