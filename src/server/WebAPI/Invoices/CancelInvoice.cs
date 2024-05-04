@@ -55,7 +55,6 @@ public static class CancelInvoice
     [FromServices] TransactionBehavior behavior,
     [FromServices] Handler handler,
     [FromServices] ListProformaToInvoiceProcessItems.Runner listProformaToInvoiceProcessItemsRunner,
-    [FromServices] MarkProformaAsIssued.Handler markProformaAsIssuedHandler,
     [FromRoute] Guid invoiceId,
     [FromServices] IClock clock,
     [FromBody] Command command)
@@ -71,11 +70,6 @@ public static class CancelInvoice
             await handler.Handle(command);
 
             var result = await listProformaToInvoiceProcessItemsRunner.Run(new ListProformaToInvoiceProcessItems.Query() { InvoiceId = invoiceId, PageSize = 100 });
-
-            foreach (var item in result.Items)
-            {
-                await markProformaAsIssuedHandler.Handle(new MarkProformaAsIssued.Command() { ProformaId = item.ProformaId });
-            }
         });
 
         return TypedResults.Ok();
@@ -87,7 +81,6 @@ public static class CancelInvoice
     [FromServices] GetInvoice.Runner getInvoiceRunner,
     [FromServices] ListProformaToInvoiceProcessItems.Runner listProformaToInvoiceProcessItems,
     [FromServices] ListProformaToInvoiceProcessItems.Runner listProformaToInvoiceProcessItemsRunner,
-    [FromServices] MarkProformaAsIssued.Handler markProformaAsIssuedHandler,
     [FromServices] IClock clock,
     HttpContext context,
     Guid invoiceId)
@@ -98,7 +91,7 @@ public static class CancelInvoice
             CanceledAt = clock.Now
         };
 
-        await Handle(behavior, handler, listProformaToInvoiceProcessItemsRunner, markProformaAsIssuedHandler, invoiceId, clock, command);
+        await Handle(behavior, handler, listProformaToInvoiceProcessItemsRunner, invoiceId, clock, command);
 
         context.Response.Headers.TriggerShowSuccessMessage($"The invoice {command.InvoiceId} was cancel successfully");
 

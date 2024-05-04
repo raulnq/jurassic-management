@@ -10,22 +10,20 @@ public class StartInvoiceToCollectionProcessTests : BaseTest
     {
         var today = _appDsl.Clock.Now.DateTime;
 
-        var (proformaResult, proformaCommand, clientResult) = await _appDsl.IssuedProforma(today);
+        var (proformaResult, proformaCommand, clientResult, _) = await _appDsl.IssueProforma(today);
 
-        var invoice = await _appDsl.IssuedInvoice(proformaResult.ProformaId, clientResult.ClientId, proformaCommand.Currency, today);
+        var invoice = await _appDsl.IssueInvoice(proformaResult.ProformaId, clientResult.ClientId, proformaCommand.Currency, today);
 
         await _appDsl.InvoiceToCollectionProcess.Start(c =>
         {
             c.InvoiceId = new[] { invoice.InvoiceId };
         });
-
-        await _appDsl.Proformas.ShouldBe(proformaResult.ProformaId, ProformaStatus.Invoiced);
     }
 
     [Fact]
     public async Task start_should_throw_an_error_when_invoice_not_issue()
     {
-        var (proformaResult, proformaCommand, clientResult) = await _appDsl.IssuedProforma(_appDsl.Clock.Now.DateTime);
+        var (proformaResult, proformaCommand, clientResult, _) = await _appDsl.IssueProforma(_appDsl.Clock.Now.DateTime);
 
         var (_, start) = await _appDsl.ProformaToInvoiceProcess.Start(c =>
         {

@@ -22,7 +22,9 @@ public static class Endpoints
 
     public const string ListWorkItems = "/ui/proformas/{proformaId}/weeks/{week}/work-items/list";
 
-    public const string Search = "/ui/proformas/search";
+    public const string SearchNotAddedToInvoice = "/ui/proformas/search-not-added-to-invoice";
+
+    public const string SearchNotAddedToCollaboratorPayment = "/ui/proformas/search-not-added-to-collaborator-payment";
 
     public static string GetView(Guid proformaId)
     {
@@ -128,6 +130,8 @@ public static class Endpoints
 
         uigroup.MapDelete("/{proformaId:guid}/weeks/{week:int}/work-items/{collaboratorId:guid}/remove", Proformas.RemoveWorkItem.HandleAction);
 
-        uigroup.MapGet("/search", SearchProformas.HandlePage);
+        uigroup.MapGet("/search-not-added-to-invoice", SearchProformasNotAddedToInvoice.HandlePage);
+
+        uigroup.MapGet("/search-not-added-to-collaborator-payment", SearchProformasNotAddedToCollaboratorPayment.HandlePage);
     }
 }

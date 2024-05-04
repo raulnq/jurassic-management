@@ -14,9 +14,9 @@ public static class ServiceCollectionExtensions
 
         services.AddTransient<PayCollaboratorPayment.Handler>();
 
-        //services.AddTransient<ListInvoices.Runner>();
+        services.AddTransient<ListCollaboratorPayments.Runner>();
 
-        //services.AddTransient<GetInvoice.Runner>();
+        services.AddTransient<GetCollaboratorPayment.Runner>();
 
         var connectionString = configuration["AzureStorageConnectionString"];
 

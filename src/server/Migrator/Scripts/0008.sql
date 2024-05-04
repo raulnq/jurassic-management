@@ -1,6 +1,8 @@
 ﻿CREATE TABLE $schema$.[ProformaToCollaboratorPaymentProcesses] (
     [CollaboratorPaymentId] UNIQUEIDENTIFIER NOT NULL,
     [CreatedAt] datetimeoffset NOT NULL,
+    [CollaboratorId] UNIQUEIDENTIFIER NOT NULL, 
+    [Currency] nvarchar(50) NOT NULL,
     CONSTRAINT [PK_ProformaToCollaboratorPaymentProcesses] PRIMARY KEY ([CollaboratorPaymentId]),
 );
 
@@ -20,9 +22,8 @@ GO
 
 CREATE TABLE $schema$.[CollaboratorPayments] (
     [CollaboratorPaymentId] UNIQUEIDENTIFIER NOT NULL,
-    [ProformaId] UNIQUEIDENTIFIER NOT NULL, 
-    [Week] int NOT NULL, 
     [CollaboratorId] UNIQUEIDENTIFIER NOT NULL, 
+    [Number] nvarchar(50) NULL,
     [Status] nvarchar(50) NOT NULL,
     [GrossSalary] decimal(19,4) NOT NULL, 
     [NetSalary] decimal(19,4) NOT NULL, 
@@ -30,8 +31,22 @@ CREATE TABLE $schema$.[CollaboratorPayments] (
     [Withholding] decimal(19,4) NOT NULL, 
     [CreatedAt] datetimeoffset NOT NULL,
     [PaidAt] date NULL,
+    [CanceledAt] datetimeoffset NULL,
     [DocumentUrl] nvarchar(500) NULL,
     [ConfirmedAt] date NULL,
     [Currency] nvarchar(50) NOT NULL,
     CONSTRAINT [PK_CollaboratorPayments] PRIMARY KEY ([CollaboratorPaymentId]),
+    CONSTRAINT [FK_CollaboratorPayments_Collaborators_CollaboratorId] FOREIGN KEY ([CollaboratorId]) REFERENCES $schema$.[Collaborators] ([CollaboratorId]) ON DELETE CASCADE,
 );
+
+GO
+
+CREATE VIEW $schema$.[VwNotAddedToCollaboratorPaymentProformas]
+AS
+  SELECT p.Status, p.Currency, p.Number, p.ProjectId, w.Start, w.[End], pi.*
+  FROM $schema$.[ProformaWeekWorkItems] pi
+  JOIN $schema$.[ProformaWeeks] w on pi.ProformaId=w.ProformaId and pi.Week=w.Week
+  JOIN $schema$.[Proformas] p on p.ProformaId=pi.ProformaId
+  LEFT JOIN $schema$.ProformaToCollaboratorPaymentProcessItems c on c.ProformaId = pi.ProformaId and c.Week=pi.Week and c.CollaboratorId=pi.CollaboratorId
+  LEFT JOIN $schema$.CollaboratorPayments i on (i.CollaboratorId = c.CollaboratorId and i.Status!='Canceled')
+  where i.CollaboratorPaymentId is null

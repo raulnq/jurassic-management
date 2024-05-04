@@ -7,8 +7,7 @@ public enum InvoiceStatus
 {
     Pending = 0,
     Issued = 1,
-    Collected = 2,
-    Cancel = 3
+    Canceled = 2
 }
 
 public class Invoice
@@ -53,16 +52,10 @@ public class Invoice
         Number = number;
     }
 
-    public void MarkAsCollected()
-    {
-        EnsureStatus(InvoiceStatus.Issued);
-        Status = InvoiceStatus.Collected;
-    }
-
     public void Cancel(DateTimeOffset canceledAt)
     {
         EnsureStatus(InvoiceStatus.Pending);
-        Status = InvoiceStatus.Cancel;
+        Status = InvoiceStatus.Canceled;
         CanceledAt = canceledAt;
     }
 

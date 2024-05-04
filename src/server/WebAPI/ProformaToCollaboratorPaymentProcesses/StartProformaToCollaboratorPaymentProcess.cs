@@ -4,9 +4,14 @@ using MassTransit;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
+using WebAPI.Clients;
 using WebAPI.CollaboratorPayments;
+using WebAPI.Collaborators;
 using WebAPI.Infrastructure.EntityFramework;
+using WebAPI.Infrastructure.Ui;
+using WebAPI.Invoices;
 using WebAPI.Proformas;
+using WebAPI.ProformaToInvoiceProcesses;
 
 namespace WebAPI.ProformaToCollaboratorPaymentProcesses;
 
@@ -14,6 +19,8 @@ public static class StartProformaToCollaboratorPaymentProcess
 {
     public class Command
     {
+        public Guid CollaboratorId { get; set; }
+        public Currency Currency { get; set; }
         public IEnumerable<Guid>? ProformaId { get; set; }
         [JsonIgnore]
         public IEnumerable<ListProformaWeekWorkItems.Result>? ProformaWeekWorkItems { get; set; }
@@ -45,7 +52,7 @@ public static class StartProformaToCollaboratorPaymentProcess
 
         public Task<Result> Handle(Command command)
         {
-            var process = new ProformaToCollaboratorPaymentProcess(NewId.Next().ToSequentialGuid(), command.ProformaWeekWorkItems!.Select(p => (p.ProformaId, p.Week, p.CollaboratorId, p.Status!.ToEnum<ProformaStatus>())), command.CreatedAt);
+            var process = new ProformaToCollaboratorPaymentProcess(NewId.Next().ToSequentialGuid(), command.CollaboratorId, command.Currency, command.ProformaWeekWorkItems!.Select(p => (p.ProformaId, p.Week, p.CollaboratorId, p.Status!.ToEnum<ProformaStatus>())), command.CreatedAt);
 
             _context.Set<ProformaToCollaboratorPaymentProcess>().Add(process);
 
@@ -72,26 +79,20 @@ public static class StartProformaToCollaboratorPaymentProcess
 
         command.ProformaWeekWorkItems = proformaWeekWorkItems.Items;
 
-        //TODO: Todas los items de la proforma tienen que ser de la misma moneda
-
-        var currency = proformaWeekWorkItems.Items.First().Currency;
-
         var result = await behavior.Handle(async () =>
         {
             var result = await handler.Handle(command);
 
-            foreach (var collaborator in proformaWeekWorkItems.Items.GroupBy(i => new { i.ProformaId, i.Week, i.CollaboratorId }))
+            foreach (var collaborator in proformaWeekWorkItems.Items.GroupBy(i => new { i.CollaboratorId }))
             {
                 await registerCollaboratorPaymentHandler.Handle(new RegisterCollaboratorPayment.Command()
                 {
                     CollaboratorPaymentId = result.CollaboratorPaymentId,
                     CollaboratorId = collaborator.Key.CollaboratorId,
-                    Week = collaborator.Key.Week,
-                    ProformaId = collaborator.Key.ProformaId,
                     CreatedAt = command.CreatedAt,
                     GrossSalary = collaborator.Sum(i => i.SubTotal - i.ProfitAmount),
                     WithholdingPercentage = collaborator.Average(i => i.WithholdingPercentage),
-                    Currency = currency.ToEnum<Currency>()
+                    Currency = command.Currency
                 });
             }
 
@@ -99,5 +100,33 @@ public static class StartProformaToCollaboratorPaymentProcess
         });
 
         return TypedResults.Ok(result);
+    }
+
+    public static async Task<RazorComponentResult> HandlePage(
+    [FromServices] SearchCollaborators.Runner runner)
+    {
+        var result = await runner.Run(new SearchCollaborators.Query() { });
+
+        return new RazorComponentResult<StartProformaToCollaboratorPaymentProcessPage>(new
+        {
+            Collaborators = result
+        });
+    }
+
+    public static async Task<RazorComponentResult> HandleAction(
+    [FromServices] TransactionBehavior behavior,
+    [FromServices] Handler handler,
+    [FromServices] RegisterCollaboratorPayment.Handler registerCollaboratorPaymentHandler,
+    [FromServices] ListProformaWeekWorkItems.Runner listProformaWeekWorkItemsHandler,
+    [FromServices] ListCollaboratorPayments.Runner listCollaboratorPaymentsRunner,
+    [FromBody] Command command,
+    [FromServices] IClock clock,
+    HttpContext context)
+    {
+        var register = await Handle(behavior, handler, registerCollaboratorPaymentHandler, listProformaWeekWorkItemsHandler, clock, command);
+
+        context.Response.Headers.TriggerShowRegisterSuccessMessage($"collaborator payment", register.Value!.CollaboratorPaymentId);
+
+        return await ListCollaboratorPayments.HandlePage(new ListCollaboratorPayments.Query() { }, listCollaboratorPaymentsRunner);
     }
 }

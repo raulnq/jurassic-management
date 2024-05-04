@@ -2,8 +2,8 @@
 @using WebAPI.Infrastructure.Ui;
 @using WebAPI.Proformas
 
-<Heading Text="Invoices" />
-<Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new("List invoices",WebAPI.Invoices.Endpoints.List.AddListParameters()), new("Register invoice") })
+<Heading Text="Collaborator Payments" />
+<Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new("List collaborator payments",WebAPI.CollaboratorPayments.Endpoints.List.AddListParameters()), new("Register collaborator payment") })
              Target=@(Infrastructure.Ui.Targets.Workspace) />
 <Section>
     <Content>
@@ -12,18 +12,18 @@
                 <FormRow>
                     <Content>
                         <div class="col-6">
-                            <SelectInput Property=@nameof(StartProformaToInvoiceProcess.Command.ClientId)
-                                         Label="Client"
-                                         HtmxProps=@(new HtmxProps(@WebAPI.Proformas.Endpoints.SearchNotAddedToInvoice, $"#{nameof(StartProformaToInvoiceProcess.Command.ProformaId)}"){Include=$"#{nameof(StartProformaToInvoiceProcess.Command.Currency)}"})
-                                         Source=@Clients.ToDictionary(c=>c.ClientId, c=>c.Name)
+                            <SelectInput Property=@nameof(StartProformaToCollaboratorPaymentProcess.Command.CollaboratorId)
+                                         Label="Collaborator"
+                                         HtmxProps=@(new HtmxProps(@WebAPI.Proformas.Endpoints.SearchNotAddedToCollaboratorPayment, $"#{nameof(StartProformaToCollaboratorPaymentProcess.Command.ProformaId)}"){Include=$"#{nameof(StartProformaToCollaboratorPaymentProcess.Command.Currency)}"})
+                                         Source=@Collaborators.ToDictionary(c=>c.CollaboratorId, c=>c.Name)
                                          Required=true>
                             </SelectInput>
                         </div>
                         <div class="col-6">
-                            <SelectInput Property=@nameof(StartProformaToInvoiceProcess.Command.Currency)
+                            <SelectInput Property=@nameof(StartProformaToCollaboratorPaymentProcess.Command.Currency)
                                          Label="Currency"
                                          Source=@(Enum.GetValues<Currency>().ToDictionary(i=>i.ToString(), i=>i.ToString()))
-                                         HtmxProps=@(new HtmxProps(@WebAPI.Proformas.Endpoints.SearchNotAddedToInvoice, $"#{nameof(StartProformaToInvoiceProcess.Command.ProformaId)}"){Include=$"#{nameof(StartProformaToInvoiceProcess.Command.ClientId)}"})
+                                         HtmxProps=@(new HtmxProps(@WebAPI.Proformas.Endpoints.SearchNotAddedToCollaboratorPayment, $"#{nameof(StartProformaToCollaboratorPaymentProcess.Command.ProformaId)}"){Include=$"#{nameof(StartProformaToCollaboratorPaymentProcess.Command.CollaboratorId)}"})
                                          Required=true>
                             </SelectInput>
                         </div>
@@ -32,7 +32,7 @@
                 <FormRow>
                     <Content>
                         <div class="col">
-                            <SelectInput Property=@(nameof(StartProformaToInvoiceProcess.Command.ProformaId))
+                            <SelectInput Property=@(nameof(StartProformaToCollaboratorPaymentProcess.Command.ProformaId))
                                          Label="Proformas"
                                          Required=true
                                          Multiple=true
@@ -48,5 +48,5 @@
 
 @code {
     [Parameter, EditorRequired]
-    public List<WebAPI.Clients.SearchClients.Result> Clients { get; set; } = default!;
+    public List<WebAPI.Collaborators.SearchCollaborators.Result> Collaborators { get; set; } = default!;
 }

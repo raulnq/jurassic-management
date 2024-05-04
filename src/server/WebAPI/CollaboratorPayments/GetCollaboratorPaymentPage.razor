@@ -1,0 +1,125 @@
+﻿@using WebAPI.Clients
+@using WebAPI.Invoices
+@using WebAPI.ProformaToCollaboratorPaymentProcesses
+@using WebAPI.ProformaToInvoiceProcesses
+@using WebAPI.Proformas;
+@using WebAPI.Infrastructure.SqlKata;
+@using WebAPI.Infrastructure.Ui;
+
+<Heading Text="Collaborator Payments" />
+<Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new("List collaborator payments", Endpoints.List.AddListParameters()), new("Edit collaborator payment") })
+             Target=@(Infrastructure.Ui.Targets.Workspace)>
+    <MenuItems>
+        <MenuItem Text="Upload document"
+                  IsDisabled=@(Result.Status!=CollaboratorPaymentStatus.Pending.ToString())
+                  HtmxProps=@(new HtmxProps(Endpoints.GetUpload(Result.CollaboratorPaymentId), Infrastructure.Ui.Targets.Dialog)) />
+        <MenuItem Text="Issue"
+                  IsDisabled=@(Result.Status!=CollaboratorPaymentStatus.Pending.ToString())
+                  HtmxProps=@(new HtmxProps(Endpoints.GetIssue(Result.CollaboratorPaymentId), Infrastructure.Ui.Targets.Dialog)) />
+        <MenuItem HtmxProps=@(new HtmxProps(Endpoints.GetCancel(Result.CollaboratorPaymentId), Infrastructure.Ui.Targets.Workspace){ Confirm = "Are you sure?", HttpMethod="POST"})
+                  IsDisabled=@(Result.Status !=CollaboratorPaymentStatus.Pending.ToString())
+                  Text="Cancel" />
+    </MenuItems>
+</Breadcrumbs>
+<Toolbar>
+    <Actions>
+        <Divider />
+        <Link Property=@nameof(GetCollaboratorPayment.Result.DocumentUrl)
+              Value="View"
+              Href=@Result.DocumentUrl
+              IsDisabled=@(string.IsNullOrEmpty(Result.DocumentUrl))
+              Label="PDF" />
+        <Divider />
+        <Text Property=@nameof(GetCollaboratorPayment.Result.Status)
+              Value=@Result.Status
+              Label="Status" />
+        <Divider />
+    </Actions>
+</Toolbar>
+<Section>
+    <Content>
+        <FormRow>
+            <Content>
+                <div class="col-8">
+                    <SelectInput Property=@nameof(GetCollaboratorPayment.Result.CollaboratorName)
+                                 Label="Collaborator"
+                                 TKey=Guid
+                                 Value=@Result.CollaboratorName
+                                 Readonly=true>
+                    </SelectInput>
+                </div>
+                <div class="col-4">
+                    <SelectInput Property=@nameof(GetCollaboratorPayment.Result.Currency)
+                                 Label="Currency"
+                                 TKey=int
+                                 Value=@Result.Currency
+                                 Readonly=true>
+                    </SelectInput>
+                </div>
+            </Content>
+        </FormRow>
+        <FormRow>
+            <Content>
+                <div class="col-4">
+                    <TextInput Property=@nameof(GetCollaboratorPayment.Result.Number)
+                               Label="Number"
+                               Value=@Result.Number
+                               Readonly=true>
+                    </TextInput>
+                </div>
+                <div class="col-4">
+                    <DateInput Property=@nameof(GetCollaboratorPayment.Result.PaidAt)
+                               Label="Paid at"
+                               Value=@Result.PaidAt
+                               Readonly=true />
+                </div>
+                <div class="col-4">
+                    <DateInput Property=@nameof(GetCollaboratorPayment.Result.CreatedAt)
+                               Label="Created at"
+                               Value=@Result.CreatedAt
+                               Readonly=true />
+                </div>
+            </Content>
+        </FormRow>
+        <FormRow>
+            <Content>
+                <div class="col-4">
+                    <NumberInput Property=@nameof(GetCollaboratorPayment.Result.GrossSalary)
+                                 Label="Gross Salary"
+                                 Prefix="$"
+                                 Value=@Result.GrossSalary
+                                 Readonly=true />
+                </div>
+                <div class="col-4">
+                    <NumberInput Property=@nameof(GetCollaboratorPayment.Result.Withholding)
+                                 Label="Withholding"
+                                 Prefix="-$"
+                                 Value=@Result.Withholding
+                                 Readonly=true />
+                </div>
+                <div class="col-4">
+                    <NumberInput Property=@nameof(GetCollaboratorPayment.Result.NetSalary)
+                                 Label="Commission"
+                                 Prefix="=$"
+                                 Value=@Result.NetSalary
+                                 Readonly=true />
+                </div>
+            </Content>
+        </FormRow>
+    </Content>
+</Section>
+<Section Title="Proformas">
+    <Content>
+        <ListProformaToCollaboratorPaymentProcessItemsPage Query=@ListProformaToCollaboratorPaymentProcessItemsQuery
+                                                           Result=@ListProformaToCollaboratorPaymentProcessItemsResult />
+    </Content>
+</Section>
+
+@code {
+    [Parameter, EditorRequired]
+    public GetCollaboratorPayment.Result Result { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public ListResults<ListProformaToCollaboratorPaymentProcessItems.Result> ListProformaToCollaboratorPaymentProcessItemsResult { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public ListProformaToCollaboratorPaymentProcessItems.Query ListProformaToCollaboratorPaymentProcessItemsQuery { get; set; } = default!;
+}

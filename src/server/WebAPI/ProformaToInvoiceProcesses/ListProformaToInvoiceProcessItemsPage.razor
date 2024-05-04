@@ -2,7 +2,7 @@
 @using WebAPI.Infrastructure.Ui;
 @using WebAPI.Proformas;
 
-<div id=@Targets.ProcessItemsWeekList>
+<div id=@Targets.ProcessItemsList>
     <DataTable TResult=ListProformaToInvoiceProcessItems.Result
                Result=@Result
                Context="item">
@@ -25,7 +25,7 @@
     </DataTable>
     <Pagination Query=@Query
                 Result=@Result
-                HtmxProps=@(new HtmxProps(Endpoints.GetListItems(Query.InvoiceId!.Value), $"#{Targets.ProcessItemsWeekList}", Swap.OuterHTML)) />
+                HtmxProps=@(new HtmxProps(Endpoints.GetListItems(Query.InvoiceId!.Value), $"#{Targets.ProcessItemsList}", Swap.OuterHTML)) />
 </div>
 
 @code {

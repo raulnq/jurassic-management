@@ -13,7 +13,9 @@ using Tests.ProformaToCollaboratorPaymentProcesses;
 using Tests.ProformaToInvoiceProcesses;
 using Tests.Projects;
 using WebAPI.Clients;
+using WebAPI.Collaborators;
 using WebAPI.Proformas;
+using WebAPI.ProformaToCollaboratorPaymentProcesses;
 using WebAPI.ProformaToInvoiceProcesses;
 
 namespace Tests;
@@ -107,11 +109,11 @@ public class AppDsl : IAsyncDisposable
         return (result!, clientCommand, command, client!);
     }
 
-    public async Task<(RegisterProforma.Result, RegisterProforma.Command, RegisterClient.Result)> RegisterProformaReadyToIssue(DateTime start, int days = 6)
+    public async Task<(RegisterProforma.Result, RegisterProforma.Command, RegisterClient.Result, RegisterCollaborator.Result)> RegisterProformaReadyToIssue(DateTime start, int days = 6)
     {
         var (proformaResult, clientCommand, proformaCommand, clientResult) = await RegisterProforma(start, days);
 
-        var (_, collaborator) = await Collaborator.Register();
+        var (_, collaboratorResult) = await Collaborator.Register();
 
         var (_, collaboratorRole) = await CollaboratorRole.Register();
 
@@ -123,19 +125,19 @@ public class AppDsl : IAsyncDisposable
             {
                 c.ProformaId = proformaResult!.ProformaId;
                 c.Week = i;
-                c.CollaboratorId = collaborator!.CollaboratorId;
+                c.CollaboratorId = collaboratorResult!.CollaboratorId;
                 c.CollaboratorRoleId = collaboratorRole!.CollaboratorRoleId;
                 c.Hours = clientCommand.PenaltyMinimumHours;
                 c.FreeHours = 0;
             });
         }
 
-        return (proformaResult, proformaCommand, clientResult);
+        return (proformaResult, proformaCommand, clientResult, collaboratorResult!);
     }
 
-    public async Task<(RegisterProforma.Result, RegisterProforma.Command, RegisterClient.Result)> IssuedProforma(DateTime start, int days = 6)
+    public async Task<(RegisterProforma.Result, RegisterProforma.Command, RegisterClient.Result, RegisterCollaborator.Result)> IssueProforma(DateTime start, int days = 6)
     {
-        var (proformaResult, proformaCommand, clientResult) = await RegisterProformaReadyToIssue(start, days);
+        var (proformaResult, proformaCommand, clientResult, collaboratorResult) = await RegisterProformaReadyToIssue(start, days);
 
         await Proformas.Issue(c =>
         {
@@ -143,10 +145,52 @@ public class AppDsl : IAsyncDisposable
             c.IssueAt = start.AddDays(days + 1);
         });
 
-        return (proformaResult, proformaCommand, clientResult);
+        return (proformaResult, proformaCommand, clientResult, collaboratorResult);
     }
 
-    public async Task<StartProformaToInvoiceProcess.Result> IssuedInvoice(Guid proformaId, Guid clientId, Currency currency, DateTime today)
+    public async Task<StartProformaToInvoiceProcess.Result> RegisterInvoice(Guid proformaId, Guid clientId, Currency currency)
+    {
+        var (_, start) = await ProformaToInvoiceProcess.Start(c =>
+        {
+            c.Currency = currency;
+            c.ClientId = clientId;
+            c.ProformaId = new[] { proformaId };
+        });
+
+        return start!;
+    }
+
+    public async Task<StartProformaToCollaboratorPaymentProcess.Result> RegisterCollaboratorPayment(Guid proformaId, Guid collaboratorId, Currency currency)
+    {
+        var (_, start) = await ProformaToCollaboratorPaymentProcess.Start(c =>
+        {
+            c.Currency = currency;
+            c.CollaboratorId = collaboratorId;
+            c.ProformaId = new[] { proformaId };
+        });
+
+        return start;
+    }
+
+    public async Task<StartProformaToCollaboratorPaymentProcess.Result> PayCollaboratorPayment(Guid proformaId, Guid collaboratorId, Currency currency, DateTime today)
+    {
+        var (_, start) = await ProformaToCollaboratorPaymentProcess.Start(c =>
+        {
+            c.Currency = currency;
+            c.CollaboratorId = collaboratorId;
+            c.ProformaId = new[] { proformaId };
+        });
+
+        await CollaboratorPayment.Pay(c =>
+        {
+            c.CollaboratorPaymentId = start!.CollaboratorPaymentId;
+            c.PaidAt = today.AddDays(1);
+        });
+
+        return start;
+    }
+
+    public async Task<StartProformaToInvoiceProcess.Result> IssueInvoice(Guid proformaId, Guid clientId, Currency currency, DateTime today)
     {
         var (_, start) = await ProformaToInvoiceProcess.Start(c =>
         {

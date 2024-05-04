@@ -13,6 +13,7 @@ public static class ConfirmCollaboratorPayment
     {
         [JsonIgnore]
         public Guid CollaboratorPaymentId { get; set; }
+        public string Number { get; set; } = default!;
         public DateTime ConfirmedAt { get; set; }
     }
 
@@ -21,6 +22,7 @@ public static class ConfirmCollaboratorPayment
         public Validator()
         {
             RuleFor(command => command.CollaboratorPaymentId).NotEmpty();
+            RuleFor(command => command.Number).NotEmpty().MaximumLength(50);
         }
     }
 
@@ -37,7 +39,7 @@ public static class ConfirmCollaboratorPayment
         {
             var payment = await _context.Get<CollaboratorPayment>(command.CollaboratorPaymentId);
 
-            payment.Confirm(command.ConfirmedAt);
+            payment.Confirm(command.ConfirmedAt, command.Number);
         }
     }
 

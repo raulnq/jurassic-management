@@ -54,7 +54,8 @@ public class CollaboratorPaymentDsl
     public async Task<ConfirmCollaboratorPayment.Command> Confirm(Action<ConfirmCollaboratorPayment.Command>? setup = null, string? errorDetail = null, IDictionary<string, string[]>? errors = null)
     {
         var faker = new Faker<ConfirmCollaboratorPayment.Command>()
-            ;
+            .RuleFor(command => command.Number, faker => faker.Random.Guid().ToString());
+
         var request = faker.Generate();
 
         setup?.Invoke(request);

@@ -2,10 +2,10 @@
 
 namespace Tests.Invoices;
 
-public class IssueInvoiceTests : BaseTest
+public class CancelInvoiceTests : BaseTest
 {
     [Fact]
-    public async Task issue_should_be_ok()
+    public async Task cancel_should_be_ok()
     {
         var today = _appDsl.Clock.Now.DateTime;
 
@@ -13,12 +13,9 @@ public class IssueInvoiceTests : BaseTest
 
         var start = await _appDsl.RegisterInvoice(proformaResult.ProformaId, clientResult.ClientId, proformaCommand.Currency);
 
-        await _appDsl.Invoice.Upload("blank.pdf", c => c.InvoiceId = start!.InvoiceId);
-
-        await _appDsl.Invoice.Issue(c =>
+        await _appDsl.Invoice.Cancel(c =>
         {
             c.InvoiceId = start!.InvoiceId;
-            c.IssueAt = today.AddDays(1);
         });
 
     }

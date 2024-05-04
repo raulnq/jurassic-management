@@ -34,3 +34,13 @@ CREATE TABLE $schema$.[Invoices] (
     CONSTRAINT [PK_Invoices] PRIMARY KEY ([InvoiceId]),
     CONSTRAINT [FK_Invoices_Clients_ClientId] FOREIGN KEY ([ClientId]) REFERENCES $schema$.[Clients] ([ClientId]) ON DELETE CASCADE
 );
+
+GO
+
+CREATE VIEW $schema$.[VwNotAddedToInvoiceProformas]
+AS
+  SELECT p.*
+  FROM $schema$.[Proformas] p
+  LEFT JOIN $schema$.ProformaToInvoiceProcessItems c on c.ProformaId = p.ProformaId
+  LEFT JOIN $schema$.Invoices i on (i.InvoiceId = c.InvoiceId and i.Status!='Canceled')
+  where i.InvoiceId is null

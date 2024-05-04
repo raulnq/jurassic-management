@@ -1,4 +1,4 @@
-﻿namespace WebAPI.ProformaToInvoiceProcesses;
+﻿namespace WebAPI.ProformaToCollaboratorPaymentProcesses;
 
 public static class Targets
 {

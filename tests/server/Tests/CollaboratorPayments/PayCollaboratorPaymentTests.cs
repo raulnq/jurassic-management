@@ -9,12 +9,11 @@ public class PayCollaboratorPaymentTests : BaseTest
     {
         var today = _appDsl.Clock.Now.DateTime;
 
-        var (proformaResult, proformaCommand, clientResult) = await _appDsl.IssuedProforma(_appDsl.Clock.Now.DateTime);
+        var (proformaResult, proformaCommand, clientResult, collaboratorResult) = await _appDsl.IssueProforma(_appDsl.Clock.Now.DateTime);
 
-        var (_, start) = await _appDsl.ProformaToCollaboratorPaymentProcess.Start(c =>
-        {
-            c.ProformaId = new[] { proformaResult.ProformaId };
-        });
+        await _appDsl.RegisterInvoice(proformaResult.ProformaId, clientResult.ClientId, proformaCommand.Currency);
+
+        var start = await _appDsl.RegisterCollaboratorPayment(proformaResult.ProformaId, collaboratorResult.CollaboratorId, proformaCommand.Currency);
 
         await _appDsl.CollaboratorPayment.Pay(c =>
         {

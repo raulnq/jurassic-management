@@ -12,6 +12,7 @@ public static class ListProformaWeekWorkItems
     public class Query : ListQuery
     {
         public Guid? ProformaId { get; set; }
+        public Guid? CollaboratorId { get; set; }
         public int? Week { get; set; }
         public IEnumerable<Guid>? ListOfProformaId { get; set; }
     }
@@ -56,6 +57,12 @@ public static class ListProformaWeekWorkItems
                 {
                     statement = statement
                         .Where(Tables.ProformaWeekWorkItems.Field(nameof(ProformaWeekWorkItem.ProformaId)), query.ProformaId);
+                }
+
+                if (query.CollaboratorId.HasValue)
+                {
+                    statement = statement
+                        .Where(Tables.ProformaWeekWorkItems.Field(nameof(ProformaWeekWorkItem.CollaboratorId)), query.CollaboratorId);
                 }
 
                 if (query.Week.HasValue)

@@ -65,7 +65,6 @@ public static class StartProformaToInvoiceProcess
     [FromServices] Handler handler,
     [FromServices] RegisterInvoice.Handler registerInvoiceHandler,
     [FromServices] ListProformas.Runner listProformasHandler,
-    [FromServices] MarkProformaAsInvoiced.Handler markProformaAsInvoicedHandler,
     [FromServices] IClock clock,
     [FromBody] Command command)
     {
@@ -93,11 +92,6 @@ public static class StartProformaToInvoiceProcess
                 ClientId = command.ClientId,
             });
 
-            foreach (var proforma in command.Proformas)
-            {
-                await markProformaAsInvoicedHandler.Handle(new MarkProformaAsInvoiced.Command() { ProformaId = proforma.ProformaId });
-            }
-
             return result;
         });
 
@@ -120,13 +114,12 @@ public static class StartProformaToInvoiceProcess
     [FromServices] Handler handler,
     [FromServices] ListProformas.Runner listProformasRunner,
     [FromServices] RegisterInvoice.Handler registerInvoiceHandler,
-    [FromServices] MarkProformaAsInvoiced.Handler markProformaAsInvoicedHandler,
     [FromServices] ListInvoices.Runner listInvoicesRunner,
     [FromBody] Command command,
     [FromServices] IClock clock,
     HttpContext context)
     {
-        var register = await Handle(behavior, handler, registerInvoiceHandler, listProformasRunner, markProformaAsInvoicedHandler, clock, command);
+        var register = await Handle(behavior, handler, registerInvoiceHandler, listProformasRunner, clock, command);
 
         context.Response.Headers.TriggerShowRegisterSuccessMessage($"invoice", register.Value!.InvoiceId);
 

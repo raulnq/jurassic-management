@@ -16,6 +16,10 @@ public static class Tables
 
     public static Table Proformas = new Table("Proformas");
 
+    public static Table VwNotAddedToInvoiceProformas = new Table("VwNotAddedToInvoiceProformas");
+
+    public static Table VwNotAddedToCollaboratorPaymentProformas = new Table("VwNotAddedToCollaboratorPaymentProformas");
+
     public static Table ProformaWeeks = new Table("ProformaWeeks");
 
     public static Table ProformaWeekWorkItems = new Table("ProformaWeekWorkItems");

@@ -28,13 +28,11 @@ public static partial class ServiceCollectionExtensions
 
         services.AddTransient<CountProformas.Runner>();
 
-        services.AddTransient<MarkProformaAsInvoiced.Handler>();
-
-        services.AddTransient<MarkProformaAsIssued.Handler>();
-
         services.AddTransient<CancelProforma.Handler>();
 
-        services.AddTransient<SearchProformas.Runner>();
+        services.AddTransient<SearchProformasNotAddedToInvoice.Runner>();
+
+        services.AddTransient<SearchProformasNotAddedToCollaboratorPayment.Runner>();
 
         return services;
     }

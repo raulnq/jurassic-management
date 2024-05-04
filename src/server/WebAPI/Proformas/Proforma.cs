@@ -8,8 +8,7 @@ public enum ProformaStatus
 {
     Pending = 0,
     Issued = 1,
-    Invoiced = 2,
-    Cancel = 3
+    Canceled = 2
 }
 
 public enum Currency
@@ -102,23 +101,11 @@ public class Proforma
         IssuedAt = issueAt;
     }
 
-    public void MarkAsIssued()
-    {
-        EnsureStatus(ProformaStatus.Invoiced);
-        Status = ProformaStatus.Issued;
-    }
-
     public void Cancel(DateTimeOffset canceledAt)
     {
         EnsureStatus(ProformaStatus.Pending);
-        Status = ProformaStatus.Cancel;
+        Status = ProformaStatus.Canceled;
         CanceledAt = canceledAt;
-    }
-
-    public void MarkAsInvoiced()
-    {
-        EnsureStatus(ProformaStatus.Issued);
-        Status = ProformaStatus.Invoiced;
     }
 
     private void EnsureIssueAtGreaterOrEqualThanEnd(DateTimeOffset issueAt)

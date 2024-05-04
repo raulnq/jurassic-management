@@ -1,0 +1,48 @@
+﻿@using WebAPI.Infrastructure.SqlKata;
+@using WebAPI.Infrastructure.Ui;
+@using WebAPI.Proformas;
+
+<div id=@Targets.ProcessItemsList>
+    <DataTable TResult=ListProformaToCollaboratorPaymentProcessItems.Result
+               Result=@Result
+               Context="item">
+        <TableHeader>
+            <th>ProformaId</th>
+            <th>Project Name</th>
+            <th>Proforma Number</th>
+            <th>Week</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Hours</th>
+            <th>Free Hours</th>
+            <th>Fee Amount</th>
+            <th>SubTotal</th>
+            <th>Profit Percentage</th>
+            <th>Profit Amount</th>
+        </TableHeader>
+        <RowTemplate>
+            <td>@item.ProformaId</td>
+            <td>@item.ProformaProjectName</td>
+            <td>@item.ProformaNumber</td>
+            <td>@item.Week</td>
+            <td>@item.ProformaWeekStart</td>
+            <td>@item.ProformaWeekEnd</td>
+            <td>@item.Hours</td>
+            <td>@item.FreeHours</td>
+            <td>@item.ProformaCurrency @item.FeeAmount</td>
+            <td>@item.ProformaCurrency @item.SubTotal</td>
+            <td>% @item.ProfitPercentage</td>
+            <td>@item.ProformaCurrency @item.ProfitAmount</td>
+        </RowTemplate>
+    </DataTable>
+    <Pagination Query=@Query
+                Result=@Result
+                HtmxProps=@(new HtmxProps(Endpoints.GetListItems(Query.CollaboratorPaymentId!.Value), $"#{Targets.ProcessItemsList}", Swap.OuterHTML)) />
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public ListResults<ListProformaToCollaboratorPaymentProcessItems.Result> Result { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public ListProformaToCollaboratorPaymentProcessItems.Query Query { get; set; } = default!;
+}
