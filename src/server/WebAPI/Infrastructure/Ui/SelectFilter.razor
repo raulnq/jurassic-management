@@ -9,7 +9,7 @@
         hx-target=@HtmxProps.Target
         hx-include=@HtmxProps.Include
         hx-select=@HtmxProps.Select>
-    <option value="" selected>@EmptyOption</option>
+    <option value=@(EmptyValue??"") selected>@EmptyLabel</option>
     @foreach (var item in Source)
     {
         <option value=@item.Key>@item.Value</option>
@@ -23,7 +23,9 @@
     [Parameter, EditorRequired]
     public string Property { get; set; } = default!;
     [Parameter]
-    public string EmptyOption { get; set; } = default!;
+    public string EmptyLabel { get; set; } = default!;
+    [Parameter]
+    public string EmptyValue { get; set; } = default!;
     [Parameter, EditorRequired]
     public ListQuery Query { get; set; } = default!;
     [Parameter]

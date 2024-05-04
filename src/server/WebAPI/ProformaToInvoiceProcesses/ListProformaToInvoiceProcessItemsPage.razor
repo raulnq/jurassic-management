@@ -7,20 +7,22 @@
                Result=@Result
                Context="item">
         <TableHeader>
-            <th>ProformaId</th>
             <th>Project</th>
+            <th>Proforma Number</th>
             <th>Start Date</th>
             <th>End Date</th>
-            <th>Number</th>
+            <th>SubTotal</th>
+            <th>Commission</th>
             <th>Total</th>
         </TableHeader>
         <RowTemplate>
-            <td>@item.ProformaId</td>
-            <td>@item.ProformaProjectName</td>
+            <td>@item.ProjectName</td>
+            <td>@item.ProformaNumber</td>
             <td>@item.ProformaStart</td>
             <td>@item.ProformaEnd</td>
-            <td>@item.ProformaNumber</td>
-            <td>@item.ProformaCurrency @item.ProformTotal</td>
+            <td>@item.ProformaCurrency @item.ProformaSubTotal</td>
+            <td>@item.ProformaCurrency @item.ProformaCommission</td>
+            <td>@item.ProformaCurrency @item.ProformaTotal</td>
         </RowTemplate>
     </DataTable>
     <Pagination Query=@Query

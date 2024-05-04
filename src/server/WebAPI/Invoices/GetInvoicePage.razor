@@ -39,7 +39,7 @@
     <Content>
         <FormRow>
             <Content>
-                <div class="col-8">
+                <div class="col-6">
                     <SelectInput Property=@nameof(GetInvoice.Result.ClientName)
                                  Label="Client"
                                  TKey=Guid
@@ -47,7 +47,14 @@
                                  Readonly=true>
                     </SelectInput>
                 </div>
-                <div class="col-4">
+                <div class="col-3">
+                    <TextInput Property=@nameof(GetInvoice.Result.Number)
+                               Label="Number"
+                               Value=@Result.Number
+                               Readonly=true>
+                    </TextInput>
+                </div>
+                <div class="col-3">
                     <SelectInput Property=@nameof(GetInvoice.Result.Currency)
                                  Label="Currency"
                                  TKey=int
@@ -60,47 +67,53 @@
         <FormRow>
             <Content>
                 <div class="col-4">
-                    <TextInput Property=@nameof(GetInvoice.Result.Number)
-                               Label="Number"
-                               Value=@Result.Number
-                               Readonly=true>
-                    </TextInput>
+                    <DateInput Property=@nameof(GetInvoice.Result.CreatedAt)
+                               Label="Created at"
+                               Value=@Result.CreatedAt
+                               Readonly=true />
                 </div>
                 <div class="col-4">
                     <DateInput Property=@nameof(GetInvoice.Result.IssueAt)
-                               Label="Issued At"
+                               Label="Issued at"
                                Value=@Result.IssueAt
                                Readonly=true />
                 </div>
                 <div class="col-4">
-                    <DateInput Property=@nameof(GetInvoice.Result.CreatedAt)
-                               Label="Created At"
-                               Value=@Result.CreatedAt
+                    <DateInput Property=@nameof(GetInvoice.Result.CanceledAt)
+                               Label="Canceled at"
+                               Value=@Result.CanceledAt
                                Readonly=true />
                 </div>
             </Content>
         </FormRow>
         <FormRow>
             <Content>
-                <div class="col-4">
+                <div class="col-3">
                     <NumberInput Property=@nameof(GetInvoice.Result.SubTotal)
                                  Label="SubTotal"
                                  Prefix="$"
                                  Value=@Result.SubTotal
                                  Readonly=true />
                 </div>
-                <div class="col-4">
+                <div class="col-3">
                     <NumberInput Property=@nameof(GetInvoice.Result.Taxes)
                                  Label="Commission"
                                  Prefix="+$"
                                  Value=@Result.Taxes
                                  Readonly=true />
                 </div>
-                <div class="col-4">
+                <div class="col-3">
                     <NumberInput Property=@nameof(GetInvoice.Result.Total)
                                  Label="Commission"
                                  Prefix="=$"
                                  Value=@Result.Total
+                                 Readonly=true />
+                </div>
+                <div class="col-3">
+                    <NumberInput Property=@nameof(GetInvoice.Result.ITF)
+                                 Label="ITF"
+                                 Prefix="$"
+                                 Value=@Result.ITF
                                  Readonly=true />
                 </div>
             </Content>

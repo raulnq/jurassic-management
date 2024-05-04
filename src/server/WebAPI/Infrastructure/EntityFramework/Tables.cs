@@ -28,6 +28,8 @@ public static class Tables
 
     public static Table ProformaToInvoiceProcessItems = new Table("ProformaToInvoiceProcessItems");
 
+    public static Table VwProformaToInvoiceProcessItems = new Table("VwProformaToInvoiceProcessItems");
+
     public static Table Invoices = new Table("Invoices");
 
     public static Table InvoiceToCollectionProcesses = new Table("InvoiceToCollectionProcesses");
@@ -42,4 +44,5 @@ public static class Tables
 
     public static Table ProformaToCollaboratorPaymentProcessItems = new Table("ProformaToCollaboratorPaymentProcessItems");
 
+    public static Table VwProformaToCollaboratorPaymentProcessItems = new Table("VwProformaToCollaboratorPaymentProcessItems");
 }

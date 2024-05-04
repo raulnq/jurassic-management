@@ -40,7 +40,7 @@
     <Content>
         <FormRow>
             <Content>
-                <div class="col-8">
+                <div class="col-6">
                     <SelectInput Property=@nameof(GetCollaboratorPayment.Result.CollaboratorName)
                                  Label="Collaborator"
                                  TKey=Guid
@@ -48,7 +48,14 @@
                                  Readonly=true>
                     </SelectInput>
                 </div>
-                <div class="col-4">
+                <div class="col-3">
+                    <TextInput Property=@nameof(GetCollaboratorPayment.Result.Number)
+                               Label="Number"
+                               Value=@Result.Number
+                               Readonly=true>
+                    </TextInput>
+                </div>
+                <div class="col-3">
                     <SelectInput Property=@nameof(GetCollaboratorPayment.Result.Currency)
                                  Label="Currency"
                                  TKey=int
@@ -60,48 +67,60 @@
         </FormRow>
         <FormRow>
             <Content>
-                <div class="col-4">
-                    <TextInput Property=@nameof(GetCollaboratorPayment.Result.Number)
-                               Label="Number"
-                               Value=@Result.Number
-                               Readonly=true>
-                    </TextInput>
+                <div class="col-3">
+                    <DateInput Property=@nameof(GetCollaboratorPayment.Result.CreatedAt)
+                               Label="Created at"
+                               Value=@Result.CreatedAt
+                               Readonly=true />
                 </div>
-                <div class="col-4">
+                <div class="col-3">
                     <DateInput Property=@nameof(GetCollaboratorPayment.Result.PaidAt)
                                Label="Paid at"
                                Value=@Result.PaidAt
                                Readonly=true />
                 </div>
-                <div class="col-4">
-                    <DateInput Property=@nameof(GetCollaboratorPayment.Result.CreatedAt)
-                               Label="Created at"
-                               Value=@Result.CreatedAt
+                <div class="col-3">
+                    <DateInput Property=@nameof(GetCollaboratorPayment.Result.ConfirmedAt)
+                               Label="Confirmed at"
+                               Value=@Result.ConfirmedAt
+                               Readonly=true />
+                </div>
+                <div class="col-3">
+                    <DateInput Property=@nameof(GetCollaboratorPayment.Result.CanceledAt)
+                               Label="Canceled at"
+                               Value=@Result.CanceledAt
                                Readonly=true />
                 </div>
             </Content>
         </FormRow>
         <FormRow>
             <Content>
-                <div class="col-4">
+                <div class="col-3">
                     <NumberInput Property=@nameof(GetCollaboratorPayment.Result.GrossSalary)
                                  Label="Gross Salary"
                                  Prefix="$"
                                  Value=@Result.GrossSalary
                                  Readonly=true />
                 </div>
-                <div class="col-4">
+                <div class="col-3">
                     <NumberInput Property=@nameof(GetCollaboratorPayment.Result.Withholding)
                                  Label="Withholding"
                                  Prefix="-$"
                                  Value=@Result.Withholding
                                  Readonly=true />
                 </div>
-                <div class="col-4">
+                <div class="col-3">
                     <NumberInput Property=@nameof(GetCollaboratorPayment.Result.NetSalary)
-                                 Label="Commission"
+                                 Label="Net Salary"
                                  Prefix="=$"
                                  Value=@Result.NetSalary
+                                 Readonly=true />
+                </div>
+                <div class="col-3">
+                    <NumberInput Property=@nameof(GetCollaboratorPayment.Result.ITF)
+                                 Label="ITF"
+                                 Prefix="$"
+                                 Value=@Result.ITF
                                  Readonly=true />
                 </div>
             </Content>

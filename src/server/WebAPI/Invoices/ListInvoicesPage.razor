@@ -1,4 +1,5 @@
-﻿@using WebAPI.Invoices;
+﻿@using WebAPI.Clients
+@using WebAPI.Invoices;
 @using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
 
@@ -17,13 +18,23 @@
     <Content>
         <FormRow>
             <Content>
-                <div class="col">
-                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.InvoiceList}",Swap.OuterHTML,$"#{Targets.InvoiceList}"))
+                <div class="col-6">
+                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.InvoiceList}",Swap.OuterHTML,$"#{Targets.InvoiceList}"){ Include=$"#{nameof(ListInvoices.Query.ClientId)}"})
                                   Label="Status"
                                   Property=@(nameof(ListInvoices.Query.Status))
                                   Query=@Query
-                                  EmptyOption="All Status"
+                                  EmptyLabel="All Status"
                                   Source=@(Enum.GetValues<InvoiceStatus>().ToDictionary(i=>i.ToString(), i=>i.ToString()))>
+                    </SelectFilter>
+                </div>
+                <div class="col-6">
+                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.InvoiceList}",Swap.OuterHTML,$"#{Targets.InvoiceList}"){ Include=$"#{nameof(ListInvoices.Query.Status)}"})
+                                  Label="Client"
+                                  Property=@(nameof(ListInvoices.Query.ClientId))
+                                  Query=@Query
+                                  EmptyLabel="All Clients"
+                                  EmptyValue="00000000-0000-0000-0000-000000000000"
+                                  Source=@(Clients.ToDictionary(i=>i.ClientId.ToString(), i=>i.Name))>
                     </SelectFilter>
                 </div>
             </Content>
@@ -66,4 +77,6 @@
     public ListResults<ListInvoices.Result> Result { get; set; } = default!;
     [Parameter, EditorRequired]
     public ListInvoices.Query Query { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public List<SearchClients.Result> Clients { get; set; } = default!;
 }

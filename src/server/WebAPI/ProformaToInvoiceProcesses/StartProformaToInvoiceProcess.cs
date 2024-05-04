@@ -115,6 +115,7 @@ public static class StartProformaToInvoiceProcess
     [FromServices] ListProformas.Runner listProformasRunner,
     [FromServices] RegisterInvoice.Handler registerInvoiceHandler,
     [FromServices] ListInvoices.Runner listInvoicesRunner,
+    [FromServices] SearchClients.Runner searchClientsRunner,
     [FromBody] Command command,
     [FromServices] IClock clock,
     HttpContext context)
@@ -123,6 +124,6 @@ public static class StartProformaToInvoiceProcess
 
         context.Response.Headers.TriggerShowRegisterSuccessMessage($"invoice", register.Value!.InvoiceId);
 
-        return await ListInvoices.HandlePage(new ListInvoices.Query() { }, listInvoicesRunner);
+        return await ListInvoices.HandlePage(new ListInvoices.Query() { }, searchClientsRunner, listInvoicesRunner);
     }
 }

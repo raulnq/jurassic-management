@@ -11,6 +11,7 @@ public static class ListInvoices
     public class Query : ListQuery
     {
         public string? Status { get; set; }
+        public Guid? ClientId { get; set; }
         public IEnumerable<Guid>? InvoiceId { get; set; }
     }
 
@@ -47,6 +48,10 @@ public static class ListInvoices
                 {
                     statement = statement.Where(Tables.Invoices.Field(nameof(Invoice.Status)), query.Status);
                 }
+                if (query.ClientId.HasValue && query.ClientId != Guid.Empty)
+                {
+                    statement = statement.Where(Tables.Invoices.Field(nameof(Invoice.ClientId)), query.ClientId);
+                }
                 if (query.InvoiceId != null && query.InvoiceId.Any())
                 {
                     statement = statement.WhereIn(Tables.Invoices.Field(nameof(Invoice.InvoiceId)), query.InvoiceId);
@@ -65,9 +70,13 @@ public static class ListInvoices
 
     public static async Task<RazorComponentResult> HandlePage(
     [AsParameters] Query query,
+    [FromServices] SearchClients.Runner searchClientsRunner,
     [FromServices] Runner runner)
     {
+        var clients = await searchClientsRunner.Run(new SearchClients.Query() { });
+
         var result = await runner.Run(query);
-        return new RazorComponentResult<ListInvoicesPage>(new { Result = result, Query = query });
+
+        return new RazorComponentResult<ListInvoicesPage>(new { Result = result, Query = query, Clients = clients });
     }
 }

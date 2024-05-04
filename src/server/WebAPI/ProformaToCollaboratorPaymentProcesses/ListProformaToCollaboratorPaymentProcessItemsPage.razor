@@ -7,8 +7,7 @@
                Result=@Result
                Context="item">
         <TableHeader>
-            <th>ProformaId</th>
-            <th>Project Name</th>
+            <th>Project</th>
             <th>Proforma Number</th>
             <th>Week</th>
             <th>Start Date</th>
@@ -21,8 +20,7 @@
             <th>Profit Amount</th>
         </TableHeader>
         <RowTemplate>
-            <td>@item.ProformaId</td>
-            <td>@item.ProformaProjectName</td>
+            <td>@item.ProjectName</td>
             <td>@item.ProformaNumber</td>
             <td>@item.Week</td>
             <td>@item.ProformaWeekStart</td>
@@ -31,7 +29,7 @@
             <td>@item.FreeHours</td>
             <td>@item.ProformaCurrency @item.FeeAmount</td>
             <td>@item.ProformaCurrency @item.SubTotal</td>
-            <td>% @item.ProfitPercentage</td>
+            <td>@item.ProfitPercentage % </td>
             <td>@item.ProformaCurrency @item.ProfitAmount</td>
         </RowTemplate>
     </DataTable>

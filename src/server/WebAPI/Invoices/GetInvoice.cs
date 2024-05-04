@@ -28,6 +28,8 @@ public static class GetInvoice
         public string? DocumentUrl { get; set; }
         public string? Status { get; set; }
         public string? Currency { get; set; }
+        public DateTimeOffset? CanceledAt { get; set; }
+        public decimal ITF { get; set; }
     }
 
     public class Runner : BaseRunner

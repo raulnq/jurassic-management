@@ -21,7 +21,7 @@
                                   Label="Status"
                                   Property=@(nameof(ListProformas.Query.Status))
                                   Query=@Query
-                                  EmptyOption="All Status"
+                                  EmptyLabel="All Status"
                                   Source=@(Enum.GetValues<ProformaStatus>().ToDictionary(i=>i.ToString(), i=>i.ToString()))>
                     </SelectFilter>
                 </div>

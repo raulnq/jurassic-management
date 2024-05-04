@@ -44,3 +44,21 @@ AS
   LEFT JOIN $schema$.ProformaToInvoiceProcessItems c on c.ProformaId = p.ProformaId
   LEFT JOIN $schema$.Invoices i on (i.InvoiceId = c.InvoiceId and i.Status!='Canceled')
   where i.InvoiceId is null
+
+GO 
+
+CREATE VIEW $schema$.VwProformaToInvoiceProcessItems
+AS
+  SELECT pi.InvoiceId, 
+  pi.ProformaId, 
+  p.Start as ProformaStart,
+  p.[End] as ProformaEnd,
+  p.Number as ProformaNumber,
+  p.SubTotal as ProformaSubTotal,
+  p.Commission as ProformaCommission,
+  p.Total as ProformaTotal,
+  p.Currency as ProformaCurrency,
+  j.Name as ProjectName
+  FROM $schema$.ProformaToInvoiceProcessItems pi
+  JOIN $schema$.Proformas p on pi.ProformaId=p.ProformaId
+  JOIN $schema$.Projects j on p.ProjectId=j.ProjectId
