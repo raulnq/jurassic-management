@@ -1,7 +1,6 @@
 using Infrastructure;
-using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Text.Json.Serialization;
-using WebAPI;
 using WebAPI.Clients;
 using WebAPI.CollaboratorPayments;
 using WebAPI.CollaboratorRoles;
@@ -19,6 +18,8 @@ using WebAPI.ProformaToCollaboratorPaymentProcesses;
 using WebAPI.ProformaToInvoiceProcesses;
 using WebAPI.Projects;
 using WebAPI.Transactions;
+using WebAPI.Users;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,7 +34,24 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 {
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+        options.Cookie.MaxAge = options.ExpireTimeSpan;
+        options.SlidingExpiration = true;
+        options.Events = new CookieAuthenticationEvents()
+        {
+            OnRedirectToLogin = (options) =>
+            {
+                options.HttpContext.Response.Headers.Append("HX-Redirect", WebAPI.Users.Endpoints.Login);
+                return Task.CompletedTask;
+            }
+        };
+    });
 
+
+builder.Services.AddAuthorization();
 builder.Services.AddEntityFramework(builder.Configuration);
 builder.Services.AddSqlKata(builder.Configuration);
 builder.Services.AddRebus(builder.Configuration, onCreated: bus =>
@@ -54,7 +72,8 @@ builder.Services.AddProformaToCollaboratorPaymentProcesses();
 builder.Services.AddCollaboratorPayments(builder.Configuration);
 builder.Services.AddProformaDocuments(builder.Configuration);
 builder.Services.AddTransactions(builder.Configuration);
-builder.Services.AddSingleton<IClock>(new SystemClock());
+builder.Services.AddUsers();
+builder.Services.AddSingleton<IClock>(new Infrastructure.SystemClock());
 builder.Services.AddExceptionHandler<DefaultExceptionHandler>();
 builder.Services.AddRazorComponents();
 var app = builder.Build();
@@ -66,13 +85,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapGet("/ui", () =>
-{
-    return new RazorComponentResult<Main>();
-});
-
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseExceptionHandler();
 app.RegisterCollaboratorRoleEndpoints();
 app.RegisterCollaboratorEndpoints();
@@ -86,4 +103,5 @@ app.RegisterCollectionEndpoints();
 app.RegisterProformaToColaboratorPaymentProcessEndpoints();
 app.RegisterCollaboratorPaymentEndpoints();
 app.RegisterTransactionEndpoints();
+app.RegisterUserEndpoints();
 app.Run();

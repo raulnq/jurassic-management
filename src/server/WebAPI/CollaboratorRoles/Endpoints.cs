@@ -16,7 +16,8 @@ public static class Endpoints
     public static void RegisterCollaboratorRoleEndpoints(this WebApplication app)
     {
         var group = app.MapGroup("/collaborator-roles")
-        .WithTags("collaborator-roles");
+        .WithTags("collaborator-roles")
+        .RequireAuthorization();
 
         group.MapPost("/", RegisterCollaboratorRole.Handle);
 
@@ -27,7 +28,8 @@ public static class Endpoints
         group.MapPut("/{collaboratorRoleId:guid}", EditCollaboratorRole.Handle);
 
         var uigroup = app.MapGroup("/ui/collaborator-roles")
-        .ExcludeFromDescription();
+        .ExcludeFromDescription()
+        .RequireAuthorization();
 
         uigroup.MapGet("/list", ListCollaboratorRoles.HandlePage);
 
