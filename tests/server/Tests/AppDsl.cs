@@ -12,6 +12,7 @@ using Tests.Proformas;
 using Tests.ProformaToCollaboratorPaymentProcesses;
 using Tests.ProformaToInvoiceProcesses;
 using Tests.Projects;
+using Tests.Transactions;
 using WebAPI.Clients;
 using WebAPI.Collaborators;
 using WebAPI.Proformas;
@@ -60,7 +61,11 @@ public class AppDsl : IAsyncDisposable
         ProformaToCollaboratorPaymentProcess = new ProformaToCollaboratorPaymentProcessDsl(httpDriver);
 
         CollaboratorPayment = new CollaboratorPaymentDsl(httpDriver);
+
+        Transaction = new TransactionDsl(httpDriver);
     }
+
+    public TransactionDsl Transaction { get; set; }
 
     public CollaboratorPaymentDsl CollaboratorPayment { get; set; }
 

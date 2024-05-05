@@ -1,0 +1,102 @@
+﻿using FluentValidation;
+using Infrastructure;
+using MassTransit;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
+using System.Text.Json.Serialization;
+using WebAPI.Infrastructure.EntityFramework;
+using WebAPI.Infrastructure.Ui;
+using WebAPI.Proformas;
+
+namespace WebAPI.Transactions;
+
+public static class RegisterTransaction
+{
+    public class Command
+    {
+        public TransactionType Type { get; set; }
+        public Currency Currency { get; set; }
+        public string Description { get; set; } = default!;
+        public decimal SubTotal { get; set; }
+        public decimal Taxes { get; set; }
+        public DateTime IssuedAt { get; set; }
+        public string? Number { get; set; }
+        [JsonIgnore]
+        public DateTimeOffset CreatedAt { get; set; }
+    }
+
+    public class Result
+    {
+        public Guid TransactionId { get; set; }
+    }
+
+    public class Validator : AbstractValidator<Command>
+    {
+        public Validator()
+        {
+            RuleFor(command => command.Description).MaximumLength(1000).NotEmpty();
+            RuleFor(command => command.Number).MaximumLength(50);
+            RuleFor(command => command.SubTotal).GreaterThan(0);
+            RuleFor(command => command.Taxes).GreaterThanOrEqualTo(0);
+        }
+    }
+
+    public class Handler
+    {
+        private readonly ApplicationDbContext _context;
+
+        public Handler(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+        public Task<Result> Handle(Command command)
+        {
+            var transaction = new Transaction(NewId.Next().ToSequentialGuid(), command.Type,
+                command.Description, command.SubTotal, command.Taxes, command.Currency, command.Number, command.IssuedAt, command.CreatedAt);
+
+            _context.Set<Transaction>().Add(transaction);
+
+            return Task.FromResult(new Result()
+            {
+                TransactionId = transaction.TransactionId
+            });
+        }
+    }
+
+
+    public static async Task<Ok<Result>> Handle(
+    [FromServices] TransactionBehavior behavior,
+    [FromServices] Handler handler,
+    [FromServices] IClock clock,
+    [FromBody] Command command)
+    {
+        command.CreatedAt = clock.Now;
+
+        new Validator().ValidateAndThrow(command);
+
+        var result = await behavior.Handle(() => handler.Handle(command));
+
+        return TypedResults.Ok(result);
+    }
+
+    public static Task<RazorComponentResult> HandlePage()
+    {
+        return Task.FromResult<RazorComponentResult>(new RazorComponentResult<RegisterTransactionPage>(new { }));
+    }
+
+    public static async Task<RazorComponentResult> HandleAction(
+    [FromServices] TransactionBehavior behavior,
+    [FromServices] Handler handler,
+    [FromServices] ListTransactions.Runner runner,
+    [FromBody] Command command,
+    [FromServices] IClock clock,
+    HttpContext context)
+    {
+        var result = await Handle(behavior, handler, clock, command);
+
+        context.Response.Headers.TriggerShowRegisterSuccessMessage($"transaction", result.Value!.TransactionId);
+
+        return await ListTransactions.HandlePage(new ListTransactions.Query() { }, runner);
+    }
+}

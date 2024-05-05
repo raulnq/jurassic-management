@@ -1,0 +1,65 @@
+﻿@using WebAPI.CollaboratorRoles;
+@using WebAPI.Infrastructure.SqlKata;
+@using WebAPI.Infrastructure.Ui;
+
+<Heading Text="Transactions" />
+<Breadcrumbs Links=@(new []{new Breadcrumbs.Link("List transactions")})
+             Target=@(Infrastructure.Ui.Targets.Workspace) />
+<Toolbar>
+    <Actions>
+        <ActionButton Text="Register Transaction"
+                      Icon=@Icons.Add
+                      HtmxProps=@(new HtmxProps(Endpoints.Register, Infrastructure.Ui.Targets.Workspace)) />
+    </Actions>
+</Toolbar>
+<Section>
+    <Content>
+        <FormRow>
+            <Content>
+                <div class="col">
+                </div>
+            </Content>
+        </FormRow>
+        <div id=@Targets.TransactionList>
+            <DataTable TResult=ListTransactions.Result
+                       Result=@Result
+                       Context="item">
+                <TableHeader>
+                    <th></th>
+                    <th>TransactionId</th>
+                    <th>Description</th>
+                    <th>Type</th>
+                    <th>SubTotal</th>
+                    <th>Taxes</th>
+                    <th>Total</th>
+                    <th>Issued at</th>
+                </TableHeader>
+                <RowTemplate>
+                    <RowToolbar>
+                        <Actions>
+                            <ActionLink HtmxProps=@(new HtmxProps(Endpoints.GetEdit(@item.TransactionId), Infrastructure.Ui.Targets.Workspace))
+                                        Icon=@Icons.Edit />
+                        </Actions>
+                    </RowToolbar>
+                    <td>@item.TransactionId</td>
+                    <td>@item.Description</td>
+                    <td>@item.Type</td>
+                    <td>@item.Currency @item.SubTotal</td>
+                    <td>@item.Currency @item.Taxes</td>
+                    <td>@item.Currency @item.Total</td>
+                    <td>@item.IssuedAt</td>
+                </RowTemplate>
+            </DataTable>
+            <Pagination Query=@Query
+                        Result=@Result
+                        HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.TransactionList}", Swap.OuterHTML, $"#{Targets.TransactionList}"))
+                        Parameters=@(new[] { new KeyValuePair<string, object?>(nameof(Query.Type), Query.Type) }) />
+        </div>
+    </Content>
+</Section>
+@code {
+    [Parameter, EditorRequired]
+    public ListResults<ListTransactions.Result> Result { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public ListTransactions.Query Query { get; set; } = default!;
+}

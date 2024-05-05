@@ -18,6 +18,7 @@ using WebAPI.Proformas;
 using WebAPI.ProformaToCollaboratorPaymentProcesses;
 using WebAPI.ProformaToInvoiceProcesses;
 using WebAPI.Projects;
+using WebAPI.Transactions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,6 +53,7 @@ builder.Services.AddCollections();
 builder.Services.AddProformaToCollaboratorPaymentProcesses();
 builder.Services.AddCollaboratorPayments(builder.Configuration);
 builder.Services.AddProformaDocuments(builder.Configuration);
+builder.Services.AddTransactions(builder.Configuration);
 builder.Services.AddSingleton<IClock>(new SystemClock());
 builder.Services.AddExceptionHandler<DefaultExceptionHandler>();
 builder.Services.AddRazorComponents();
@@ -83,4 +85,5 @@ app.RegisterInvoiceToCollectionProcessEndpoints();
 app.RegisterCollectionEndpoints();
 app.RegisterProformaToColaboratorPaymentProcessEndpoints();
 app.RegisterCollaboratorPaymentEndpoints();
+app.RegisterTransactionEndpoints();
 app.Run();

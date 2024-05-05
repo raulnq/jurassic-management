@@ -47,10 +47,16 @@
                         hx-on:change=@HtmxProps.OnChange
                         hx-trigger="input changed"
                         required>
-                    <option value="" selected></option>
                     @foreach (var item in Source)
                     {
-                        <option value=@item.Key>@item.Value</option>
+                        @if (Value == item.Value)
+                        {
+                            <option value=@item.Key selected>@item.Value</option>
+                        }
+                        else
+                        {
+                            <option value=@item.Key>@item.Value</option>
+                        }
                     }
                 </select>
             }
@@ -89,10 +95,22 @@
                         hx-on:change=@HtmxProps.OnChange
                         hx-trigger="input changed"
                         id=@Property>
-                    <option value="" selected></option>
+
+
+                    @if (!string.IsNullOrEmpty(Value))
+                    {
+                        <option value="" selected></option>
+                    }
                     @foreach (var item in Source)
                     {
-                        <option value=@item.Key>@item.Value</option>
+                        @if (Value == item.Value)
+                        {
+                            <option value=@item.Key selected>@item.Value</option>
+                        }
+                        else
+                        {
+                            <option value=@item.Key>@item.Value</option>
+                        }
                     }
                 </select>
             }
@@ -114,7 +132,7 @@
     [Parameter]
     public HtmxProps HtmxProps { get; set; } = new HtmxProps();
     [Parameter]
-    public object Value { get; set; } = default!;
+    public string Value { get; set; } = default!;
     [Parameter]
     public Dictionary<TKey, string> Source { get; set; } = new Dictionary<TKey, string>();
 
