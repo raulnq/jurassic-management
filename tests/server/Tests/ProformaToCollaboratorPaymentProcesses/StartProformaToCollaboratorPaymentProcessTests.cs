@@ -1,6 +1,4 @@
 ﻿using Tests.Infrastructure;
-using WebAPI.Invoices;
-using WebAPI.ProformaToInvoiceProcesses;
 
 namespace Tests.ProformaToCollaboratorPaymentProcesses;
 

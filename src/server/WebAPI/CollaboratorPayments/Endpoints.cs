@@ -1,6 +1,4 @@
-﻿using WebAPI.Invoices;
-
-namespace WebAPI.CollaboratorPayments;
+﻿namespace WebAPI.CollaboratorPayments;
 
 public static class Endpoints
 {
@@ -8,7 +6,9 @@ public static class Endpoints
 
     public const string View = "/ui/collaborator-payments/{collaboratorPaymentId}/view";
 
-    public const string Issue = "/ui/collaborator-payments/{collaboratorPaymentId}/issue";
+    public const string Pay = "/ui/collaborator-payments/{collaboratorPaymentId}/pay";
+
+    public const string Confirm = "/ui/collaborator-payments/{collaboratorPaymentId}/confirm";
 
     public const string Upload = "/ui/collaborator-payments/{collaboratorPaymentId}/upload-document";
 
@@ -18,11 +18,14 @@ public static class Endpoints
     {
         return View.Replace("{collaboratorPaymentId}", collaboratorPaymentId.ToString());
     }
-    public static string GetIssue(Guid collaboratorPaymentId)
+    public static string GetPay(Guid collaboratorPaymentId)
     {
-        return Issue.Replace("{collaboratorPaymentId}", collaboratorPaymentId.ToString());
+        return Pay.Replace("{collaboratorPaymentId}", collaboratorPaymentId.ToString());
     }
-
+    public static string GetConfirm(Guid collaboratorPaymentId)
+    {
+        return Confirm.Replace("{collaboratorPaymentId}", collaboratorPaymentId.ToString());
+    }
     public static string GetCancel(Guid collaboratorPaymentId)
     {
         return Cancel.Replace("{collaboratorPaymentId}", collaboratorPaymentId.ToString());
@@ -52,5 +55,20 @@ public static class Endpoints
         uigroup.MapGet("/list", ListCollaboratorPayments.HandlePage);
 
         uigroup.MapGet("/{collaboratorPaymentId:guid}/view", GetCollaboratorPayment.HandlePage);
+
+        uigroup.MapGet("/{collaboratorPaymentId:guid}/upload-document", UploadDocument.HandlePage);
+
+        uigroup.MapPost("/{collaboratorPaymentId:guid}/upload-document", UploadDocument.HandleAction)
+            .DisableAntiforgery();
+
+        uigroup.MapGet("/{collaboratorPaymentId:guid}/pay", PayCollaboratorPayment.HandlePage);
+
+        uigroup.MapPost("/{collaboratorPaymentId:guid}/pay", PayCollaboratorPayment.HandleAction);
+
+        uigroup.MapGet("/{collaboratorPaymentId:guid}/confirm", ConfirmCollaboratorPayment.HandlePage);
+
+        uigroup.MapPost("/{collaboratorPaymentId:guid}/confirm", ConfirmCollaboratorPayment.HandleAction);
+
+        uigroup.MapPost("/{collaboratorPaymentId:guid}/cancel", CancelCollaboratorPayment.HandleAction);
     }
 }

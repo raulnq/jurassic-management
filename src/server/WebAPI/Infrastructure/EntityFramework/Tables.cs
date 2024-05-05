@@ -18,6 +18,8 @@ public static class Tables
 
     public static Table VwNotAddedToInvoiceProformas = new Table("VwNotAddedToInvoiceProformas");
 
+    public static Table VwNotAddedToCollectionInvoices = new Table("VwNotAddedToCollectionInvoices");
+
     public static Table VwNotAddedToCollaboratorPaymentProformas = new Table("VwNotAddedToCollaboratorPaymentProformas");
 
     public static Table ProformaWeeks = new Table("ProformaWeeks");
@@ -29,6 +31,8 @@ public static class Tables
     public static Table ProformaToInvoiceProcessItems = new Table("ProformaToInvoiceProcessItems");
 
     public static Table VwProformaToInvoiceProcessItems = new Table("VwProformaToInvoiceProcessItems");
+
+    public static Table VwInvoiceToCollectionProcessItems = new Table("VwInvoiceToCollectionProcessItems");
 
     public static Table Invoices = new Table("Invoices");
 

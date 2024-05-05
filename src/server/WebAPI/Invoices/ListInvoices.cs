@@ -42,7 +42,7 @@ public static class ListInvoices
                 var statement = qf.Query(Tables.Invoices)
                 .Select(Tables.Invoices.AllFields)
                 .Select(Tables.Clients.Field(nameof(Client.Name), nameof(Result.ClientName)))
-                .Join(Tables.Clients, Tables.Invoices.Field(nameof(Invoice.ClientId)), Tables.Clients.Field(nameof(Invoice.ClientId)));
+                .Join(Tables.Clients, Tables.Invoices.Field(nameof(Invoice.ClientId)), Tables.Clients.Field(nameof(Client.ClientId)));
 
                 if (!string.IsNullOrEmpty(query.Status))
                 {

@@ -12,6 +12,8 @@ public static class ServiceCollectionExtensions
 
         services.AddTransient<GetCollection.Runner>();
 
+        services.AddTransient<CancelCollection.Handler>();
+
         return services;
     }
 }

@@ -92,7 +92,7 @@ public static class UploadDocument
     {
         await Handle(behavior, handler, storage, invoiceId, file);
 
-        context.Response.Headers.TriggerShowSuccessMessageAndCloseModal($"The document for the {invoiceId} was uploaded successfully");
+        context.Response.Headers.TriggerShowSuccessMessageAndCloseModal($"The document for the invoice {invoiceId} was uploaded successfully");
 
         return await GetInvoice.HandlePage(getInvoiceRunner, listProformaToInvoiceProcessItemsRunner, invoiceId);
     }

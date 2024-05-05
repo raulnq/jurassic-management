@@ -11,12 +11,12 @@ public class ConfirmCollectionTests : BaseTest
 
         var (proformaResult, proformaCommand, clientResult, _) = await _appDsl.IssueProforma(today);
 
-        //var (_, _, _, _) = await _appDsl.IssuedProforma(today);
-
         var invoice = await _appDsl.IssueInvoice(proformaResult.ProformaId, clientResult.ClientId, proformaCommand.Currency, today);
 
         var (_, start) = await _appDsl.InvoiceToCollectionProcess.Start(c =>
         {
+            c.ClientId = clientResult.ClientId;
+            c.Currency = proformaCommand.Currency;
             c.InvoiceId = new[] { invoice.InvoiceId };
         });
 

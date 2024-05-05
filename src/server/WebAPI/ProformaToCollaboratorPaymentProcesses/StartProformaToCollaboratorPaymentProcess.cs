@@ -4,14 +4,11 @@ using MassTransit;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
-using WebAPI.Clients;
 using WebAPI.CollaboratorPayments;
 using WebAPI.Collaborators;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.Ui;
-using WebAPI.Invoices;
 using WebAPI.Proformas;
-using WebAPI.ProformaToInvoiceProcesses;
 
 namespace WebAPI.ProformaToCollaboratorPaymentProcesses;
 

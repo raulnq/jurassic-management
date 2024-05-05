@@ -3,6 +3,8 @@ using Invoices;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Infrastructure.EntityFramework;
+using WebAPI.Infrastructure.Ui;
+using WebAPI.ProformaToCollaboratorPaymentProcesses;
 
 
 namespace WebAPI.CollaboratorPayments;
@@ -64,5 +66,34 @@ public static class UploadDocument
 
             return TypedResults.Ok();
         }
+    }
+
+    public static Task<RazorComponentResult> HandlePage(
+    [FromRoute] Guid collaboratorPaymentId,
+    HttpContext context)
+    {
+        context.Response.Headers.TriggerOpenModal();
+
+        return Task.FromResult<RazorComponentResult>(new RazorComponentResult<UploadDocumentPage>(new
+        {
+            CollaboratorPaymentId = collaboratorPaymentId,
+        }));
+    }
+
+    public static async Task<RazorComponentResult> HandleAction(
+    [FromServices] TransactionBehavior behavior,
+    [FromServices] Handler handler,
+    [FromServices] GetCollaboratorPayment.Runner getCollaboratorPaymentRunner,
+    [FromServices] ListProformaToCollaboratorPaymentProcessItems.Runner listProformaToCollaboratorPaymentProcessItemsRunner,
+    [FromServices] InvoiceStorage storage,
+    IFormFile file,
+    Guid collaboratorPaymentId,
+    HttpContext context)
+    {
+        await Handle(behavior, handler, storage, collaboratorPaymentId, file);
+
+        context.Response.Headers.TriggerShowSuccessMessageAndCloseModal($"The document for the collaborator payment {collaboratorPaymentId} was uploaded successfully");
+
+        return await GetCollaboratorPayment.HandlePage(getCollaboratorPaymentRunner, listProformaToCollaboratorPaymentProcessItemsRunner, collaboratorPaymentId);
     }
 }

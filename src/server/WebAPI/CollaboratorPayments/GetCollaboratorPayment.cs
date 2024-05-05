@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using WebAPI.Clients;
 using WebAPI.Collaborators;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.SqlKata;
 using WebAPI.ProformaToCollaboratorPaymentProcesses;
-using WebAPI.ProformaToInvoiceProcesses;
 
 namespace WebAPI.CollaboratorPayments;
 

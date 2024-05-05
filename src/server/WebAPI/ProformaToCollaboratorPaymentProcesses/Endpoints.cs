@@ -1,6 +1,4 @@
-﻿using WebAPI.ProformaToInvoiceProcesses;
-
-namespace WebAPI.ProformaToCollaboratorPaymentProcesses;
+﻿namespace WebAPI.ProformaToCollaboratorPaymentProcesses;
 
 public static class Endpoints
 {

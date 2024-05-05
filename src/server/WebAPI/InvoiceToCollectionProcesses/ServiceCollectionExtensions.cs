@@ -6,6 +6,8 @@ public static class ServiceCollectionExtensions
     {
         services.AddTransient<StartInvoiceToCollectionProcess.Handler>();
 
+        services.AddTransient<ListInvoiceToCollectionProcessItems.Runner>();
+
         return services;
     }
 }

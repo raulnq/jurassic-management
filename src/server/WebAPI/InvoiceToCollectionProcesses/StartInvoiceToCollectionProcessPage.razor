@@ -1,0 +1,52 @@
+﻿@using WebAPI.Infrastructure.SqlKata;
+@using WebAPI.Infrastructure.Ui;
+@using WebAPI.Proformas
+
+<Heading Text="Collections" />
+<Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new("List collections",WebAPI.Collections.Endpoints.List.AddListParameters()), new("Register collection") })
+             Target=@(Infrastructure.Ui.Targets.Workspace) />
+<Section>
+    <Content>
+        <Form HtmxProps=@(new HtmxProps(Endpoints.Register, Infrastructure.Ui.Targets.Workspace))>
+            <Content>
+                <FormRow>
+                    <Content>
+                        <div class="col-6">
+                            <SelectInput Property=@nameof(StartInvoiceToCollectionProcess.Command.ClientId)
+                                         Label="Client"
+                                         HtmxProps=@(new HtmxProps(@WebAPI.Invoices.Endpoints.SearchNotAddedToCollection, $"#{nameof(StartInvoiceToCollectionProcess.Command.InvoiceId)}"){Include=$"#{nameof(StartInvoiceToCollectionProcess.Command.Currency)}"})
+                                         Source=@Clients.ToDictionary(c=>c.ClientId, c=>c.Name)
+                                         Required=true>
+                            </SelectInput>
+                        </div>
+                        <div class="col-6">
+                            <SelectInput Property=@nameof(StartInvoiceToCollectionProcess.Command.Currency)
+                                         Label="Currency"
+                                         Source=@(Enum.GetValues<Currency>().ToDictionary(i=>i.ToString(), i=>i.ToString()))
+                                         HtmxProps=@(new HtmxProps(@WebAPI.Invoices.Endpoints.SearchNotAddedToCollection, $"#{nameof(StartInvoiceToCollectionProcess.Command.InvoiceId)}"){Include=$"#{nameof(StartInvoiceToCollectionProcess.Command.ClientId)}"})
+                                         Required=true>
+                            </SelectInput>
+                        </div>
+                    </Content>
+                </FormRow>
+                <FormRow>
+                    <Content>
+                        <div class="col">
+                            <SelectInput Property=@(nameof(StartInvoiceToCollectionProcess.Command.InvoiceId))
+                                         Label="Invoices"
+                                         Required=true
+                                         Multiple=true
+                                         TKey=Guid>
+                            </SelectInput>
+                        </div>
+                    </Content>
+                </FormRow>
+            </Content>
+        </Form>
+    </Content>
+</Section>
+
+@code {
+    [Parameter, EditorRequired]
+    public List<WebAPI.Clients.SearchClients.Result> Clients { get; set; } = default!;
+}

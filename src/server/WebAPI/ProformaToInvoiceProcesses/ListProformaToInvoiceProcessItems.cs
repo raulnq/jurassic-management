@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.SqlKata;
-using WebAPI.Proformas;
-using WebAPI.Projects;
 
 namespace WebAPI.ProformaToInvoiceProcesses;
 

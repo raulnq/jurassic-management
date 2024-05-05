@@ -74,8 +74,6 @@ public static class StartProformaToInvoiceProcess
 
         var proformas = await listProformasHandler.Run(new ListProformas.Query() { ProformaId = command.ProformaId, PageSize = 50 });
 
-        var currency = proformas.Items.First().Currency;
-
         command.Proformas = proformas.Items;
 
         var result = await behavior.Handle(async () =>

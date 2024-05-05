@@ -1,0 +1,34 @@
+﻿@using WebAPI.Clients;
+@using WebAPI.CollaboratorRoles
+@using WebAPI.Collaborators
+@using WebAPI.Infrastructure.SqlKata;
+@using WebAPI.Infrastructure.Ui;
+
+<ModalForm HtmxProps=@(new HtmxProps(Endpoints.GetConfirm(CollaboratorPaymentId), Infrastructure.Ui.Targets.Workspace))
+           Title="Confirm payment invoice">
+    <Content>
+        <FormRow>
+            <Content>
+                <div class="col-6">
+                    <TextInput Property=@nameof(ConfirmCollaboratorPayment.Command.Number)
+                               Label="Number"
+                               Placeholder="Enter Number"
+                               MaxLenght=50
+                               Required=true>
+                    </TextInput>
+                </div>
+                <div class="col-6">
+                    <DateInput Property=@nameof(ConfirmCollaboratorPayment.Command.ConfirmedAt)
+                               Label="Date"
+                               Required=true />
+                </div>
+
+            </Content>
+        </FormRow>
+    </Content>
+</ModalForm>
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid CollaboratorPaymentId { get; set; } = default;
+}

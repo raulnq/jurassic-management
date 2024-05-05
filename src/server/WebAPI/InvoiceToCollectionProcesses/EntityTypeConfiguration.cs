@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 using WebAPI.Infrastructure.EntityFramework;
+using Infrastructure;
+using WebAPI.Proformas;
 
 namespace WebAPI.InvoiceToCollectionProcesses;
 
@@ -13,6 +15,10 @@ public class EntityTypeConfiguration : IEntityTypeConfiguration<InvoiceToCollect
 
         builder
             .HasKey(field => field.CollectionId);
+
+        builder
+            .Property(c => c.Currency)
+            .HasConversion(s => s.ToString(), value => value.ToEnum<Currency>());
 
         builder
             .HasMany(p => p.Items)

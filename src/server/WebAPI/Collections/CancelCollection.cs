@@ -1,22 +1,23 @@
 ﻿using FluentValidation;
+using Infrastructure;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
+using WebAPI.Infrastructure.ExceptionHandling;
 using WebAPI.Infrastructure.Ui;
 using WebAPI.InvoiceToCollectionProcesses;
 
-
 namespace WebAPI.Collections;
 
-public static class ConfirmCollection
+public static class CancelCollection
 {
     public class Command
     {
         [JsonIgnore]
         public Guid CollectionId { get; set; }
-        public decimal Total { get; set; }
-        public DateTime ConfirmedAt { get; set; }
+        [JsonIgnore]
+        public DateTimeOffset CanceledAt { get; set; }
     }
 
     public class Validator : AbstractValidator<Command>
@@ -24,7 +25,6 @@ public static class ConfirmCollection
         public Validator()
         {
             RuleFor(command => command.CollectionId).NotEmpty();
-            RuleFor(command => command.Total).GreaterThan(0);
         }
     }
 
@@ -41,7 +41,12 @@ public static class ConfirmCollection
         {
             var collection = await _context.Get<Collection>(command.CollectionId);
 
-            collection.Confirm(command.Total, command.ConfirmedAt);
+            if (collection == null)
+            {
+                throw new NotFoundException<Collection>();
+            }
+
+            collection.Cancel(command.CanceledAt);
         }
     }
 
@@ -49,9 +54,12 @@ public static class ConfirmCollection
     [FromServices] TransactionBehavior behavior,
     [FromServices] Handler handler,
     [FromRoute] Guid collectionId,
+    [FromServices] IClock clock,
     [FromBody] Command command)
     {
         command.CollectionId = collectionId;
+
+        command.CanceledAt = clock.Now;
 
         new Validator().ValidateAndThrow(command);
 
@@ -60,31 +68,25 @@ public static class ConfirmCollection
         return TypedResults.Ok();
     }
 
-    public static Task<RazorComponentResult> HandlePage(
-    [FromRoute] Guid collectionId,
-    HttpContext context)
-    {
-        context.Response.Headers.TriggerOpenModal();
-
-        return Task.FromResult<RazorComponentResult>(new RazorComponentResult<ConfirmCollectionPage>(new
-        {
-            CollectionId = collectionId,
-        }));
-    }
-
     public static async Task<RazorComponentResult> HandleAction(
     [FromServices] TransactionBehavior behavior,
     [FromServices] Handler handler,
     [FromServices] GetCollection.Runner getCollectionRunner,
     [FromServices] ListInvoiceToCollectionProcessItems.Runner listInvoiceToCollectionProcessItemsRunner,
-    [FromBody] Command command,
-    Guid collectionId,
-    HttpContext context)
+    [FromServices] IClock clock,
+    HttpContext context,
+    Guid collectionId)
     {
-        await Handle(behavior, handler, collectionId, command);
+        var command = new Command()
+        {
+            CollectionId = collectionId,
+            CanceledAt = clock.Now
+        };
 
-        context.Response.Headers.TriggerShowSuccessMessageAndCloseModal($"The collection {collectionId} was confirmed successfully");
+        await Handle(behavior, handler, collectionId, clock, command);
 
-        return await GetCollection.HandlePage(getCollectionRunner, listInvoiceToCollectionProcessItemsRunner, collectionId);
+        context.Response.Headers.TriggerShowSuccessMessage($"The collection {command.CollectionId} was canceled successfully");
+
+        return await GetCollection.HandlePage(getCollectionRunner, listInvoiceToCollectionProcessItemsRunner, command.CollectionId);
     }
 }

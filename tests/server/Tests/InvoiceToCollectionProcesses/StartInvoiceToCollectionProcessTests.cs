@@ -1,5 +1,4 @@
 ﻿using Tests.Infrastructure;
-using WebAPI.Proformas;
 
 namespace Tests.InvoiceToCollectionProcesses;
 
@@ -16,6 +15,8 @@ public class StartInvoiceToCollectionProcessTests : BaseTest
 
         await _appDsl.InvoiceToCollectionProcess.Start(c =>
         {
+            c.ClientId = clientResult.ClientId;
+            c.Currency = proformaCommand.Currency;
             c.InvoiceId = new[] { invoice.InvoiceId };
         });
     }

@@ -1,0 +1,36 @@
+﻿@using WebAPI.Clients;
+@using WebAPI.CollaboratorRoles
+@using WebAPI.Collaborators
+@using WebAPI.Infrastructure.SqlKata;
+@using WebAPI.Infrastructure.Ui;
+
+<ModalForm HtmxProps=@(new HtmxProps(Endpoints.GetConfirm(CollectionId), Infrastructure.Ui.Targets.Workspace))
+           Title="Issue invoice">
+    <Content>
+        <FormRow>
+            <Content>
+                <div class="col-6">
+                    <NumberInput Property=@nameof(ConfirmCollection.Command.Total)
+                                 Label="Total"
+                                 Placeholder="Enter Total"
+                                 Prefix="$"
+                                 Min=0
+                                 Step=0.01m
+                                 Value=0
+                                 Required=true />
+                </div>
+                <div class="col-6">
+                    <DateInput Property=@nameof(ConfirmCollection.Command.ConfirmedAt)
+                               Label="Date"
+                               Required=true />
+                </div>
+
+            </Content>
+        </FormRow>
+    </Content>
+</ModalForm>
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid CollectionId { get; set; } = default;
+}

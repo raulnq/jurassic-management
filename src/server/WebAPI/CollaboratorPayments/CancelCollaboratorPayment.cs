@@ -1,22 +1,23 @@
 ﻿using FluentValidation;
+using Infrastructure;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
+using WebAPI.Infrastructure.ExceptionHandling;
 using WebAPI.Infrastructure.Ui;
 using WebAPI.ProformaToCollaboratorPaymentProcesses;
 
-
 namespace WebAPI.CollaboratorPayments;
 
-public static class ConfirmCollaboratorPayment
+public static class CancelCollaboratorPayment
 {
     public class Command
     {
         [JsonIgnore]
         public Guid CollaboratorPaymentId { get; set; }
-        public string Number { get; set; } = default!;
-        public DateTime ConfirmedAt { get; set; }
+        [JsonIgnore]
+        public DateTimeOffset CanceledAt { get; set; }
     }
 
     public class Validator : AbstractValidator<Command>
@@ -24,7 +25,6 @@ public static class ConfirmCollaboratorPayment
         public Validator()
         {
             RuleFor(command => command.CollaboratorPaymentId).NotEmpty();
-            RuleFor(command => command.Number).NotEmpty().MaximumLength(50);
         }
     }
 
@@ -39,9 +39,14 @@ public static class ConfirmCollaboratorPayment
 
         public async Task Handle(Command command)
         {
-            var payment = await _context.Get<CollaboratorPayment>(command.CollaboratorPaymentId);
+            var collaboratorPayment = await _context.Get<CollaboratorPayment>(command.CollaboratorPaymentId);
 
-            payment.Confirm(command.ConfirmedAt, command.Number);
+            if (collaboratorPayment == null)
+            {
+                throw new NotFoundException<CollaboratorPayment>();
+            }
+
+            collaboratorPayment.Cancel(command.CanceledAt);
         }
     }
 
@@ -49,9 +54,12 @@ public static class ConfirmCollaboratorPayment
     [FromServices] TransactionBehavior behavior,
     [FromServices] Handler handler,
     [FromRoute] Guid collaboratorPaymentId,
+    [FromServices] IClock clock,
     [FromBody] Command command)
     {
         command.CollaboratorPaymentId = collaboratorPaymentId;
+
+        command.CanceledAt = clock.Now;
 
         new Validator().ValidateAndThrow(command);
 
@@ -60,30 +68,24 @@ public static class ConfirmCollaboratorPayment
         return TypedResults.Ok();
     }
 
-    public static Task<RazorComponentResult> HandlePage(
-    [FromRoute] Guid collaboratorPaymentId,
-    HttpContext context)
-    {
-        context.Response.Headers.TriggerOpenModal();
-
-        return Task.FromResult<RazorComponentResult>(new RazorComponentResult<ConfirmCollaboratorPaymentPage>(new
-        {
-            CollaboratorPaymentId = collaboratorPaymentId,
-        }));
-    }
-
     public static async Task<RazorComponentResult> HandleAction(
     [FromServices] TransactionBehavior behavior,
     [FromServices] Handler handler,
     [FromServices] GetCollaboratorPayment.Runner getCollaboratorPaymentRunner,
     [FromServices] ListProformaToCollaboratorPaymentProcessItems.Runner listProformaToCollaboratorPaymentProcessItemsRunner,
-    [FromBody] Command command,
     Guid collaboratorPaymentId,
+    [FromServices] IClock clock,
     HttpContext context)
     {
-        await Handle(behavior, handler, collaboratorPaymentId, command);
+        var command = new Command()
+        {
+            CollaboratorPaymentId = collaboratorPaymentId,
+            CanceledAt = clock.Now
+        };
 
-        context.Response.Headers.TriggerShowSuccessMessageAndCloseModal($"The collaborator payment {collaboratorPaymentId} was confirmed successfully");
+        await Handle(behavior, handler, collaboratorPaymentId, clock, command);
+
+        context.Response.Headers.TriggerShowSuccessMessage($"The collaborator payment {collaboratorPaymentId} was canceled successfully");
 
         return await GetCollaboratorPayment.HandlePage(getCollaboratorPaymentRunner, listProformaToCollaboratorPaymentProcessItemsRunner, collaboratorPaymentId);
     }

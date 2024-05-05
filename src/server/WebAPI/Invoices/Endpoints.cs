@@ -12,6 +12,8 @@ public static class Endpoints
 
     public const string Cancel = "/ui/invoices/{invoiceId}/cancel";
 
+    public const string SearchNotAddedToCollection = "/ui/invoices/search-not-added-to-collection";
+
     public static string GetView(Guid invoiceId)
     {
         return View.Replace("{invoiceId}", invoiceId.ToString());
@@ -64,5 +66,7 @@ public static class Endpoints
         uigroup.MapPost("/{invoiceId:guid}/issue", IssueInvoice.HandleAction);
 
         uigroup.MapPost("/{invoiceId:guid}/cancel", CancelInvoice.HandleAction);
+
+        uigroup.MapGet("/search-not-added-to-collection", SearchInvoicesNotAddedToCollection.HandlePage);
     }
 }

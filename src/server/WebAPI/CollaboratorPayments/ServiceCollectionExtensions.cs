@@ -14,6 +14,8 @@ public static class ServiceCollectionExtensions
 
         services.AddTransient<PayCollaboratorPayment.Handler>();
 
+        services.AddTransient<CancelCollaboratorPayment.Handler>();
+
         services.AddTransient<ListCollaboratorPayments.Runner>();
 
         services.AddTransient<GetCollaboratorPayment.Runner>();

@@ -36,6 +36,10 @@
                     <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.CollaboratorPayments.Endpoints.List.AddListParameters(), Targets.Workspace){OnClick="highlight_sidebarlink(this);"})
                                  Icon="bi bi-credit-card-2-back-fill"
                                  Text="Collaborator Payments" />
+                    <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.Collections.Endpoints.List.AddListParameters(), Targets.Workspace){OnClick="highlight_sidebarlink(this);"})
+                                 Icon="bi bi-coin"
+                                 Text="Collections" />
+
                 </Items>
             </Sidebar>
             <div class="col-1"></div>

@@ -4,8 +4,10 @@ using MassTransit;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
+using WebAPI.Clients;
 using WebAPI.Collections;
 using WebAPI.Infrastructure.EntityFramework;
+using WebAPI.Infrastructure.Ui;
 using WebAPI.Invoices;
 using WebAPI.Proformas;
 
@@ -20,6 +22,8 @@ public static class StartInvoiceToCollectionProcess
         public IEnumerable<ListInvoices.Result>? Invoices { get; set; }
         [JsonIgnore]
         public DateTimeOffset CreatedAt { get; set; }
+        public Guid ClientId { get; set; }
+        public Currency Currency { get; set; }
     }
 
     public class Result
@@ -46,7 +50,7 @@ public static class StartInvoiceToCollectionProcess
 
         public Task<Result> Handle(Command command)
         {
-            var process = new InvoiceToCollectionProcess(NewId.Next().ToSequentialGuid(), command.Invoices!.Select(p => (p.InvoiceId, p.Status!.ToEnum<InvoiceStatus>())), command.CreatedAt);
+            var process = new InvoiceToCollectionProcess(NewId.Next().ToSequentialGuid(), command.ClientId, command.Currency, command.Invoices!.Select(p => (p.InvoiceId, p.Status!.ToEnum<InvoiceStatus>())), command.CreatedAt);
 
             _context.Set<InvoiceToCollectionProcess>().Add(process);
 
@@ -71,21 +75,53 @@ public static class StartInvoiceToCollectionProcess
 
         var invoices = await listInvoiceHandler.Run(new ListInvoices.Query() { InvoiceId = command.InvoiceId, PageSize = 50 });
 
-        //TODO: Todas las facturas tienen que ser de la misma moneda
-
-        var currency = invoices.Items.First().Currency;
-
         command.Invoices = invoices.Items;
 
         var result = await behavior.Handle(async () =>
         {
             var result = await handler.Handle(command);
 
-            await registerCollectionHandler.Handle(new RegisterCollection.Command() { CollectionId = result.CollectionId, CreatedAt = command.CreatedAt, Total = invoices.Items.Sum(p => p.Total), Currency = currency.ToEnum<Currency>() });
+            await registerCollectionHandler.Handle(new RegisterCollection.Command()
+            {
+                CollectionId = result.CollectionId,
+                ClientId = command.ClientId,
+                CreatedAt = command.CreatedAt,
+                Total = invoices.Items.Sum(p => p.Total),
+                Currency = command.Currency
+            });
 
             return result;
         });
 
         return TypedResults.Ok(result);
+    }
+
+    public static async Task<RazorComponentResult> HandlePage(
+    [FromServices] SearchClients.Runner runner)
+    {
+        var result = await runner.Run(new SearchClients.Query() { });
+
+        return new RazorComponentResult<StartInvoiceToCollectionProcessPage>(new
+        {
+            Clients = result
+        });
+    }
+
+    public static async Task<RazorComponentResult> HandleAction(
+    [FromServices] TransactionBehavior behavior,
+    [FromServices] Handler handler,
+    [FromServices] RegisterCollection.Handler registerCollectionHandler,
+    [FromServices] ListInvoices.Runner listInvoicesRunner,
+    [FromServices] ListCollections.Runner listCollectionsRunner,
+    [FromServices] SearchClients.Runner searchClientsRunner,
+    [FromBody] Command command,
+    [FromServices] IClock clock,
+    HttpContext context)
+    {
+        var register = await Handle(behavior, handler, registerCollectionHandler, listInvoicesRunner, clock, command);
+
+        context.Response.Headers.TriggerShowRegisterSuccessMessage($"collection", register.Value!.CollectionId);
+
+        return await ListCollections.HandlePage(new ListCollections.Query() { }, searchClientsRunner, listCollectionsRunner);
     }
 }

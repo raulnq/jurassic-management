@@ -6,7 +6,6 @@ using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.ExceptionHandling;
 using WebAPI.Infrastructure.Ui;
-using WebAPI.Proformas;
 using WebAPI.ProformaToInvoiceProcesses;
 
 namespace WebAPI.Invoices;
@@ -54,7 +53,6 @@ public static class CancelInvoice
     public static async Task<Ok> Handle(
     [FromServices] TransactionBehavior behavior,
     [FromServices] Handler handler,
-    [FromServices] ListProformaToInvoiceProcessItems.Runner listProformaToInvoiceProcessItemsRunner,
     [FromRoute] Guid invoiceId,
     [FromServices] IClock clock,
     [FromBody] Command command)
@@ -65,12 +63,7 @@ public static class CancelInvoice
 
         new Validator().ValidateAndThrow(command);
 
-        await behavior.Handle(async () =>
-        {
-            await handler.Handle(command);
-
-            var result = await listProformaToInvoiceProcessItemsRunner.Run(new ListProformaToInvoiceProcessItems.Query() { InvoiceId = invoiceId, PageSize = 100 });
-        });
+        await behavior.Handle(() => handler.Handle(command));
 
         return TypedResults.Ok();
     }
@@ -80,7 +73,6 @@ public static class CancelInvoice
     [FromServices] Handler handler,
     [FromServices] GetInvoice.Runner getInvoiceRunner,
     [FromServices] ListProformaToInvoiceProcessItems.Runner listProformaToInvoiceProcessItems,
-    [FromServices] ListProformaToInvoiceProcessItems.Runner listProformaToInvoiceProcessItemsRunner,
     [FromServices] IClock clock,
     HttpContext context,
     Guid invoiceId)
@@ -91,9 +83,9 @@ public static class CancelInvoice
             CanceledAt = clock.Now
         };
 
-        await Handle(behavior, handler, listProformaToInvoiceProcessItemsRunner, invoiceId, clock, command);
+        await Handle(behavior, handler, invoiceId, clock, command);
 
-        context.Response.Headers.TriggerShowSuccessMessage($"The invoice {command.InvoiceId} was cancel successfully");
+        context.Response.Headers.TriggerShowSuccessMessage($"The invoice {command.InvoiceId} was canceled successfully");
 
         return await GetInvoice.HandlePage(getInvoiceRunner, listProformaToInvoiceProcessItems, command.InvoiceId);
     }

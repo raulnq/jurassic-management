@@ -10,6 +10,7 @@ public static class RegisterCollection
     public class Command
     {
         public decimal Total { get; set; }
+        public Guid ClientId { get; set; }
         public Guid CollectionId { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
         public Currency Currency { get; set; }
@@ -40,7 +41,7 @@ public static class RegisterCollection
 
         public Task<Result> Handle(Command command)
         {
-            var collection = new Collection(command.CollectionId, command.Total, command.Currency, command.CreatedAt);
+            var collection = new Collection(command.CollectionId, command.ClientId, command.Total, command.Currency, command.CreatedAt);
 
             _context.Set<Collection>().Add(collection);
 

@@ -11,11 +11,14 @@
              Target=@(Infrastructure.Ui.Targets.Workspace)>
     <MenuItems>
         <MenuItem Text="Upload document"
-                  IsDisabled=@(Result.Status!=CollaboratorPaymentStatus.Pending.ToString())
+                  IsDisabled=@(Result.Status!=CollaboratorPaymentStatus.Paid.ToString())
                   HtmxProps=@(new HtmxProps(Endpoints.GetUpload(Result.CollaboratorPaymentId), Infrastructure.Ui.Targets.Dialog)) />
-        <MenuItem Text="Issue"
+        <MenuItem Text="Pay"
                   IsDisabled=@(Result.Status!=CollaboratorPaymentStatus.Pending.ToString())
-                  HtmxProps=@(new HtmxProps(Endpoints.GetIssue(Result.CollaboratorPaymentId), Infrastructure.Ui.Targets.Dialog)) />
+                  HtmxProps=@(new HtmxProps(Endpoints.GetPay(Result.CollaboratorPaymentId), Infrastructure.Ui.Targets.Dialog)) />
+        <MenuItem Text="Confirm"
+                  IsDisabled=@(Result.Status!=CollaboratorPaymentStatus.Paid.ToString())
+                  HtmxProps=@(new HtmxProps(Endpoints.GetConfirm(Result.CollaboratorPaymentId), Infrastructure.Ui.Targets.Dialog)) />
         <MenuItem HtmxProps=@(new HtmxProps(Endpoints.GetCancel(Result.CollaboratorPaymentId), Infrastructure.Ui.Targets.Workspace){ Confirm = "Are you sure?", HttpMethod="POST"})
                   IsDisabled=@(Result.Status !=CollaboratorPaymentStatus.Pending.ToString())
                   Text="Cancel" />
