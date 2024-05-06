@@ -2,38 +2,32 @@
 
 public static class Endpoints
 {
+    public const string Title = "Transactions";
+
     public const string List = "/ui/transactions/list";
+
+    public const string ListTitle = "List transactions";
 
     public const string Register = "/ui/transactions/register";
 
+    public const string RegisterTitle = "Register transaction";
+
     public const string Edit = "/ui/transactions/{transactionId}/edit";
 
-    public const string Issue = "/ui/transactions/{transactionId}/issue";
-
-    public const string Cancel = "/ui/transactions/{transactionId}/cancel";
+    public const string EditTitle = "Edit transaction";
 
     public const string Upload = "/ui/transactions/{transactionId}/upload-document";
+
+    public const string UploadTitle = "Upload";
 
     public static string GetEdit(Guid transactionId)
     {
         return Edit.Replace("{transactionId}", transactionId.ToString());
     }
-
-    public static string GetIssue(Guid transactionId)
-    {
-        return Issue.Replace("{transactionId}", transactionId.ToString());
-    }
-
-    public static string GetCancel(Guid transactionId)
-    {
-        return Cancel.Replace("{transactionId}", transactionId.ToString());
-    }
-
     public static string GetUpload(Guid transactionId)
     {
         return Upload.Replace("{transactionId}", transactionId.ToString());
     }
-
     public static void RegisterTransactionEndpoints(this WebApplication app)
     {
         var group = app.MapGroup("/transactions")
@@ -48,7 +42,8 @@ public static class Endpoints
         group.MapPut("/{transactionId:guid}", EditTransaction.Handle);
 
         var uigroup = app.MapGroup("/ui/transactions")
-        .ExcludeFromDescription();
+        .ExcludeFromDescription()
+        .RequireAuthorization();
 
         uigroup.MapGet("/list", ListTransactions.HandlePage);
 

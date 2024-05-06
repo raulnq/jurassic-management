@@ -3,8 +3,8 @@
 @using WebAPI.CollaboratorRoles;
 @using WebAPI.Proformas
 
-<Heading Text="Transactions" />
-<Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new("List transaction", Endpoints.List.AddListParameters()), new("Edit Transaction") })
+<Heading Text=@Endpoints.Title />
+<Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new(Endpoints.ListTitle, Endpoints.List.AddListParameters()), new(Endpoints.EditTitle) })
              Target=@(Infrastructure.Ui.Targets.Workspace)>
     <MenuItems>
         <MenuItem Text="Upload document"
@@ -71,8 +71,7 @@
                                          Label="Currency"
                                          Source=@(Enum.GetValues<Currency>().ToDictionary(i=>i.ToString(), i=>i.ToString()))
                                          Value=@Result.Currency
-                                         Required=true>
-                            </SelectInput>
+                                         Required=true />
                         </div>
                         <div class="col-3">
                             <NumberInput Property=@nameof(RegisterTransaction.Command.SubTotal)

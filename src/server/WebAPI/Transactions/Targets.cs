@@ -2,5 +2,5 @@
 
 public static class Targets
 {
-    public const string TransactionList = "transaction-list-target";
+    public const string List = "transaction-list-target";
 }

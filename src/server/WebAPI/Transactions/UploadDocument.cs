@@ -90,7 +90,7 @@ public static class UploadDocument
     {
         await Handle(behavior, handler, storage, transactionId, file);
 
-        context.Response.Headers.TriggerShowSuccessMessageAndCloseModal($"The document for the transaction {transactionId} was uploaded successfully");
+        context.Response.Headers.TriggerShowSuccessMessageAndCloseModal("document for the transaction", "uploaded", transactionId);
 
         return await EditTransaction.HandlePage(runner, transactionId);
     }
