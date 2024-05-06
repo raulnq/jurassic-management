@@ -56,6 +56,16 @@ public static class UiExtensions
         dictionary.TriggerShowSuccessMessage($"The {entity.ToLower()} {id} was edited successfully");
     }
 
+    public static void TriggerShowSuccessMessage(this IHeaderDictionary dictionary, string entity, string action, object id)
+    {
+        dictionary.TriggerShowSuccessMessage($"The {entity.ToLower()} {id} was {action} successfully");
+    }
+
+    public static void TriggerShowSuccessMessageAndCloseModal(this IHeaderDictionary dictionary, string entity, string action, object id)
+    {
+        dictionary.TriggerShowSuccessMessageAndCloseModal($"The {entity.ToLower()} {id} was {action} successfully");
+    }
+
     public static void TriggerShowSuccessMessageAndCloseModal(this IHeaderDictionary dictionary, string message)
     {
         dictionary.Append("HX-Trigger-After-Swap", @$"{{""successMessageEvent"":""{message}"", ""closeModalEvent"":""true""}}");

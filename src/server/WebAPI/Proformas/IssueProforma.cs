@@ -102,7 +102,7 @@ public static class IssueProforma
     {
         await Handle(behavior, handler, proformaId, bus, command);
 
-        context.Response.Headers.TriggerShowSuccessMessageAndCloseModal($"The proforma {proformaId} was issued successfully");
+        context.Response.Headers.TriggerShowSuccessMessageAndCloseModal("proforma", "issued", proformaId);
 
         return await GetProforma.HandlePage(getProformaRunner, listProformasWeeksRunner, getProformaDocumentRunner, command.ProformaId);
     }

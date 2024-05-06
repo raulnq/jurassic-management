@@ -29,7 +29,7 @@ public static class ListProformaWeeks
         public Task<ListResults<Result>> Run(Query query)
         {
             return _queryRunner.List<Query, Result>((qf) => qf.Query(Tables.ProformaWeeks)
-                .Where(Tables.ProformaWeeks.Field(nameof(Query.ProformaId)), query.ProformaId), query);
+                .Where(Tables.ProformaWeeks.Field(nameof(ProformaWeek.ProformaId)), query.ProformaId), query);
         }
     }
 

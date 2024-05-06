@@ -2,21 +2,41 @@
 
 public static class Endpoints
 {
+    public const string Title = "Proformas";
+
+    public const string WeekTitle = "Weeks";
+
+    public const string WorkItemTitle = "Work Items";
+
     public const string List = "/ui/proformas/list";
+
+    public const string ListTitle = "List proformas";
 
     public const string Register = "/ui/proformas/register";
 
+    public const string RegisterTitle = "Register proformas";
+
     public const string View = "/ui/proformas/{proformaId}/view";
+
+    public const string ViewTitle = "View proformas";
 
     public const string Issue = "/ui/proformas/{proformaId}/issue";
 
+    public const string IssueTitle = "Issue";
+
     public const string Cancel = "/ui/proformas/{proformaId}/cancel";
+
+    public const string CancelTitle = "Cancel";
 
     public const string ListWeeks = "/ui/proformas/{proformaId}/weeks/list";
 
     public const string AddWorkItem = "/ui/proformas/{proformaId}/weeks/{week}/work-items/add";
 
+    public const string AddWorkItemTitle = "Add work item";
+
     public const string EditWorkItem = "/ui/proformas/{proformaId}/weeks/{week}/work-items/{collaboratorId}/edit";
+
+    public const string EditWorkItemTitle = "Edit work item";
 
     public const string RemoveWorkItem = "/ui/proformas/{proformaId}/weeks/{week}/work-items/{collaboratorId}/remove";
 
@@ -100,7 +120,8 @@ public static class Endpoints
         group.MapDelete("/{proformaId:guid}/weeks/{week:int}/work-items/{collaboratorId:guid}", Proformas.RemoveWorkItem.Handle);
 
         var uigroup = app.MapGroup("/ui/proformas")
-        .ExcludeFromDescription();
+        .ExcludeFromDescription()
+        .RequireAuthorization();
 
         uigroup.MapGet("/list", ListProformas.HandlePage);
 

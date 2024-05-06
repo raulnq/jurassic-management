@@ -2,8 +2,8 @@
 @using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
 
-<Heading Text="Proformas" />
-<Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new("List proformas", Endpoints.List.AddListParameters()), new("Register proforma") })
+<Heading Text=@Endpoints.Title />
+<Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new(Endpoints.ListTitle, Endpoints.List.AddListParameters()), new(Endpoints.RegisterTitle) })
              Target=@(Infrastructure.Ui.Targets.Workspace) />
 <Section>
     <Content>
@@ -52,15 +52,13 @@
                                          Label="Client"
                                          HtmxProps=@(new HtmxProps(@WebAPI.Projects.Endpoints.Search, $"#{nameof(RegisterProforma.Command.ProjectId)}"))
                                          Source=@Clients.ToDictionary(c=>c.ClientId, c=>c.Name)
-                                         Required=true>
-                            </SelectInput>
+                                         Required=true />
                         </div>
                         <div class="col-6">
                             <SelectInput Property=@nameof(RegisterProforma.Command.ProjectId)
                                          Label="Project"
                                          Required=true
-                                         TKey=Guid>
-                            </SelectInput>
+                                         TKey=Guid />
                         </div>
                     </Content>
                 </FormRow>

@@ -107,7 +107,7 @@ public static class RegisterProforma
     {
         var register = await Handle(behavior, handler, clock, countProformaRunner, command);
 
-        context.Response.Headers.TriggerShowSuccessMessageAndCloseModal($"The proforma {register.Value!.ProformaId} was added successfully");
+        context.Response.Headers.TriggerShowRegisterSuccessMessage($"proforma", register.Value!.ProformaId);
 
         return await ListProformas.HandlePage(new ListProformas.Query() { }, listProformasRunner);
     }

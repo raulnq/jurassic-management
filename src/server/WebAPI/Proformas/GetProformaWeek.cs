@@ -31,8 +31,8 @@ public static class GetProformaWeek
         {
             return _queryRunner.Get<Result>((qf) => qf
                 .Query(Tables.ProformaWeeks)
-                .Where(Tables.ProformaWeeks.Field(nameof(Query.Week)), query.Week)
-                .Where(Tables.ProformaWeeks.Field(nameof(Query.ProformaId)), query.ProformaId));
+                .Where(Tables.ProformaWeeks.Field(nameof(ProformaWeek.Week)), query.Week)
+                .Where(Tables.ProformaWeeks.Field(nameof(ProformaWeek.ProformaId)), query.ProformaId));
         }
     }
 

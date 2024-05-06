@@ -36,9 +36,9 @@ public static class GetProformaWeekWorkItem
         {
             return _queryRunner.Get<Result>((qf) => qf
                 .Query(Tables.ProformaWeekWorkItems)
-                .Where(Tables.ProformaWeekWorkItems.Field(nameof(Query.CollaboratorId)), query.CollaboratorId)
-                .Where(Tables.ProformaWeekWorkItems.Field(nameof(Query.Week)), query.Week)
-                .Where(Tables.ProformaWeekWorkItems.Field(nameof(Query.ProformaId)), query.ProformaId));
+                .Where(Tables.ProformaWeekWorkItems.Field(nameof(ProformaWeekWorkItem.CollaboratorId)), query.CollaboratorId)
+                .Where(Tables.ProformaWeekWorkItems.Field(nameof(ProformaWeekWorkItem.Week)), query.Week)
+                .Where(Tables.ProformaWeekWorkItems.Field(nameof(ProformaWeekWorkItem.ProformaId)), query.ProformaId));
         }
     }
 

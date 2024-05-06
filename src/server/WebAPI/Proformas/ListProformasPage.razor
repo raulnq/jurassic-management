@@ -2,12 +2,12 @@
 @using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
 
-<Heading Text="Proformas" />
-<Breadcrumbs Links=@(new []{new Breadcrumbs.Link("List proformas")})
+<Heading Text=@Endpoints.Title />
+<Breadcrumbs Links=@(new []{new Breadcrumbs.Link(Endpoints.ListTitle)})
              Target=@(Infrastructure.Ui.Targets.Workspace) />
 <Toolbar>
     <Actions>
-        <ActionButton Text="Register Proforma"
+        <ActionButton Text=@Endpoints.RegisterTitle
                       Icon=@Icons.Add
                       HtmxProps=@(new HtmxProps(Endpoints.Register, Infrastructure.Ui.Targets.Workspace)) />
     </Actions>
@@ -17,7 +17,7 @@
         <FormRow>
             <Content>
                 <div class="col-6">
-                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.ProformaList}",Swap.OuterHTML,$"#{Targets.ProformaList}"){Include=$"#{nameof(ListProformas.Query.Number)}"})
+                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}",Swap.OuterHTML,$"#{Targets.List}"){Include=$"#{nameof(ListProformas.Query.Number)}"})
                                   Label="Status"
                                   Property=@(nameof(ListProformas.Query.Status))
                                   Query=@Query
@@ -29,11 +29,11 @@
                     <SearchFilter Label="Number"
                                   Property=@nameof(ListProformas.Query.Number)
                                   Query=@Query
-                                  HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.ProformaList}", Swap.OuterHTML, $"#{Targets.ProformaList}"){Include=$"#{nameof(ListProformas.Query.Status)}"}) />
+                                  HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}", Swap.OuterHTML, $"#{Targets.List}"){Include=$"#{nameof(ListProformas.Query.Status)}"}) />
                 </div>
             </Content>
         </FormRow>
-        <div id=@Targets.ProformaList>
+        <div id=@Targets.List>
             <DataTable TResult=ListProformas.Result
                        Result=@Result
                        Context="item">
@@ -67,8 +67,8 @@
             </DataTable>
             <Pagination Query=@Query
                         Result=@Result
-                        HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.ProformaList}", Swap.OuterHTML, $"#{Targets.ProformaList}"))
-                        Parameters=@(new []{ new KeyValuePair<string, object?>(nameof(Query.Status), Query.Status)}) />
+                        HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}", Swap.OuterHTML, $"#{Targets.List}"))
+                        Parameters=@(new KeyValuePair<string, object?>[]{ new (nameof(Query.Status), Query.Status), new (nameof(Query.Number), Query.Number)}) />
         </div>
     </Content>
 </Section>

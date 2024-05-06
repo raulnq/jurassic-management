@@ -2,11 +2,11 @@
 @using WebAPI.Infrastructure.Ui;
 @using WebAPI.Proformas;
 
-<Section Title="Work">
+<Section Title=@Endpoints.WorkItemTitle>
     <Content>
         <Toolbar>
             <Actions>
-                <ActionButton Text="Add Collaborator"
+                <ActionButton Text=@Endpoints.AddWorkItemTitle
                               Icon=@Icons.Add
                               IsDisabled=@(GetProformaResult.Status !=ProformaStatus.Pending.ToString())
                               HtmxProps=@(new HtmxProps(Endpoints.GetAddWorkItem(Query.ProformaId!.Value, Query.Week!.Value), Infrastructure.Ui.Targets.Dialog)) />

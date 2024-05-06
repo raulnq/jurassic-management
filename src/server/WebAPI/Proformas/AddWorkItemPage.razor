@@ -5,7 +5,7 @@
 @using WebAPI.Infrastructure.Ui;
 
 <ModalForm HtmxProps=@(new HtmxProps(WebAPI.Proformas.Endpoints.GetAddWorkItem(ProformaId, Week),$"#{Targets.CollaboratorList}",Swap.OuterHTML,$"#{Targets.CollaboratorList}"))
-           Title="Add collaborator">
+           Title=@Endpoints.AddWorkItemTitle>
     <Content>
         <FormRow>
             <Content>

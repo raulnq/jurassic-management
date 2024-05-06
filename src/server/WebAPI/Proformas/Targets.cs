@@ -6,7 +6,7 @@ public static class Targets
 
     public const string Collaborator = "collaborator-target";
 
-    public const string ProformaList = "proforma-list-target";
+    public const string List = "proforma-list-target";
 
     public const string WeekList = "week-list-target";
 

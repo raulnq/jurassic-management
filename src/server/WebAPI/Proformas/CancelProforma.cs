@@ -90,7 +90,7 @@ public static class CancelProforma
 
         await Handle(behavior, handler, proformaId, clock, command);
 
-        context.Response.Headers.TriggerShowSuccessMessage($"The proforma {command.ProformaId} was cancel successfully");
+        context.Response.Headers.TriggerShowSuccessMessage($"proforma", "canceled", command.ProformaId);
 
         return await GetProforma.HandlePage(getProformaRunner, listProformasWeeksRunner, getProformaDocumentRunner, command.ProformaId);
     }

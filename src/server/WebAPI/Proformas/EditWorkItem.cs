@@ -110,7 +110,7 @@ public static class EditWorkItem
     {
         await Handle(behavior, handler, proformaId, week, collaboratorId, command);
 
-        context.Response.Headers.TriggerShowSuccessMessageAndCloseModal($"The collaborator {collaboratorId} was updated successfully");
+        context.Response.Headers.TriggerShowSuccessMessageAndCloseModal("collaborator", "edited", collaboratorId);
 
         return await ListProformaWeekWorkItems.HandlePage(
             new ListProformaWeekWorkItems.Query() { ProformaId = command.ProformaId, Week = command.Week },

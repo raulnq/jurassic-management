@@ -66,8 +66,6 @@ public static class AddWorkItem
             proforma.AddWorkItem(command.Week, command.CollaboratorId, collaboratorRole, command.Hours, command.FreeHours);
         }
     }
-
-
     public static async Task<Ok> Handle(
     [FromServices] TransactionBehavior behavior,
     [FromServices] Handler handler,
@@ -121,7 +119,7 @@ public static class AddWorkItem
     {
         await Handle(behavior, handler, proformaId, week, command);
 
-        context.Response.Headers.TriggerShowSuccessMessageAndCloseModal($"The collaborator {command.CollaboratorId} was added successfully");
+        context.Response.Headers.TriggerShowSuccessMessageAndCloseModal($"collaborator", "added", command.CollaboratorId);
 
         return await ListProformaWeekWorkItems.HandlePage(new ListProformaWeekWorkItems.Query() { ProformaId = command.ProformaId, Week = command.Week },
             runner, getProformaRunner, getProformaWeekRunner, proformaId, week);

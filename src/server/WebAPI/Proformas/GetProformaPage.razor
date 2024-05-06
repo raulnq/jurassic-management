@@ -4,8 +4,8 @@
 @using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
 
-<Heading Text="Proformas" />
-<Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new("List proformas", Endpoints.List.AddListParameters()), new("Edit proforma") })
+<Heading Text=@Endpoints.Title />
+<Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new(Endpoints.ListTitle, Endpoints.List.AddListParameters()), new(Endpoints.ViewTitle) })
              Target=@(Infrastructure.Ui.Targets.Workspace)>
     <MenuItems>
         <MenuItem Text="Issue"
@@ -86,7 +86,7 @@
         </div>
     </Content>
 </Section>
-<Section Title="Weeks">
+<Section Title=@Endpoints.WeekTitle>
     <Content>
         <ListProformaWeeksPage Query=@ListProformaWeeksQuery
                                Result=@ListProformaWeeksResult />
