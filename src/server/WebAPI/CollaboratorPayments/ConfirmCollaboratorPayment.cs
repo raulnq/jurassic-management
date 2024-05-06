@@ -83,7 +83,7 @@ public static class ConfirmCollaboratorPayment
     {
         await Handle(behavior, handler, collaboratorPaymentId, command);
 
-        context.Response.Headers.TriggerShowSuccessMessageAndCloseModal($"The collaborator payment {collaboratorPaymentId} was confirmed successfully");
+        context.Response.Headers.TriggerShowSuccessMessageAndCloseModal("collaborator payment", "confirmed", collaboratorPaymentId);
 
         return await GetCollaboratorPayment.HandlePage(getCollaboratorPaymentRunner, listProformaToCollaboratorPaymentProcessItemsRunner, collaboratorPaymentId);
     }

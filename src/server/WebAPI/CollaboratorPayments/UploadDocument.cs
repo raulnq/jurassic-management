@@ -92,7 +92,7 @@ public static class UploadDocument
     {
         await Handle(behavior, handler, storage, collaboratorPaymentId, file);
 
-        context.Response.Headers.TriggerShowSuccessMessageAndCloseModal($"The document for the collaborator payment {collaboratorPaymentId} was uploaded successfully");
+        context.Response.Headers.TriggerShowSuccessMessageAndCloseModal("document for the collaborator payment", "uploaded", collaboratorPaymentId);
 
         return await GetCollaboratorPayment.HandlePage(getCollaboratorPaymentRunner, listProformaToCollaboratorPaymentProcessItemsRunner, collaboratorPaymentId);
     }

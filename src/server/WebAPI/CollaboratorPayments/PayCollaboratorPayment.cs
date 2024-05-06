@@ -81,7 +81,7 @@ public static class PayCollaboratorPayment
     {
         await Handle(behavior, handler, collaboratorPaymentId, command);
 
-        context.Response.Headers.TriggerShowSuccessMessageAndCloseModal($"The collaborator payment {collaboratorPaymentId} was paid successfully");
+        context.Response.Headers.TriggerShowSuccessMessageAndCloseModal("collaborator payment", "paid", collaboratorPaymentId);
 
         return await GetCollaboratorPayment.HandlePage(getCollaboratorPaymentRunner, listProformaToCollaboratorPaymentProcessItemsRunner, collaboratorPaymentId);
     }

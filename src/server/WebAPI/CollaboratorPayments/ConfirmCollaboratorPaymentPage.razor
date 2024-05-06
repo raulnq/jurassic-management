@@ -5,7 +5,7 @@
 @using WebAPI.Infrastructure.Ui;
 
 <ModalForm HtmxProps=@(new HtmxProps(Endpoints.GetConfirm(CollaboratorPaymentId), Infrastructure.Ui.Targets.Workspace))
-           Title="Confirm payment invoice">
+           Title=@Endpoints.ConfirmTitle>
     <Content>
         <FormRow>
             <Content>
@@ -14,15 +14,13 @@
                                Label="Number"
                                Placeholder="Enter Number"
                                MaxLenght=50
-                               Required=true>
-                    </TextInput>
+                               Required=true />
                 </div>
                 <div class="col-6">
                     <DateInput Property=@nameof(ConfirmCollaboratorPayment.Command.ConfirmedAt)
                                Label="Date"
                                Required=true />
                 </div>
-
             </Content>
         </FormRow>
     </Content>

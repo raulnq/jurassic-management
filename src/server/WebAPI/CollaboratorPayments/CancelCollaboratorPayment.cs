@@ -85,7 +85,7 @@ public static class CancelCollaboratorPayment
 
         await Handle(behavior, handler, collaboratorPaymentId, clock, command);
 
-        context.Response.Headers.TriggerShowSuccessMessage($"The collaborator payment {collaboratorPaymentId} was canceled successfully");
+        context.Response.Headers.TriggerShowSuccessMessage("collaborator payment", "canceled", collaboratorPaymentId);
 
         return await GetCollaboratorPayment.HandlePage(getCollaboratorPaymentRunner, listProformaToCollaboratorPaymentProcessItemsRunner, collaboratorPaymentId);
     }

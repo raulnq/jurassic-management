@@ -4,9 +4,9 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddProformaToInvoiceProcesses(this IServiceCollection services)
     {
-        services.AddTransient<StartProformaToInvoiceProcess.Handler>();
-
-        services.AddTransient<ListProformaToInvoiceProcessItems.Runner>();
+        services
+            .AddTransient<StartProformaToInvoiceProcess.Handler>()
+            .AddTransient<ListProformaToInvoiceProcessItems.Runner>();
 
         return services;
     }

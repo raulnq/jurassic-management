@@ -5,7 +5,7 @@
 @using WebAPI.Infrastructure.Ui;
 
 <ModalForm HtmxProps=@(new HtmxProps(Endpoints.GetPay(CollaboratorPaymentId), Infrastructure.Ui.Targets.Workspace))
-           Title="Pay collaborator payment">
+           Title=@Endpoints.PayTitle>
     <Content>
         <FormRow>
             <Content>

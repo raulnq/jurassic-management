@@ -2,17 +2,31 @@
 
 public static class Endpoints
 {
+    public const string Title = "Collaborator Payments";
+
     public const string List = "/ui/collaborator-payments/list";
+
+    public const string ListTitle = "List collaborator payments";
 
     public const string View = "/ui/collaborator-payments/{collaboratorPaymentId}/view";
 
+    public const string ViewTitle = "View collaborator payment";
+
     public const string Pay = "/ui/collaborator-payments/{collaboratorPaymentId}/pay";
+
+    public const string PayTitle = "Pay";
 
     public const string Confirm = "/ui/collaborator-payments/{collaboratorPaymentId}/confirm";
 
+    public const string ConfirmTitle = "Confirm";
+
     public const string Upload = "/ui/collaborator-payments/{collaboratorPaymentId}/upload-document";
 
+    public const string UploadTitle = "Upload";
+
     public const string Cancel = "/ui/collaborator-payments/{collaboratorPaymentId}/cancel";
+
+    public const string CancelTitle = "Cancel";
 
     public static string GetView(Guid collaboratorPaymentId)
     {
@@ -50,7 +64,8 @@ public static class Endpoints
         group.MapGet("/", ListCollaboratorPayments.Handle);
 
         var uigroup = app.MapGroup("/ui/collaborator-payments")
-           .ExcludeFromDescription();
+           .ExcludeFromDescription()
+           .RequireAuthorization();
 
         uigroup.MapGet("/list", ListCollaboratorPayments.HandlePage);
 

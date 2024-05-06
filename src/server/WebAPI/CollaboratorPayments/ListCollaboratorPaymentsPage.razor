@@ -2,15 +2,15 @@
 @using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
 
-<Heading Text="Collaborator Payments" />
-<Breadcrumbs Links=@(new []{new Breadcrumbs.Link("List collaborator payments")})
+<Heading Text=@Endpoints.Title />
+<Breadcrumbs Links=@(new []{new Breadcrumbs.Link(Endpoints.ListTitle)})
              Target=@(Infrastructure.Ui.Targets.Workspace) />
 <Toolbar>
     <Actions>
-        <ActionButton Text="Register collaborator payment"
+        <ActionButton Text=@ProformaToCollaboratorPaymentProcesses.Endpoints.RegisterTitle
                       Icon=@Icons.Add
                       HtmxProps=@(new HtmxProps(
-                      WebAPI.ProformaToCollaboratorPaymentProcesses.Endpoints.Register, Infrastructure.Ui.Targets.Workspace)) />
+                      ProformaToCollaboratorPaymentProcesses.Endpoints.Register, Infrastructure.Ui.Targets.Workspace)) />
     </Actions>
 </Toolbar>
 <Section>
@@ -18,7 +18,7 @@
         <FormRow>
             <Content>
                 <div class="col">
-                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.CollaboratorPaymentList}",Swap.OuterHTML,$"#{Targets.CollaboratorPaymentList}"))
+                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}",Swap.OuterHTML,$"#{Targets.List}"))
                                   Label="Status"
                                   Property=@(nameof(ListCollaboratorPayments.Query.Status))
                                   Query=@Query
@@ -28,7 +28,7 @@
                 </div>
             </Content>
         </FormRow>
-        <div id=@Targets.CollaboratorPaymentList>
+        <div id=@Targets.List>
             <DataTable TResult=ListCollaboratorPayments.Result
                        Result=@Result
                        Context="item">
@@ -60,7 +60,7 @@
             </DataTable>
             <Pagination Query=@Query
                         Result=@Result
-                        HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.CollaboratorPaymentList}", Swap.OuterHTML, $"#{Targets.CollaboratorPaymentList}"))
+                        HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}", Swap.OuterHTML, $"#{Targets.List}"))
                         Parameters=@(new []{ new KeyValuePair<string, object?>(nameof(ListCollaboratorPayments.Query.Status), Query.Status)}) />
         </div>
     </Content>

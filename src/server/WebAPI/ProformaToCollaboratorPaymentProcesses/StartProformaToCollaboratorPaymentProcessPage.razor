@@ -2,8 +2,8 @@
 @using WebAPI.Infrastructure.Ui;
 @using WebAPI.Proformas
 
-<Heading Text="Collaborator Payments" />
-<Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new("List collaborator payments",WebAPI.CollaboratorPayments.Endpoints.List.AddListParameters()), new("Register collaborator payment") })
+<Heading Text=@CollaboratorPayments.Endpoints.Title />
+<Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new(CollaboratorPayments.Endpoints.ListTitle,CollaboratorPayments.Endpoints.List.AddListParameters()), new(Endpoints.RegisterTitle) })
              Target=@(Infrastructure.Ui.Targets.Workspace) />
 <Section>
     <Content>
@@ -14,7 +14,7 @@
                         <div class="col-6">
                             <SelectInput Property=@nameof(StartProformaToCollaboratorPaymentProcess.Command.CollaboratorId)
                                          Label="Collaborator"
-                                         HtmxProps=@(new HtmxProps(@WebAPI.Proformas.Endpoints.SearchNotAddedToCollaboratorPayment, $"#{nameof(StartProformaToCollaboratorPaymentProcess.Command.ProformaId)}"){Include=$"#{nameof(StartProformaToCollaboratorPaymentProcess.Command.Currency)}"})
+                                         HtmxProps=@(new HtmxProps(@Proformas.Endpoints.SearchNotAddedToCollaboratorPayment, $"#{nameof(StartProformaToCollaboratorPaymentProcess.Command.ProformaId)}"){Include=$"#{nameof(StartProformaToCollaboratorPaymentProcess.Command.Currency)}"})
                                          Source=@Collaborators.ToDictionary(c=>c.CollaboratorId, c=>c.Name)
                                          Required=true>
                             </SelectInput>
@@ -23,7 +23,7 @@
                             <SelectInput Property=@nameof(StartProformaToCollaboratorPaymentProcess.Command.Currency)
                                          Label="Currency"
                                          Source=@(Enum.GetValues<Currency>().ToDictionary(i=>i.ToString(), i=>i.ToString()))
-                                         HtmxProps=@(new HtmxProps(@WebAPI.Proformas.Endpoints.SearchNotAddedToCollaboratorPayment, $"#{nameof(StartProformaToCollaboratorPaymentProcess.Command.ProformaId)}"){Include=$"#{nameof(StartProformaToCollaboratorPaymentProcess.Command.CollaboratorId)}"})
+                                         HtmxProps=@(new HtmxProps(@Proformas.Endpoints.SearchNotAddedToCollaboratorPayment, $"#{nameof(StartProformaToCollaboratorPaymentProcess.Command.ProformaId)}"){Include=$"#{nameof(StartProformaToCollaboratorPaymentProcess.Command.CollaboratorId)}"})
                                          Required=true>
                             </SelectInput>
                         </div>

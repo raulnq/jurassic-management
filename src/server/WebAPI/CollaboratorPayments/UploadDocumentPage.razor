@@ -6,7 +6,7 @@
 
 <ModalForm HtmxProps=@(new HtmxProps(Endpoints.GetUpload(CollaboratorPaymentId), Infrastructure.Ui.Targets.Workspace)
            { Encoding="multipart/form-data"})
-           Title="Upload document">
+           Title=@Endpoints.UploadTitle>
     <Content>
         <FormRow>
             <Content>

@@ -2,7 +2,7 @@
 @using WebAPI.Infrastructure.Ui;
 @using WebAPI.Proformas;
 
-<div id=@Targets.ProcessItemsList>
+<div id=@Targets.List>
     <DataTable TResult=ListProformaToCollaboratorPaymentProcessItems.Result
                Result=@Result
                Context="item">
@@ -35,7 +35,7 @@
     </DataTable>
     <Pagination Query=@Query
                 Result=@Result
-                HtmxProps=@(new HtmxProps(Endpoints.GetListItems(Query.CollaboratorPaymentId!.Value), $"#{Targets.ProcessItemsList}", Swap.OuterHTML)) />
+                HtmxProps=@(new HtmxProps(Endpoints.GetListItems(Query.CollaboratorPaymentId!.Value), $"#{Targets.List}", Swap.OuterHTML)) />
 </div>
 
 @code {

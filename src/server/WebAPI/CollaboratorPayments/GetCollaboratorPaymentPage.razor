@@ -6,22 +6,22 @@
 @using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
 
-<Heading Text="Collaborator Payments" />
-<Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new("List collaborator payments", Endpoints.List.AddListParameters()), new("Edit collaborator payment") })
+<Heading Text=@Endpoints.Title />
+<Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new(Endpoints.ListTitle, Endpoints.List.AddListParameters()), new(Endpoints.ViewTitle) })
              Target=@(Infrastructure.Ui.Targets.Workspace)>
     <MenuItems>
-        <MenuItem Text="Upload document"
+        <MenuItem Text=@Endpoints.UploadTitle
                   IsDisabled=@(Result.Status!=CollaboratorPaymentStatus.Paid.ToString())
                   HtmxProps=@(new HtmxProps(Endpoints.GetUpload(Result.CollaboratorPaymentId), Infrastructure.Ui.Targets.Dialog)) />
-        <MenuItem Text="Pay"
+        <MenuItem Text=@Endpoints.PayTitle
                   IsDisabled=@(Result.Status!=CollaboratorPaymentStatus.Pending.ToString())
                   HtmxProps=@(new HtmxProps(Endpoints.GetPay(Result.CollaboratorPaymentId), Infrastructure.Ui.Targets.Dialog)) />
-        <MenuItem Text="Confirm"
+        <MenuItem Text=@Endpoints.ConfirmTitle
                   IsDisabled=@(Result.Status!=CollaboratorPaymentStatus.Paid.ToString())
                   HtmxProps=@(new HtmxProps(Endpoints.GetConfirm(Result.CollaboratorPaymentId), Infrastructure.Ui.Targets.Dialog)) />
         <MenuItem HtmxProps=@(new HtmxProps(Endpoints.GetCancel(Result.CollaboratorPaymentId), Infrastructure.Ui.Targets.Workspace){ Confirm = "Are you sure?", HttpMethod="POST"})
                   IsDisabled=@(Result.Status !=CollaboratorPaymentStatus.Pending.ToString())
-                  Text="Cancel" />
+                  Text=@Endpoints.CancelTitle />
     </MenuItems>
 </Breadcrumbs>
 <Toolbar>
@@ -48,23 +48,20 @@
                                  Label="Collaborator"
                                  TKey=Guid
                                  Value=@Result.CollaboratorName
-                                 Readonly=true>
-                    </SelectInput>
+                                 Readonly=true />
                 </div>
                 <div class="col-3">
                     <TextInput Property=@nameof(GetCollaboratorPayment.Result.Number)
                                Label="Number"
                                Value=@Result.Number
-                               Readonly=true>
-                    </TextInput>
+                               Readonly=true />
                 </div>
                 <div class="col-3">
                     <SelectInput Property=@nameof(GetCollaboratorPayment.Result.Currency)
                                  Label="Currency"
                                  TKey=int
                                  Value=@Result.Currency
-                                 Readonly=true>
-                    </SelectInput>
+                                 Readonly=true />
                 </div>
             </Content>
         </FormRow>
@@ -130,7 +127,7 @@
         </FormRow>
     </Content>
 </Section>
-<Section Title="Proformas">
+<Section Title=@Proformas.Endpoints.Title>
     <Content>
         <ListProformaToCollaboratorPaymentProcessItemsPage Query=@ListProformaToCollaboratorPaymentProcessItemsQuery
                                                            Result=@ListProformaToCollaboratorPaymentProcessItemsResult />
