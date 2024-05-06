@@ -14,10 +14,10 @@ public static class EditClient
     {
         [JsonIgnore]
         public Guid ClientId { get; set; }
-        public string? Name { get; set; }
-        public string? PhoneNumber { get; set; }
-        public string? DocumentNumber { get; set; }
-        public string? Address { get; set; }
+        public string Name { get; set; } = default!;
+        public string PhoneNumber { get; set; } = default!;
+        public string DocumentNumber { get; set; } = default!;
+        public string Address { get; set; } = default!;
         public decimal PenaltyMinimumHours { get; set; }
         public decimal PenaltyAmount { get; set; }
         public decimal TaxesExpensesPercentage { get; set; }
@@ -57,7 +57,7 @@ public static class EditClient
         {
             var client = await _context.Get<Client>(command.ClientId);
 
-            client.Edit(command.Name!, command.PhoneNumber!, command.DocumentNumber!, command.Address!);
+            client.Edit(command.Name!, command.PhoneNumber, command.DocumentNumber, command.Address);
 
             client.EditExpenses(command.TaxesExpensesPercentage, command.AdministrativeExpensesPercentage, command.BankingExpensesPercentage, command.MinimumBankingExpenses);
 

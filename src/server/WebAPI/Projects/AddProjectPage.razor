@@ -1,8 +1,8 @@
 ﻿@using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
 
-<ModalForm HtmxProps=@(new HtmxProps(Endpoints.GetRegister(ClientId), $"#{Targets.ProjectList}", Swap.OuterHTML))
-           Title="Add project">
+<ModalForm HtmxProps=@(new HtmxProps(Endpoints.GetRegister(ClientId), $"#{Targets.List}", Swap.OuterHTML))
+           Title=@Endpoints.AddTitle>
     <Content>
         <TextInput Property=@nameof(AddProject.Command.Name)
                    Label="Name"

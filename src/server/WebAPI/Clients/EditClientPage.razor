@@ -3,12 +3,12 @@
 @using WebAPI.Infrastructure.Ui;
 @using WebAPI.Projects;
 
-<Heading Text="Clients" />
-<Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new("List clients", WebAPI.Clients.Endpoints.List.AddListParameters()), new("Edit client") })
+<Heading Text=@Endpoints.Title />
+<Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new(Endpoints.ListTitle, Clients.Endpoints.List.AddListParameters()), new(Endpoints.EditTitle) })
              Target=@(Infrastructure.Ui.Targets.Workspace) />
 <Section>
     <Content>
-        <Form HtmxProps=@(new HtmxProps(WebAPI.Clients.Endpoints.GetEdit(GetClientResult.ClientId), Infrastructure.Ui.Targets.Workspace))>
+        <Form HtmxProps=@(new HtmxProps(Clients.Endpoints.GetEdit(GetClientResult.ClientId), Infrastructure.Ui.Targets.Workspace))>
             <Content>
                 <FormRow>
                     <Content>
@@ -133,11 +133,11 @@
         </Form>
     </Content>
 </Section>
-<Section Title="Projects">
+<Section Title=@Projects.Endpoints.Title>
     <Content>
         <Toolbar>
             <Actions>
-                <ActionButton Text="Add Project"
+                <ActionButton Text=@Projects.Endpoints.AddTitle
                               Icon=@Icons.Add
                               HtmxProps=@(new HtmxProps(WebAPI.Projects.Endpoints.GetRegister(GetClientResult.ClientId), Infrastructure.Ui.Targets.Dialog)) />
             </Actions>

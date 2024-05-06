@@ -14,7 +14,7 @@ public static class AddProject
     {
         [JsonIgnore]
         public Guid ClientId { get; set; }
-        public string? Name { get; set; }
+        public string Name { get; set; } = default!;
     }
 
     public class Result
@@ -85,7 +85,7 @@ public static class AddProject
     {
         var result = await Handle(behavior, handler, clientId, command);
 
-        context.Response.Headers.TriggerShowRegisterSuccessMessageAndCloseModal($"project", result.Value!.ProjectId);
+        context.Response.Headers.TriggerShowRegisterSuccessMessageAndCloseModal("project", result.Value!.ProjectId);
 
         return await ListProjects.HandlePage(new ListProjects.Query() { ClientId = command.ClientId }, clientId, runner);
     }

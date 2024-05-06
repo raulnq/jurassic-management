@@ -2,13 +2,19 @@
 
 public static class Endpoints
 {
+    public const string Title = "Projects";
+
     public const string Search = "/ui/clients/search";
 
     public const string List = "/ui/clients/{clientId}/projects/list";
 
-    public const string Register = "/ui/clients/{clientId}/projects/add";
+    public const string Add = "/ui/clients/{clientId}/projects/add";
+
+    public const string AddTitle = "Add project";
 
     public const string Edit = "/ui/clients/{clientId}/projects/{projectId}/edit";
+
+    public const string EditTitle = "Edit project";
 
     public static string GetEdit(Guid clientId, Guid projectId)
     {
@@ -19,7 +25,7 @@ public static class Endpoints
 
     public static string GetRegister(Guid clientId)
     {
-        return Register.Replace("{clientId}", clientId.ToString());
+        return Add.Replace("{clientId}", clientId.ToString());
     }
 
     public static string GetList(Guid clientId)

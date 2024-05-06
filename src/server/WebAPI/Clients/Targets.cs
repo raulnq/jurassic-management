@@ -2,5 +2,5 @@
 
 public static class Targets
 {
-    public const string ClientList = "client-list-target";
+    public const string List = "client-list-target";
 }

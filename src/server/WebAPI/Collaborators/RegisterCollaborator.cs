@@ -78,7 +78,7 @@ public static class RegisterCollaborator
     {
         var result = await Handle(behavior, handler, command);
 
-        context.Response.Headers.TriggerShowRegisterSuccessMessage(Endpoints.Title, result.Value!.CollaboratorId);
+        context.Response.Headers.TriggerShowRegisterSuccessMessage("collaborator", result.Value!.CollaboratorId);
 
         return await ListCollaborators.HandlePage(new ListCollaborators.Query() { }, runner);
     }

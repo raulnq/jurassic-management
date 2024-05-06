@@ -4,16 +4,17 @@ namespace WebAPI.Users;
 
 public static class Endpoints
 {
-    public const string Login = "/ui/login";
+    public const string Login = "/";
 
     public static void RegisterUserEndpoints(this WebApplication app)
     {
+        app.MapGet("/", LoginUser.HandlePage).ExcludeFromDescription();
+
+        app.MapPost("/", LoginUser.HandleAction).ExcludeFromDescription();
+
         var uigroup = app.MapGroup("/ui")
-        .ExcludeFromDescription();
-
-        uigroup.MapGet("/login", LoginUser.HandlePage);
-
-        uigroup.MapPost("/login", LoginUser.HandleAction);
+        .ExcludeFromDescription()
+        .RequireAuthorization();
 
         uigroup.MapGet("/", () =>
         {

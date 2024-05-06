@@ -75,7 +75,7 @@ public static class EditCollaboratorRole
     {
         await Handle(behavior, handler, collaboratorRoleId, command);
 
-        context.Response.Headers.TriggerShowEditSuccessMessage(Endpoints.Title, command.CollaboratorRoleId);
+        context.Response.Headers.TriggerShowEditSuccessMessage("collaborator role", command.CollaboratorRoleId);
 
         return await HandlePage(runner, command.CollaboratorRoleId);
     }

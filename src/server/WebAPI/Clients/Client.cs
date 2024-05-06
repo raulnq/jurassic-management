@@ -3,10 +3,10 @@
 public class Client
 {
     public Guid ClientId { get; private set; }
-    public string? Name { get; private set; }
-    public string? PhoneNumber { get; private set; }
-    public string? DocumentNumber { get; private set; }
-    public string? Address { get; private set; }
+    public string Name { get; private set; } = default!;
+    public string PhoneNumber { get; private set; } = default!;
+    public string DocumentNumber { get; private set; } = default!;
+    public string Address { get; private set; } = default!;
     public decimal PenaltyMinimumHours { get; private set; }
     public decimal PenaltyAmount { get; private set; }
     public decimal TaxesExpensesPercentage { get; private set; }

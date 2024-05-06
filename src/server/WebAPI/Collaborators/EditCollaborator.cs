@@ -78,7 +78,7 @@ public static class EditCollaborator
     {
         await Handle(behavior, handler, collaboratorId, command);
 
-        context.Response.Headers.TriggerShowEditSuccessMessage($"collaborator", command.CollaboratorId);
+        context.Response.Headers.TriggerShowEditSuccessMessage("collaborator", command.CollaboratorId);
 
         return await HandlePage(runner, command.CollaboratorId);
     }

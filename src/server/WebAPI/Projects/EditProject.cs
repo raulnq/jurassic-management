@@ -13,7 +13,7 @@ public static class EditProject
     {
         [JsonIgnore]
         public Guid ProjectId { get; set; }
-        public string? Name { get; set; }
+        public string Name { get; set; } = default!;
     }
 
     public class Validator : AbstractValidator<Command>

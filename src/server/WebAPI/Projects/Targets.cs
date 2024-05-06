@@ -2,5 +2,5 @@
 
 public static class Targets
 {
-    public const string ProjectList = "project-list-target";
+    public const string List = "project-list-target";
 }

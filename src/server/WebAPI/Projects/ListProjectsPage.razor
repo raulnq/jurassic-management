@@ -2,7 +2,7 @@
 @using WebAPI.Infrastructure.Ui;
 @using WebAPI.Projects;
 
-<div id=@Targets.ProjectList>
+<div id=@Targets.List>
     <DataTable TResult=ListProjects.Result
                Result=@Result
                Context="item">
@@ -22,7 +22,7 @@
     </DataTable>
     <Pagination Query=@Query
                 Result=@Result
-                HtmxProps=@(new HtmxProps(Endpoints.GetList(Query.ClientId!.Value),$"#{Targets.ProjectList}", Swap.OuterHTML)) />
+                HtmxProps=@(new HtmxProps(Endpoints.GetList(Query.ClientId!.Value),$"#{Targets.List}", Swap.OuterHTML)) />
 </div>
 
 @code {

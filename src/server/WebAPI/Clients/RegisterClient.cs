@@ -11,10 +11,10 @@ public static class RegisterClient
 {
     public class Command
     {
-        public string? Name { get; set; }
-        public string? PhoneNumber { get; set; }
-        public string? DocumentNumber { get; set; }
-        public string? Address { get; set; }
+        public string Name { get; set; } = default!;
+        public string PhoneNumber { get; set; } = default!;
+        public string DocumentNumber { get; set; } = default!;
+        public string Address { get; set; } = default!;
         public decimal PenaltyMinimumHours { get; set; }
         public decimal PenaltyAmount { get; set; }
         public decimal TaxesExpensesPercentage { get; set; }

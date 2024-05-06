@@ -19,7 +19,7 @@ public static class ListProjects
     {
         public Guid ProjectId { get; set; }
         public Guid ClientId { get; set; }
-        public string? Name { get; set; }
+        public string Name { get; set; } = default!;
     }
 
     public class Runner : BaseRunner

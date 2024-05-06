@@ -2,11 +2,19 @@
 
 public static class Endpoints
 {
+    public const string Title = "Clients";
+
     public const string List = "/ui/clients/list";
+
+    public const string ListTitle = "List clients";
 
     public const string Register = "/ui/clients/register";
 
+    public const string RegisterTitle = "Register clients";
+
     public const string Edit = "/ui/clients/{clientId}/edit";
+
+    public const string EditTitle = "Edit clients";
 
     public static string GetEdit(Guid clientId)
     {
@@ -27,7 +35,8 @@ public static class Endpoints
         group.MapPut("/{clientId:guid}", EditClient.Handle);
 
         var uigroup = app.MapGroup("/ui/clients")
-        .ExcludeFromDescription();
+        .ExcludeFromDescription()
+        .RequireAuthorization();
 
         uigroup.MapGet("/list", ListClients.HandlePage);
 

@@ -4,15 +4,12 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddProjects(this IServiceCollection services)
     {
-        services.AddTransient<ListProjects.Runner>();
-
-        services.AddTransient<GetProject.Runner>();
-
-        services.AddTransient<AddProject.Handler>();
-
-        services.AddTransient<EditProject.Handler>();
-
-        services.AddTransient<SearchProjects.Runner>();
+        services
+            .AddTransient<ListProjects.Runner>()
+            .AddTransient<GetProject.Runner>()
+            .AddTransient<AddProject.Handler>()
+            .AddTransient<EditProject.Handler>()
+            .AddTransient<SearchProjects.Runner>();
 
         return services;
     }
