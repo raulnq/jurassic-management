@@ -2,11 +2,19 @@
 
 public static class Endpoints
 {
+    public const string Title = "Collaborators";
+
     public const string List = "/ui/collaborators/list";
+
+    public const string ListTitle = "List collaborators";
 
     public const string Register = "/ui/collaborators/register";
 
+    public const string RegisterTitle = "Register collaborators";
+
     public const string Edit = "/ui/collaborators/{collaboratorId}/edit";
+
+    public const string EditTitle = "Edit collaborators";
 
     public static string GetEdit(Guid collaboratorId)
     {
@@ -27,7 +35,8 @@ public static class Endpoints
         group.MapGet("/", ListCollaborators.Handle);
 
         var uigroup = app.MapGroup("/ui/collaborators")
-            .ExcludeFromDescription();
+            .ExcludeFromDescription()
+            .RequireAuthorization();
 
         uigroup.MapGet("/list", ListCollaborators.HandlePage);
 

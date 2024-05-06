@@ -13,7 +13,7 @@ public static class EditCollaborator
     {
         [JsonIgnore]
         public Guid CollaboratorId { get; set; }
-        public string? Name { get; set; }
+        public string Name { get; set; } = default!;
         public decimal WithholdingPercentage { get; set; }
     }
 
@@ -40,7 +40,7 @@ public static class EditCollaborator
         {
             var collaborator = await _context.Get<Collaborator>(command.CollaboratorId);
 
-            collaborator.Edit(command.Name!, command.WithholdingPercentage);
+            collaborator.Edit(command.Name, command.WithholdingPercentage);
         }
     }
 

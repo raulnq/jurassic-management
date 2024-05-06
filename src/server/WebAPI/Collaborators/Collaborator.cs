@@ -3,7 +3,7 @@
 public class Collaborator
 {
     public Guid CollaboratorId { get; private set; }
-    public string? Name { get; private set; }
+    public string Name { get; private set; } = default!;
     public decimal WithholdingPercentage { get; private set; }
 
     private Collaborator() { }

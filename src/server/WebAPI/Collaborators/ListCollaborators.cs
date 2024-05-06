@@ -15,7 +15,7 @@ public static class ListCollaborators
     public class Result
     {
         public Guid CollaboratorId { get; set; }
-        public string? Name { get; set; }
+        public string Name { get; set; } = default!;
         public decimal WithholdingPercentage { get; set; }
     }
 

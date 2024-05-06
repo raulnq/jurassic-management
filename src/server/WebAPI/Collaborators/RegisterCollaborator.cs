@@ -11,7 +11,7 @@ public static class RegisterCollaborator
 {
     public class Command
     {
-        public string? Name { get; set; }
+        public string Name { get; set; } = default!;
         public decimal WithholdingPercentage { get; set; }
     }
 
@@ -40,7 +40,7 @@ public static class RegisterCollaborator
 
         public Task<Result> Handle(Command command)
         {
-            var collaborator = new Collaborator(NewId.Next().ToSequentialGuid(), command.Name!, command.WithholdingPercentage);
+            var collaborator = new Collaborator(NewId.Next().ToSequentialGuid(), command.Name, command.WithholdingPercentage);
 
             _context.Set<Collaborator>().Add(collaborator);
 
@@ -78,7 +78,7 @@ public static class RegisterCollaborator
     {
         var result = await Handle(behavior, handler, command);
 
-        context.Response.Headers.TriggerShowRegisterSuccessMessage($"collaborator", result.Value!.CollaboratorId);
+        context.Response.Headers.TriggerShowRegisterSuccessMessage(Endpoints.Title, result.Value!.CollaboratorId);
 
         return await ListCollaborators.HandlePage(new ListCollaborators.Query() { }, runner);
     }

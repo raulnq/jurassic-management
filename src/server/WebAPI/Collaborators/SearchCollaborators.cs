@@ -12,7 +12,7 @@ public static class SearchCollaborators
     public class Result
     {
         public Guid CollaboratorId { get; set; }
-        public string? Name { get; set; }
+        public string Name { get; set; } = default!;
         public decimal WithholdingPercentage { get; set; }
     }
 
