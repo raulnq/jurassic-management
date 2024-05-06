@@ -25,3 +25,17 @@ nuke RunMigrator
 Open the solution and run the `WebApi` project.
 
 Note: You need to have [docker](https://docs.docker.com/desktop/install/windows-install/) up and running.
+
+### IaC
+
+```
+az deployment group create --resource-group jurassic-qa --template-file .\iac\database.bicep --parameters administratorLoginPassword='<MY_PASSWORD>'
+
+az deployment group create --resource-group jurassic-qa --template-file .\iac\application.bicep --parameters administratorLoginPassword='<MY_PASSWORD>'
+```
+
+### Deployment
+
+```
+nuke Deploy --web-app-password <MY_FTPS_PASSWORD> --web-app-name jurassic-qa --web-app-user '$jurassic-qa'
+```

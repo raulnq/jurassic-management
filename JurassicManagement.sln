@@ -26,6 +26,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PDFPreviewer", "src\server\PDFPreviewer\PDFPreviewer.csproj", "{C429585E-1069-4023-8964-C95676928A54}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "iac", "iac", "{04B1BF96-2A8E-4858-BF9A-735FB202E9A2}"
+	ProjectSection(SolutionItems) = preProject
+		iac\application.bicep = iac\application.bicep
+		iac\database.bicep = iac\database.bicep
+		iac\settings.bicep = iac\settings.bicep
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

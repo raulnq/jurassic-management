@@ -6,6 +6,12 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using static Nuke.Common.Tools.Docker.DockerTasks;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.Docker;
+using System.Security.Policy;
+using System.IO.Compression;
+using Nuke.Common.Tooling;
+using System.IO;
+using System.Net.Http;
+using System.Text;
 
 class Build : NukeBuild
 {
@@ -22,13 +28,79 @@ class Build : NukeBuild
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
+    [Parameter()]
+    public string WebAppUser;
+
+    [Parameter()]
+    public string WebAppPassword;
+
+    [Parameter]
+    public string WebAppName;
+
     [Solution] readonly Solution Solution;
 
     AbsolutePath SourceDirectory => RootDirectory / "src" / "server";
 
     AbsolutePath PublishDirectory => RootDirectory / "publish";
 
+    AbsolutePath ArtifactDirectory => RootDirectory / "artifact";
+
     string MigratorProject = "Migrator";
+
+    string WebAPIProject = "WebAPI";
+
+    Target Clean => _ => _
+        .Executes(() =>
+        {
+            ArtifactDirectory.CreateOrCleanDirectory();
+            PublishDirectory.CreateOrCleanDirectory();
+        });
+
+    Target CompileWebAPI => _ => _
+    .Executes(() =>
+    {
+        DotNetBuild(s => s
+            .SetProjectFile(SourceDirectory / WebAPIProject)
+            .SetConfiguration(Configuration));
+    });
+
+    Target PublishWebAPI => _ => _
+    .DependsOn(Clean)
+    .DependsOn(CompileWebAPI)
+    .Executes(() =>
+    {
+        DotNetPublish(s => s
+            .SetProject(SourceDirectory / WebAPIProject)
+            .SetConfiguration(Configuration)
+            .DisableNoBuild()
+            .DisableNoRestore()
+            .SetOutput(PublishDirectory / WebAPIProject));
+    });
+
+    Target Deploy => _ => _
+        .DependsOn(Zip)
+        .Requires(() => WebAppUser)
+        .Requires(() => WebAppPassword)
+        .Requires(() => WebAppName)
+        .Executes(async () =>
+        {
+            var base64Auth = Convert.ToBase64String(Encoding.Default.GetBytes($"{WebAppUser}:{WebAppPassword}"));
+            using (var memStream = new MemoryStream(File.ReadAllBytes(ArtifactDirectory / "deployment.zip")))
+            {
+                memStream.Position = 0;
+                var content = new StreamContent(memStream);
+                var httpClient = new HttpClient();
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", base64Auth);
+                var requestUrl = $"https://{WebAppName}.scm.azurewebsites.net/api/zipdeploy";
+                var response = await httpClient.PostAsync(requestUrl, content);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    Assert.Fail("Deployment returned status code: " + response.StatusCode);
+                }
+            }
+        });
+
 
     Target CompileMigrator => _ => _
     .Executes(() =>
@@ -39,6 +111,7 @@ class Build : NukeBuild
     });
 
     Target PublishMigrator => _ => _
+    .DependsOn(Clean)
     .DependsOn(CompileMigrator)
     .Executes(() =>
     {
@@ -48,6 +121,13 @@ class Build : NukeBuild
             .DisableNoBuild()
             .DisableNoRestore()
             .SetOutput(PublishDirectory / MigratorProject));
+    });
+
+    Target Zip => _ => _
+    .DependsOn(PublishWebAPI)
+    .Executes(() =>
+    {
+        ZipFile.CreateFromDirectory(PublishDirectory / WebAPIProject, ArtifactDirectory / "deployment.zip");
     });
 
     Target RunMigrator => _ => _

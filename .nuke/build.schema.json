@@ -72,8 +72,12 @@
           "items": {
             "type": "string",
             "enum": [
+              "Clean",
               "CompileMigrator",
+              "CompileWebAPI",
+              "Deploy",
               "PublishMigrator",
+              "PublishWebAPI",
               "RemoveEnv",
               "RemoveRabbitMQ",
               "RemoveSeq",
@@ -89,7 +93,8 @@
               "StopRabbitMQ",
               "StopSeq",
               "StopSQLServer",
-              "StopStorage"
+              "StopStorage",
+              "Zip"
             ]
           }
         },
@@ -103,8 +108,12 @@
           "items": {
             "type": "string",
             "enum": [
+              "Clean",
               "CompileMigrator",
+              "CompileWebAPI",
+              "Deploy",
               "PublishMigrator",
+              "PublishWebAPI",
               "RemoveEnv",
               "RemoveRabbitMQ",
               "RemoveSeq",
@@ -120,7 +129,8 @@
               "StopRabbitMQ",
               "StopSeq",
               "StopSQLServer",
-              "StopStorage"
+              "StopStorage",
+              "Zip"
             ]
           }
         },
@@ -133,6 +143,15 @@
             "Quiet",
             "Verbose"
           ]
+        },
+        "WebAppName": {
+          "type": "string"
+        },
+        "WebAppPassword": {
+          "type": "string"
+        },
+        "WebAppUser": {
+          "type": "string"
         }
       }
     }
