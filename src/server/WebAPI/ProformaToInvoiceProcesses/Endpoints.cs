@@ -2,6 +2,8 @@
 
 public static class Endpoints
 {
+    public const string RegisterTitle = "Register invoice";
+
     public const string Register = "/ui/proforma-to-invoice-processes/register";
 
     public const string ListItems = "/ui/proforma-to-invoice-processes/{invoiceId}/items/list";
@@ -11,7 +13,6 @@ public static class Endpoints
         return ListItems.Replace("{invoiceId}", invoiceId.ToString());
     }
 
-
     public static void RegisterProformaToInvoiceProcessEndpoints(this WebApplication app)
     {
         var group = app.MapGroup("/proforma-to-invoice-processes")
@@ -20,7 +21,8 @@ public static class Endpoints
         group.MapPost("/", StartProformaToInvoiceProcess.Handle);
 
         var uigroup = app.MapGroup("/ui/proforma-to-invoice-processes")
-        .ExcludeFromDescription();
+        .ExcludeFromDescription()
+        .RequireAuthorization();
 
         uigroup.MapGet("/register", StartProformaToInvoiceProcess.HandlePage);
 

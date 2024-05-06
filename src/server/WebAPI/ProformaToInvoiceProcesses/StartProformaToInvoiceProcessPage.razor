@@ -2,8 +2,8 @@
 @using WebAPI.Infrastructure.Ui;
 @using WebAPI.Proformas
 
-<Heading Text="Invoices" />
-<Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new("List invoices",WebAPI.Invoices.Endpoints.List.AddListParameters()), new("Register invoice") })
+<Heading Text=@Invoices.Endpoints.Title />
+<Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new(Invoices.Endpoints.ListTitle,WebAPI.Invoices.Endpoints.List.AddListParameters()), new(Endpoints.RegisterTitle) })
              Target=@(Infrastructure.Ui.Targets.Workspace) />
 <Section>
     <Content>

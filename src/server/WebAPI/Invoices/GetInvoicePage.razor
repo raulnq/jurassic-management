@@ -5,19 +5,19 @@
 @using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
 
-<Heading Text="Invoices" />
-<Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new("List invoices", Endpoints.List.AddListParameters()), new("Edit invoice") })
+<Heading Text=@Endpoints.Title />
+<Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new(Endpoints.ListTitle, Endpoints.List.AddListParameters()), new(Endpoints.ViewTitle) })
              Target=@(Infrastructure.Ui.Targets.Workspace)>
     <MenuItems>
-        <MenuItem Text="Upload document"
+        <MenuItem Text=@Endpoints.UploadTitle
                   IsDisabled=@(Result.Status!=InvoiceStatus.Pending.ToString())
                   HtmxProps=@(new HtmxProps(Endpoints.GetUpload(Result.InvoiceId), Infrastructure.Ui.Targets.Dialog)) />
-        <MenuItem Text="Issue"
+        <MenuItem Text=@Endpoints.IssueTitle
                   IsDisabled=@(Result.Status!=InvoiceStatus.Pending.ToString())
                   HtmxProps=@(new HtmxProps(Endpoints.GetIssue(Result.InvoiceId), Infrastructure.Ui.Targets.Dialog)) />
         <MenuItem HtmxProps=@(new HtmxProps(Endpoints.GetCancel(Result.InvoiceId), Infrastructure.Ui.Targets.Workspace){ Confirm = "Are you sure?", HttpMethod="POST"})
                   IsDisabled=@(Result.Status !=InvoiceStatus.Pending.ToString())
-                  Text="Cancel" />
+                  Text=@Endpoints.CancelTitle />
     </MenuItems>
 </Breadcrumbs>
 <Toolbar>
@@ -44,23 +44,20 @@
                                  Label="Client"
                                  TKey=Guid
                                  Value=@Result.ClientName
-                                 Readonly=true>
-                    </SelectInput>
+                                 Readonly=true />
                 </div>
                 <div class="col-3">
                     <TextInput Property=@nameof(GetInvoice.Result.Number)
                                Label="Number"
                                Value=@Result.Number
-                               Readonly=true>
-                    </TextInput>
+                               Readonly=true />
                 </div>
                 <div class="col-3">
                     <SelectInput Property=@nameof(GetInvoice.Result.Currency)
                                  Label="Currency"
                                  TKey=int
                                  Value=@Result.Currency
-                                 Readonly=true>
-                    </SelectInput>
+                                 Readonly=true />
                 </div>
             </Content>
         </FormRow>
@@ -97,14 +94,14 @@
                 </div>
                 <div class="col-3">
                     <NumberInput Property=@nameof(GetInvoice.Result.Taxes)
-                                 Label="Commission"
+                                 Label="Taxes"
                                  Prefix="+$"
                                  Value=@Result.Taxes
                                  Readonly=true />
                 </div>
                 <div class="col-3">
                     <NumberInput Property=@nameof(GetInvoice.Result.Total)
-                                 Label="Commission"
+                                 Label="Total"
                                  Prefix="=$"
                                  Value=@Result.Total
                                  Readonly=true />
@@ -120,7 +117,7 @@
         </FormRow>
     </Content>
 </Section>
-<Section Title="Proformas">
+<Section Title=@Proformas.Endpoints.Title>
     <Content>
         <ListProformaToInvoiceProcessItemsPage Query=@ListProformaToInvoiceProcessItemsQuery
                                                Result=@ListProformaToInvoiceProcessItemsResult />

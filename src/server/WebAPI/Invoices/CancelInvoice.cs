@@ -85,7 +85,7 @@ public static class CancelInvoice
 
         await Handle(behavior, handler, invoiceId, clock, command);
 
-        context.Response.Headers.TriggerShowSuccessMessage($"The invoice {command.InvoiceId} was canceled successfully");
+        context.Response.Headers.TriggerShowSuccessMessage("invoice", "canceled", command.InvoiceId);
 
         return await GetInvoice.HandlePage(getInvoiceRunner, listProformaToInvoiceProcessItems, command.InvoiceId);
     }

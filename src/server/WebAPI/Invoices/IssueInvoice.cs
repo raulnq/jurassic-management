@@ -83,7 +83,7 @@ public static class IssueInvoice
     {
         await Handle(behavior, handler, invoiceId, command);
 
-        context.Response.Headers.TriggerShowSuccessMessageAndCloseModal($"The invoice {invoiceId} was issued successfully");
+        context.Response.Headers.TriggerShowSuccessMessageAndCloseModal("invoice", "issued", invoiceId);
 
         return await GetInvoice.HandlePage(getInvoiceRunner, listProformaToInvoiceProcessItemsRunner, invoiceId);
     }

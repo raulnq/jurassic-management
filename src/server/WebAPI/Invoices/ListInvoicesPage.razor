@@ -3,15 +3,15 @@
 @using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
 
-<Heading Text="Invoices" />
-<Breadcrumbs Links=@(new []{new Breadcrumbs.Link("List invoices")})
+<Heading Text=@Endpoints.Title />
+<Breadcrumbs Links=@(new []{new Breadcrumbs.Link(Endpoints.ListTitle)})
              Target=@(Infrastructure.Ui.Targets.Workspace) />
 <Toolbar>
     <Actions>
-        <ActionButton Text="Register Invoice"
+        <ActionButton Text=@ProformaToInvoiceProcesses.Endpoints.RegisterTitle
                       Icon=@Icons.Add
                       HtmxProps=@(new HtmxProps(
-                      WebAPI.ProformaToInvoiceProcesses.Endpoints.Register, Infrastructure.Ui.Targets.Workspace)) />
+                      ProformaToInvoiceProcesses.Endpoints.Register, Infrastructure.Ui.Targets.Workspace)) />
     </Actions>
 </Toolbar>
 <Section>
@@ -19,27 +19,25 @@
         <FormRow>
             <Content>
                 <div class="col-6">
-                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.InvoiceList}",Swap.OuterHTML,$"#{Targets.InvoiceList}"){ Include=$"#{nameof(ListInvoices.Query.ClientId)}"})
+                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}",Swap.OuterHTML,$"#{Targets.List}"){ Include=$"#{nameof(ListInvoices.Query.ClientId)}"})
                                   Label="Status"
                                   Property=@(nameof(ListInvoices.Query.Status))
                                   Query=@Query
                                   EmptyLabel="All Status"
-                                  Source=@(Enum.GetValues<InvoiceStatus>().ToDictionary(i=>i.ToString(), i=>i.ToString()))>
-                    </SelectFilter>
+                                  Source=@(Enum.GetValues<InvoiceStatus>().ToDictionary(i=>i.ToString(), i=>i.ToString())) />
                 </div>
                 <div class="col-6">
-                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.InvoiceList}",Swap.OuterHTML,$"#{Targets.InvoiceList}"){ Include=$"#{nameof(ListInvoices.Query.Status)}"})
+                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}",Swap.OuterHTML,$"#{Targets.List}"){ Include=$"#{nameof(ListInvoices.Query.Status)}"})
                                   Label="Client"
                                   Property=@(nameof(ListInvoices.Query.ClientId))
                                   Query=@Query
                                   EmptyLabel="All Clients"
                                   EmptyValue="00000000-0000-0000-0000-000000000000"
-                                  Source=@(Clients.ToDictionary(i=>i.ClientId.ToString(), i=>i.Name))>
-                    </SelectFilter>
+                                  Source=@(Clients.ToDictionary(i=>i.ClientId.ToString(), i=>i.Name)) />
                 </div>
             </Content>
         </FormRow>
-        <div id=@Targets.InvoiceList>
+        <div id=@Targets.List>
             <DataTable TResult=ListInvoices.Result
                        Result=@Result
                        Context="item">
@@ -67,8 +65,8 @@
             </DataTable>
             <Pagination Query=@Query
                         Result=@Result
-                        HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.InvoiceList}", Swap.OuterHTML, $"#{Targets.InvoiceList}"))
-                        Parameters=@(new []{ new KeyValuePair<string, object?>(nameof(ListInvoices.Query.Status), Query.Status)}) />
+                        HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}", Swap.OuterHTML, $"#{Targets.List}"))
+                        Parameters=@(new KeyValuePair<string, object?>[]{ new (nameof(ListInvoices.Query.Status), Query.Status), new (nameof(ListInvoices.Query.ClientId), Query.ClientId)}) />
         </div>
     </Content>
 </Section>

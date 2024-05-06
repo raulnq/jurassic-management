@@ -18,7 +18,7 @@ public static class Endpoints
 
     public const string View = "/ui/proformas/{proformaId}/view";
 
-    public const string ViewTitle = "View proformas";
+    public const string ViewTitle = "View proforma";
 
     public const string Issue = "/ui/proformas/{proformaId}/issue";
 

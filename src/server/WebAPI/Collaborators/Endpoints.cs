@@ -14,7 +14,7 @@ public static class Endpoints
 
     public const string Edit = "/ui/collaborators/{collaboratorId}/edit";
 
-    public const string EditTitle = "Edit collaborators";
+    public const string EditTitle = "Edit collaborator";
 
     public static string GetEdit(Guid collaboratorId)
     {

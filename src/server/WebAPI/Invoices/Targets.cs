@@ -2,5 +2,5 @@
 
 public static class Targets
 {
-    public const string InvoiceList = "invoice-list-target";
+    public const string List = "invoice-list-target";
 }

@@ -6,19 +6,14 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddInvoices(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddTransient<RegisterInvoice.Handler>();
-
-        services.AddTransient<UploadDocument.Handler>();
-
-        services.AddTransient<IssueInvoice.Handler>();
-
-        services.AddTransient<ListInvoices.Runner>();
-
-        services.AddTransient<GetInvoice.Runner>();
-
-        services.AddTransient<CancelInvoice.Handler>();
-
-        services.AddTransient<SearchInvoicesNotAddedToCollection.Runner>();
+        services
+            .AddTransient<RegisterInvoice.Handler>()
+            .AddTransient<UploadDocument.Handler>()
+            .AddTransient<IssueInvoice.Handler>()
+            .AddTransient<ListInvoices.Runner>()
+            .AddTransient<GetInvoice.Runner>()
+            .AddTransient<CancelInvoice.Handler>()
+            .AddTransient<SearchInvoicesNotAddedToCollection.Runner>();
 
         var connectionString = configuration["AzureStorageConnectionString"];
 
