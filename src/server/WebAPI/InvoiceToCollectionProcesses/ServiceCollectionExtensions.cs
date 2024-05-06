@@ -4,9 +4,9 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddInvoiceToCollectionProcesses(this IServiceCollection services)
     {
-        services.AddTransient<StartInvoiceToCollectionProcess.Handler>();
-
-        services.AddTransient<ListInvoiceToCollectionProcessItems.Runner>();
+        services
+            .AddTransient<StartInvoiceToCollectionProcess.Handler>()
+            .AddTransient<ListInvoiceToCollectionProcessItems.Runner>();
 
         return services;
     }

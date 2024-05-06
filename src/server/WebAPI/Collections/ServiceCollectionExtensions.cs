@@ -4,15 +4,12 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddCollections(this IServiceCollection services)
     {
-        services.AddTransient<RegisterCollection.Handler>();
-
-        services.AddTransient<ConfirmCollection.Handler>();
-
-        services.AddTransient<ListCollections.Runner>();
-
-        services.AddTransient<GetCollection.Runner>();
-
-        services.AddTransient<CancelCollection.Handler>();
+        services
+            .AddTransient<RegisterCollection.Handler>()
+            .AddTransient<ConfirmCollection.Handler>()
+            .AddTransient<ListCollections.Runner>()
+            .AddTransient<GetCollection.Runner>()
+            .AddTransient<CancelCollection.Handler>();
 
         return services;
     }

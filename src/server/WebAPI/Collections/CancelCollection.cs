@@ -85,7 +85,7 @@ public static class CancelCollection
 
         await Handle(behavior, handler, collectionId, clock, command);
 
-        context.Response.Headers.TriggerShowSuccessMessage($"The collection {command.CollectionId} was canceled successfully");
+        context.Response.Headers.TriggerShowSuccessMessage("collection", "canceled", command.CollectionId);
 
         return await GetCollection.HandlePage(getCollectionRunner, listInvoiceToCollectionProcessItemsRunner, command.CollectionId);
     }

@@ -5,7 +5,7 @@
 @using WebAPI.Infrastructure.Ui;
 
 <ModalForm HtmxProps=@(new HtmxProps(Endpoints.GetConfirm(CollectionId), Infrastructure.Ui.Targets.Workspace))
-           Title="Issue invoice">
+           Title=@Endpoints.ConfirmTitle>
     <Content>
         <FormRow>
             <Content>

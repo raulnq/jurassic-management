@@ -2,13 +2,23 @@
 
 public static class Endpoints
 {
+    public const string Title = "Collections";
+
     public const string List = "/ui/collections/list";
+
+    public const string ListTitle = "List collections";
 
     public const string View = "/ui/collections/{collectionId}/view";
 
+    public const string ViewTitle = "View collection";
+
     public const string Confirm = "/ui/collections/{collectionId}/confirm";
 
+    public const string ConfirmTitle = "Confirm";
+
     public const string Cancel = "/ui/collections/{collectionId}/cancel";
+
+    public const string CancelTitle = "Cancel";
 
     public static string GetView(Guid collectionId)
     {
@@ -37,7 +47,8 @@ public static class Endpoints
         group.MapGet("/{collectionId:guid}", GetCollection.Handle);
 
         var uigroup = app.MapGroup("/ui/collections")
-           .ExcludeFromDescription();
+           .ExcludeFromDescription()
+           .RequireAuthorization();
 
         uigroup.MapGet("/list", ListCollections.HandlePage);
 

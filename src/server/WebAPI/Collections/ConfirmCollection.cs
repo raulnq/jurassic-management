@@ -83,7 +83,7 @@ public static class ConfirmCollection
     {
         await Handle(behavior, handler, collectionId, command);
 
-        context.Response.Headers.TriggerShowSuccessMessageAndCloseModal($"The collection {collectionId} was confirmed successfully");
+        context.Response.Headers.TriggerShowSuccessMessageAndCloseModal("collection", "confirmed", collectionId);
 
         return await GetCollection.HandlePage(getCollectionRunner, listInvoiceToCollectionProcessItemsRunner, collectionId);
     }

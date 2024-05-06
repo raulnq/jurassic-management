@@ -3,15 +3,14 @@
 @using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
 
-<Heading Text="Collections" />
-<Breadcrumbs Links=@(new []{new Breadcrumbs.Link("List collections")})
+<Heading Text=@Endpoints.Title />
+<Breadcrumbs Links=@(new []{new Breadcrumbs.Link(Endpoints.ListTitle)})
              Target=@(Infrastructure.Ui.Targets.Workspace) />
 <Toolbar>
     <Actions>
-        <ActionButton Text="Register Collection"
+        <ActionButton Text=@InvoiceToCollectionProcesses.Endpoints.RegisterTitle
                       Icon=@Icons.Add
-                      HtmxProps=@(new HtmxProps(
-                      WebAPI.InvoiceToCollectionProcesses.Endpoints.Register, Infrastructure.Ui.Targets.Workspace)) />
+                      HtmxProps=@(new HtmxProps(InvoiceToCollectionProcesses.Endpoints.Register, Infrastructure.Ui.Targets.Workspace)) />
     </Actions>
 </Toolbar>
 <Section>
@@ -19,7 +18,7 @@
         <FormRow>
             <Content>
                 <div class="col-6">
-                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.CollectionList}",Swap.OuterHTML,$"#{Targets.CollectionList}"){ Include=$"#{nameof(ListCollections.Query.ClientId)}"})
+                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}",Swap.OuterHTML,$"#{Targets.List}"){ Include=$"#{nameof(ListCollections.Query.ClientId)}"})
                                   Label="Status"
                                   Property=@(nameof(ListCollections.Query.Status))
                                   Query=@Query
@@ -28,7 +27,7 @@
                     </SelectFilter>
                 </div>
                 <div class="col-6">
-                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.CollectionList}",Swap.OuterHTML,$"#{Targets.CollectionList}"){ Include=$"#{nameof(ListCollections.Query.Status)}"})
+                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}",Swap.OuterHTML,$"#{Targets.List}"){ Include=$"#{nameof(ListCollections.Query.Status)}"})
                                   Label="Client"
                                   Property=@(nameof(ListCollections.Query.ClientId))
                                   Query=@Query
@@ -39,7 +38,7 @@
                 </div>
             </Content>
         </FormRow>
-        <div id=@Targets.CollectionList>
+        <div id=@Targets.List>
             <DataTable TResult=ListCollections.Result
                        Result=@Result
                        Context="item">
@@ -65,8 +64,8 @@
             </DataTable>
             <Pagination Query=@Query
                         Result=@Result
-                        HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.CollectionList}", Swap.OuterHTML, $"#{Targets.CollectionList}"))
-                        Parameters=@(new []{ new KeyValuePair<string, object?>(nameof(ListCollections.Query.Status), Query.Status)}) />
+                        HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}", Swap.OuterHTML, $"#{Targets.List}"))
+                        Parameters=@(new KeyValuePair<string, object?>[]{ new (nameof(ListCollections.Query.Status), Query.Status),new (nameof(ListCollections.Query.ClientId), Query.ClientId)}) />
         </div>
     </Content>
 </Section>

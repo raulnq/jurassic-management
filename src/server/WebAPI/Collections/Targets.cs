@@ -2,5 +2,5 @@
 
 public static class Targets
 {
-    public const string CollectionList = "collection-list-target";
+    public const string List = "collection-list-target";
 }

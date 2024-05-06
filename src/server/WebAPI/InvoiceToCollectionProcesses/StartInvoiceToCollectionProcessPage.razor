@@ -2,8 +2,8 @@
 @using WebAPI.Infrastructure.Ui;
 @using WebAPI.Proformas
 
-<Heading Text="Collections" />
-<Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new("List collections",WebAPI.Collections.Endpoints.List.AddListParameters()), new("Register collection") })
+<Heading Text=@Collections.Endpoints.Title />
+<Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new(Collections.Endpoints.ListTitle,Collections.Endpoints.List.AddListParameters()), new(Endpoints.RegisterTitle) })
              Target=@(Infrastructure.Ui.Targets.Workspace) />
 <Section>
     <Content>

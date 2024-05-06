@@ -10,7 +10,7 @@ public static class ListCollections
 {
     public class Query : ListQuery
     {
-        public CollectionStatus? Status { get; set; }
+        public string? Status { get; set; }
 
         public Guid? ClientId { get; set; }
     }
@@ -40,9 +40,9 @@ public static class ListCollections
                 .Select(Tables.Clients.Field(nameof(Client.Name), nameof(Result.ClientName)))
                 .Join(Tables.Clients, Tables.Collections.Field(nameof(Collection.ClientId)), Tables.Clients.Field(nameof(Client.ClientId)));
 
-                if (query.Status.HasValue)
+                if (!string.IsNullOrEmpty(query.Status))
                 {
-                    statement = statement.Where(Tables.Collections.Field(nameof(Collection.Status)), query.Status.ToString());
+                    statement = statement.Where(Tables.Collections.Field(nameof(Collection.Status)), query.Status);
                 }
                 if (query.ClientId.HasValue && query.ClientId != Guid.Empty)
                 {

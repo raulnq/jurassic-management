@@ -6,16 +6,16 @@
 @using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
 
-<Heading Text="Collections" />
-<Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new("List collections", Endpoints.List.AddListParameters()), new("Edit Collection") })
+<Heading Text=@Endpoints.Title />
+<Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new(Endpoints.ListTitle, Endpoints.List.AddListParameters()), new(Endpoints.ViewTitle) })
              Target=@(Infrastructure.Ui.Targets.Workspace)>
     <MenuItems>
-        <MenuItem Text="Confirm"
+        <MenuItem Text=@Endpoints.ConfirmTitle
                   IsDisabled=@(Result.Status!=CollectionStatus.Pending.ToString())
                   HtmxProps=@(new HtmxProps(Endpoints.GetConfirm(Result.CollectionId), Infrastructure.Ui.Targets.Dialog)) />
         <MenuItem HtmxProps=@(new HtmxProps(Endpoints.GetCancel(Result.CollectionId), Infrastructure.Ui.Targets.Workspace){ Confirm = "Are you sure?", HttpMethod="POST"})
                   IsDisabled=@(Result.Status !=CollectionStatus.Pending.ToString())
-                  Text="Cancel" />
+                  Text=@Endpoints.CancelTitle />
     </MenuItems>
 </Breadcrumbs>
 <Toolbar>
@@ -36,16 +36,14 @@
                                  Label="Client"
                                  TKey=Guid
                                  Value=@Result.ClientName
-                                 Readonly=true>
-                    </SelectInput>
+                                 Readonly=true />
                 </div>
                 <div class="col-2">
                     <SelectInput Property=@nameof(GetCollection.Result.Currency)
                                  Label="Currency"
                                  TKey=int
                                  Value=@Result.Currency
-                                 Readonly=true>
-                    </SelectInput>
+                                 Readonly=true />
                 </div>
                 <div class="col-3">
                     <NumberInput Property=@nameof(GetCollection.Result.Total)
