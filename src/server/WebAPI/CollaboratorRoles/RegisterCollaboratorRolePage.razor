@@ -2,8 +2,8 @@
 @using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
 
-<Heading Text="Collaborator Roles" />
-<Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new("List collaborators roles", Endpoints.List.AddListParameters()), new("Register collaborator role") })
+<Heading Text=@Endpoints.Title />
+<Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new(Endpoints.ListTitle, Endpoints.List.AddListParameters()), new(Endpoints.RegisterTitle) })
              Target=@(Infrastructure.Ui.Targets.Workspace) />
 <Section>
     <Content>

@@ -15,7 +15,7 @@ public static class ListCollaboratorRoles
     public class Result
     {
         public Guid CollaboratorRoleId { get; set; }
-        public string? Name { get; set; }
+        public string Name { get; set; } = default!;
         public decimal FeeAmount { get; set; }
         public decimal ProfitPercentage { get; set; }
     }
@@ -32,7 +32,7 @@ public static class ListCollaboratorRoles
 
                 if (!string.IsNullOrEmpty(query.Name))
                 {
-                    statement = statement.WhereLike(Tables.CollaboratorRoles.Field(nameof(Query.Name)), $"%{query.Name}%");
+                    statement = statement.WhereLike(Tables.CollaboratorRoles.Field(nameof(CollaboratorRole.Name)), $"%{query.Name}%");
                 }
                 return statement;
             }, query);

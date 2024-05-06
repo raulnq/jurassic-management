@@ -12,7 +12,7 @@ public static class SearchCollaboratorRoles
     public class Result
     {
         public Guid CollaboratorRoleId { get; set; }
-        public string? Name { get; set; }
+        public string Name { get; set; } = default!;
         public decimal FeeAmount { get; set; }
         public decimal ProfitPercentage { get; set; }
     }

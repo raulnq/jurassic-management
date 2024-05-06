@@ -2,8 +2,8 @@
 @using WebAPI.Infrastructure.Ui;
 @using WebAPI.CollaboratorRoles;
 
-<Heading Text="Collaborator Roles" />
-<Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new("List collaborators roles", Endpoints.List.AddListParameters()), new("Edit collaborator role") })
+<Heading Text=@Endpoints.Title />
+<Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new(Endpoints.ListTitle, Endpoints.List.AddListParameters()), new(Endpoints.EditTitle) })
              Target=@(Infrastructure.Ui.Targets.Workspace) />
 <Section>
     <Content>

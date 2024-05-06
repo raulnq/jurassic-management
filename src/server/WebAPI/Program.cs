@@ -89,7 +89,6 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.UseExceptionHandler();
 app.RegisterCollaboratorRoleEndpoints();
 app.RegisterCollaboratorEndpoints();

@@ -48,12 +48,12 @@ public static class UiExtensions
 
     public static void TriggerShowRegisterSuccessMessage(this IHeaderDictionary dictionary, string entity, object id)
     {
-        dictionary.TriggerShowSuccessMessage($"The {entity} {id} was registered successfully");
+        dictionary.TriggerShowSuccessMessage($"The {entity.ToLower()} {id} was registered successfully");
     }
 
     public static void TriggerShowEditSuccessMessage(this IHeaderDictionary dictionary, string entity, object id)
     {
-        dictionary.TriggerShowSuccessMessage($"The {entity} {id} was edited successfully");
+        dictionary.TriggerShowSuccessMessage($"The {entity.ToLower()} {id} was edited successfully");
     }
 
     public static void TriggerShowSuccessMessageAndCloseModal(this IHeaderDictionary dictionary, string message)
@@ -63,12 +63,12 @@ public static class UiExtensions
 
     public static void TriggerShowRegisterSuccessMessageAndCloseModal(this IHeaderDictionary dictionary, string entity, object id)
     {
-        dictionary.TriggerShowSuccessMessageAndCloseModal($"The {entity} {id} was registered successfully");
+        dictionary.TriggerShowSuccessMessageAndCloseModal($"The {entity.ToLower()} {id} was registered successfully");
     }
 
     public static void TriggerShowEditSuccessMessageAndCloseModal(this IHeaderDictionary dictionary, string entity, object id)
     {
-        dictionary.TriggerShowSuccessMessageAndCloseModal($"The {entity} {id} was edited successfully");
+        dictionary.TriggerShowSuccessMessageAndCloseModal($"The {entity.ToLower()} {id} was edited successfully");
     }
 
     public static string AddListParameters(this string endpoint, int page = 1, int pageSize = 10, bool ascending = true)

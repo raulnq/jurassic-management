@@ -3,7 +3,7 @@
 public class CollaboratorRole
 {
     public Guid CollaboratorRoleId { get; private set; }
-    public string? Name { get; private set; }
+    public string Name { get; private set; } = default!;
     public decimal FeeAmount { get; private set; }
     public decimal ProfitPercentage { get; private set; }
 

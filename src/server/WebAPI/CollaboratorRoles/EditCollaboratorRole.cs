@@ -13,7 +13,7 @@ public static class EditCollaboratorRole
     {
         [JsonIgnore]
         public Guid CollaboratorRoleId { get; set; }
-        public string? Name { get; set; }
+        public string Name { get; set; } = default!;
         public decimal FeeAmount { get; set; }
         public decimal ProfitPercentage { get; set; }
     }
@@ -29,14 +29,9 @@ public static class EditCollaboratorRole
         }
     }
 
-    public class Handler
+    public class Handler(ApplicationDbContext context)
     {
-        private readonly ApplicationDbContext _context;
-
-        public Handler(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        private readonly ApplicationDbContext _context = context;
 
         public async Task Handle(Command command)
         {
@@ -80,7 +75,7 @@ public static class EditCollaboratorRole
     {
         await Handle(behavior, handler, collaboratorRoleId, command);
 
-        context.Response.Headers.TriggerShowEditSuccessMessage($"collaborator role", command.CollaboratorRoleId);
+        context.Response.Headers.TriggerShowEditSuccessMessage(Endpoints.Title, command.CollaboratorRoleId);
 
         return await HandlePage(runner, command.CollaboratorRoleId);
     }

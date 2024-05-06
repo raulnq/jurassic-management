@@ -13,7 +13,6 @@ public static class Endpoints
         return Edit.Replace("{clientId}", clientId.ToString());
     }
 
-
     public static void RegisterClientEndpoints(this WebApplication app)
     {
         var group = app.MapGroup("/clients")

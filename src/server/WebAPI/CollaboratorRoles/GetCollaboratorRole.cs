@@ -28,7 +28,7 @@ public static class GetCollaboratorRole
         {
             return _queryRunner.Get<Result>((qf) => qf
                 .Query(Tables.CollaboratorRoles)
-                .Where(Tables.CollaboratorRoles.Field(nameof(Query.CollaboratorRoleId)), query.CollaboratorRoleId));
+                .Where(Tables.CollaboratorRoles.Field(nameof(CollaboratorRole.CollaboratorRoleId)), query.CollaboratorRoleId));
         }
     }
 

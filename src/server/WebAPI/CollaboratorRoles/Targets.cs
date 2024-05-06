@@ -2,5 +2,5 @@
 
 public static class Targets
 {
-    public const string CollaboratorRoleList = "colaborator-role-list-target";
+    public const string List = "collaborator-role-list-target";
 }

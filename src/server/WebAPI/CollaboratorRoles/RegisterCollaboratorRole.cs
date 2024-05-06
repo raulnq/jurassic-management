@@ -80,7 +80,7 @@ public static class RegisterCollaboratorRole
     {
         var result = await Handle(behavior, handler, command);
 
-        context.Response.Headers.TriggerShowRegisterSuccessMessage($"collaborator role", result.Value!.CollaboratorRoleId);
+        context.Response.Headers.TriggerShowRegisterSuccessMessage(Endpoints.Title, result.Value!.CollaboratorRoleId);
 
         return await ListCollaboratorRoles.HandlePage(new ListCollaboratorRoles.Query() { }, runner);
     }

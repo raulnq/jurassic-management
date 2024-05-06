@@ -2,9 +2,17 @@
 
 public static class Endpoints
 {
+    public const string Title = "Collaborator Roles";
+
+    public const string ListTitle = "List collaborator roles";
+
     public const string List = "/ui/collaborator-roles/list";
 
+    public const string RegisterTitle = "Register collaborator role";
+
     public const string Register = "/ui/collaborator-roles/register";
+
+    public const string EditTitle = "Edit collaborator role";
 
     public const string Edit = "/ui/collaborator-roles/{collaboratorRoleId}/edit";
 
@@ -16,8 +24,7 @@ public static class Endpoints
     public static void RegisterCollaboratorRoleEndpoints(this WebApplication app)
     {
         var group = app.MapGroup("/collaborator-roles")
-        .WithTags("collaborator-roles")
-        .RequireAuthorization();
+        .WithTags("collaborator-roles");
 
         group.MapPost("/", RegisterCollaboratorRole.Handle);
 

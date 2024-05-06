@@ -2,12 +2,12 @@
 @using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
 
-<Heading Text="Collaborator Roles" />
-<Breadcrumbs Links=@(new []{new Breadcrumbs.Link("List collaborators roles")})
+<Heading Text=@Endpoints.Title />
+<Breadcrumbs Links=@(new []{new Breadcrumbs.Link(Endpoints.ListTitle)})
              Target=@(Infrastructure.Ui.Targets.Workspace) />
 <Toolbar>
     <Actions>
-        <ActionButton Text="Register Collaborator Role"
+        <ActionButton Text=@Endpoints.RegisterTitle
                       Icon=@Icons.Add
                       HtmxProps=@(new HtmxProps(Endpoints.Register, Infrastructure.Ui.Targets.Workspace)) />
     </Actions>
@@ -20,11 +20,11 @@
                     <SearchFilter Label="Name"
                                   Property=@nameof(ListCollaboratorRoles.Query.Name)
                                   Query=@Query
-                                  HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.CollaboratorRoleList}", Swap.OuterHTML, $"#{Targets.CollaboratorRoleList}")) />
+                                  HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}", Swap.OuterHTML, $"#{Targets.List}")) />
                 </div>
             </Content>
         </FormRow>
-        <div id=@Targets.CollaboratorRoleList>
+        <div id=@Targets.List>
             <DataTable TResult=ListCollaboratorRoles.Result
                        Result=@Result
                        Context="item">
@@ -50,7 +50,7 @@
             </DataTable>
             <Pagination Query=@Query
                         Result=@Result
-                        HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.CollaboratorRoleList}", Swap.OuterHTML, $"#{Targets.CollaboratorRoleList}"))
+                        HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}", Swap.OuterHTML, $"#{Targets.List}"))
                         Parameters=@(new[] { new KeyValuePair<string, object?>(nameof(Query.Name), Query.Name) }) />
         </div>
     </Content>
