@@ -10,13 +10,23 @@
     <Content>
         <FormRow>
             <Content>
-                <div class="col">
-                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}",Swap.OuterHTML,$"#{Targets.List}"))
+                <div class="col-4">
+                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}",Swap.OuterHTML,$"#{Targets.List}"){ Include=$"#{nameof(ListBankBalance.Query.StringStart)}, #{nameof(ListBankBalance.Query.StringEnd)}"})
                                   Label="Status"
                                   Property=@(nameof(ListBankBalance.Query.Currency))
                                   Query=@Query
-                                  Value=@Currency.USD.ToString()
+                                  EmptyLabel="None"
                                   Source=@(Enum.GetValues<Currency>().ToDictionary(i=>i.ToString(), i=>i.ToString())) />
+                </div>
+                <div class="col-4">
+                    <DateFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}",Swap.OuterHTML,$"#{Targets.List}"){ Include=$"#{nameof(ListBankBalance.Query.Currency)}, #{nameof(ListBankBalance.Query.StringEnd)}"})
+                                Property=@(nameof(ListBankBalance.Query.StringStart))
+                                Query=@Query />
+                </div>
+                <div class="col-4">
+                    <DateFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}",Swap.OuterHTML,$"#{Targets.List}"){ Include=$"#{nameof(ListBankBalance.Query.Currency)}, #{nameof(ListBankBalance.Query.StringStart)}"})
+                                Property=@(nameof(ListBankBalance.Query.StringEnd))
+                                Query=@Query />
                 </div>
             </Content>
         </FormRow>
@@ -62,7 +72,7 @@
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td>End Balance</td>
+                        <td>Balance</td>
                         <td>@EndBalance</td>
                     </tr>
                 </tfoot>

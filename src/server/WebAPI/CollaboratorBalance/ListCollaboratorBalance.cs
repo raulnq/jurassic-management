@@ -1,16 +1,13 @@
-﻿using Infrastructure;
-using Microsoft.AspNetCore.Http.HttpResults;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.ComponentModel;
 using System.Text.Json.Serialization;
+using WebAPI.Collaborators;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.SqlKata;
-using WebAPI.Proformas;
 
-namespace WebAPI.BankBalance;
+namespace WebAPI.CollaboratorBalance;
 
-public static class ListBankBalance
+public static class ListCollaboratorBalance
 {
     public class Query : ListQuery
     {
@@ -21,29 +18,26 @@ public static class ListBankBalance
         [JsonIgnore]
         public DateTime? End { get; set; }
         public string? Currency { get; set; }
+        public Guid? CollaboratorId { get; set; }
     }
 
     public class Result
     {
-        public Guid RecordId { get; set; }
-        public DateTime IssuedAt { get; set; }
-        public string Type { get; set; } = default!;
-        public string? Description { get; set; }
+        public Guid CollaboratorId { get; set; }
+        public DateTime Date { get; set; }
+        public DateTime? Start { get; set; }
+        public DateTime? End { get; set; }
+        public string Name { get; set; } = default!;
         public string Currency { get; set; } = default!;
-        public decimal SubTotal { get; set; }
-        public decimal Taxes { get; set; }
-        public decimal Total { get; set; }
-        public decimal ITF { get; set; }
+        public decimal NetSalary { get; set; }
         public decimal Balance { get; set; }
         public string? Number { get; set; }
-        public string Source { get; set; } = default!;
-        public DateTimeOffset CreatedAt { get; set; }
         public int Sign { get; set; }
         public decimal Amount
         {
             get
             {
-                return Total * Sign - ITF;
+                return NetSalary * Sign;
             }
         }
     }
@@ -57,24 +51,24 @@ public static class ListBankBalance
             return _queryRunner.List<Result>(qf =>
             {
                 var statement = qf
-                .Query(Tables.VwBankBalance)
-                .OrderBy(Tables.VwBankBalance.Field("IssuedAt"))
-                .Where(Tables.VwBankBalance.Field("Currency"), query.Currency);
-
+                .Query(Tables.VwCollaboratorBalance)
+                .OrderBy(Tables.VwCollaboratorBalance.Field("Date"))
+                .Where(Tables.VwCollaboratorBalance.Field("Currency"), query.Currency)
+                .Where(Tables.VwCollaboratorBalance.Field("CollaboratorId"), query.CollaboratorId);
                 if (query.End.HasValue && query.Start.HasValue)
                 {
-                    statement = statement.WhereBetween(Tables.VwBankBalance.Field("IssuedAt"), query.Start, query.End);
+                    statement = statement.WhereBetween(Tables.VwCollaboratorBalance.Field("Date"), query.Start, query.End);
                 }
                 else
                 {
                     if (query.Start.HasValue)
                     {
-                        statement = statement.Where(Tables.VwBankBalance.Field("IssuedAt"), ">=", query.Start);
+                        statement = statement.Where(Tables.VwCollaboratorBalance.Field("Date"), ">=", query.Start);
                     }
 
                     if (query.End.HasValue)
                     {
-                        statement = statement.Where(Tables.VwBankBalance.Field("IssuedAt"), "<=", query.End);
+                        statement = statement.Where(Tables.VwCollaboratorBalance.Field("Date"), "<=", query.End);
                     }
                 }
 
@@ -85,7 +79,8 @@ public static class ListBankBalance
 
     public static async Task<RazorComponentResult> HandlePage(
     [AsParameters] Query query,
-    [FromServices] GetBankBalance.Runner getBalanceRunner,
+    [FromServices] GetCollaboratorBalance.Runner getBalanceRunner,
+    [FromServices] SearchCollaborators.Runner searchCollaboratorsRunner,
     [FromServices] Runner runner)
     {
         var result = new List<Result>();
@@ -106,7 +101,7 @@ public static class ListBankBalance
             }
         }
 
-        if (!string.IsNullOrEmpty(query.Currency))
+        if (!string.IsNullOrEmpty(query.Currency) && query.CollaboratorId != Guid.Empty)
         {
             result = await runner.Run(query);
         }
@@ -115,7 +110,7 @@ public static class ListBankBalance
 
         if (query.Start.HasValue && !string.IsNullOrEmpty(query.Currency))
         {
-            startBalance = (await getBalanceRunner.Run(new GetBankBalance.Query() { Currency = query.Currency, End = query.Start.Value.AddDays(-1) })).Total;
+            startBalance = (await getBalanceRunner.Run(new GetCollaboratorBalance.Query() { Currency = query.Currency, End = query.Start.Value.AddDays(-1) })).Total;
         }
 
         var endBalance = startBalance;
@@ -126,6 +121,15 @@ public static class ListBankBalance
             endBalance = item.Amount + endBalance;
         }
 
-        return new RazorComponentResult<ListBankBalancePage>(new { Result = result, Query = query, StartBalance = startBalance, EndBalance = endBalance });
+        var searchCollaboratorsResult = await searchCollaboratorsRunner.Run(new SearchCollaborators.Query());
+
+        return new RazorComponentResult<ListCollaboratorBalancePage>(new
+        {
+            Result = result,
+            Query = query,
+            StartBalance = startBalance,
+            EndBalance = endBalance,
+            SearchCollaboratorsResult = searchCollaboratorsResult
+        });
     }
 }

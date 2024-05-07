@@ -1,0 +1,102 @@
+﻿@using WebAPI.CollaboratorRoles;
+@using WebAPI.Collaborators
+@using WebAPI.Infrastructure.SqlKata;
+@using WebAPI.Infrastructure.Ui;
+@using WebAPI.Proformas
+
+<Heading Text=@Endpoints.Title />
+<Breadcrumbs Links=@(new []{new Breadcrumbs.Link(Endpoints.ListTitle)})
+             Target=@(Infrastructure.Ui.Targets.Workspace) />
+<Section>
+    <Content>
+        <FormRow>
+            <Content>
+                <div class="col-3">
+                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}",Swap.OuterHTML,$"#{Targets.List}"){ Include=$"#{nameof(ListCollaboratorBalance.Query.CollaboratorId)}, #{nameof(ListCollaboratorBalance.Query.StringEnd)}, #{nameof(ListCollaboratorBalance.Query.StringStart)}"})
+                                  Label="Status"
+                                  Property=@(nameof(ListCollaboratorBalance.Query.Currency))
+                                  Query=@Query
+                                  EmptyLabel="None"
+                                  Source=@(Enum.GetValues<Currency>().ToDictionary(i=>i.ToString(), i=>i.ToString())) />
+                </div>
+                <div class="col-3">
+                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}",Swap.OuterHTML,$"#{Targets.List}"){ Include=$"#{nameof(ListCollaboratorBalance.Query.Currency)}, #{nameof(ListCollaboratorBalance.Query.StringEnd)}, #{nameof(ListCollaboratorBalance.Query.StringStart)}"})
+                                  Property=@(nameof(ListCollaboratorBalance.Query.CollaboratorId))
+                                  Query=@Query
+                                  Label="Collaborator"
+                                  EmptyLabel="None"
+                                  EmptyValue="00000000-0000-0000-0000-000000000000"
+                                  Source=@(SearchCollaboratorsResult.ToDictionary(c=>c.CollaboratorId, c=>c.Name)) />
+                </div>
+                <div class="col-3">
+                    <DateFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}",Swap.OuterHTML,$"#{Targets.List}"){ Include=$"#{nameof(ListCollaboratorBalance.Query.Currency)}, #{nameof(ListCollaboratorBalance.Query.StringEnd)}, #{nameof(ListCollaboratorBalance.Query.CollaboratorId)}"})
+                                Property=@(nameof(ListCollaboratorBalance.Query.StringStart))
+                                Query=@Query />
+                </div>
+                <div class="col-3">
+                    <DateFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}",Swap.OuterHTML,$"#{Targets.List}"){ Include=$"#{nameof(ListCollaboratorBalance.Query.Currency)}, #{nameof(ListCollaboratorBalance.Query.StringStart)}, #{nameof(ListCollaboratorBalance.Query.CollaboratorId)}"})
+                                Property=@(nameof(ListCollaboratorBalance.Query.StringEnd))
+                                Query=@Query />
+                </div>
+
+            </Content>
+        </FormRow>
+        <div id=@Targets.List>
+            <table class="table">
+                <thead class="table-light">
+                <th>Date</th>
+                <th>CollaboratorId</th>
+                <th>Name</th>
+                <th>NetSalary</th>
+                <th>Start</th>
+                <th>End</th>
+                <th>Balance</th>
+                </thead>
+                <tbody>
+                    @if (Result is null || Result.Count() == 0)
+                    {
+                        //TODO: Mostrar mensaje de no resultados
+                    }
+                    else
+                    {
+                        @foreach (var item in Result)
+                        {
+                            <tr @key="@item">
+                                <td>@item.Date</td>
+                                <td>@item.CollaboratorId</td>
+                                <td>@item.Name</td>
+                                <td>@item.Currency @item.Amount</td>
+                                <td>@item.Start</td>
+                                <td>@item.End</td>
+                                <td>@item.Balance</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>Balance</td>
+                        <td>@EndBalance</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </Content>
+</Section>
+@code {
+    [Parameter, EditorRequired]
+    public List<ListCollaboratorBalance.Result> Result { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public ListCollaboratorBalance.Query Query { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public decimal StartBalance { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public decimal EndBalance { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public List<SearchCollaborators.Result> SearchCollaboratorsResult { get; set; } = default!;
+}

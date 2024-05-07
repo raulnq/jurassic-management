@@ -6,6 +6,8 @@ public static class Tables
 
     public static Table VwBankBalance = new Table("VwBankBalance");
 
+    public static Table VwCollaboratorBalance = new Table("VwCollaboratorBalance");
+
     public static Table Transactions = new Table("Transactions");
 
     public static Table Collaborators = new Table("Collaborators");
