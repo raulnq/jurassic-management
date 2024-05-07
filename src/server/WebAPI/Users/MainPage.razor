@@ -19,31 +19,31 @@
                 <Items>
                     <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.Collaborators.Endpoints.List.AddListParameters(), Targets.Workspace){OnClick="highlight_sidebarlink(this);"})
                                  Icon="bi bi-people-fill"
-                                 Text="Collaborators" />
+                                 Text=@WebAPI.Collaborators.Endpoints.Title />
                     <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.CollaboratorRoles.Endpoints.List.AddListParameters(), Targets.Workspace){OnClick="highlight_sidebarlink(this);"})
                                  Icon="bi bi-person-vcard-fill"
-                                 Text="Collaborator Roles" />
+                                 Text=@WebAPI.CollaboratorRoles.Endpoints.Title />
                     <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.Clients.Endpoints.List.AddListParameters(), Targets.Workspace){OnClick="highlight_sidebarlink(this);"})
                                  Icon="bi bi bi-wallet-fill"
-                                 Text="Clients" />
+                                 Text=@WebAPI.Clients.Endpoints.Title />
                     <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.Proformas.Endpoints.List.AddListParameters(), Targets.Workspace){OnClick="highlight_sidebarlink(this);"})
                                  Icon="bi bi bi-file-text-fill"
-                                 Text="Proformas" />
+                                 Text=@WebAPI.Proformas.Endpoints.Title />
                     <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.Invoices.Endpoints.List.AddListParameters(), Targets.Workspace){OnClick="highlight_sidebarlink(this);"})
                                  Icon="bi bi-receipt"
-                                 Text="Invoices" />
+                                 Text=@WebAPI.Invoices.Endpoints.Title />
                     <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.CollaboratorPayments.Endpoints.List.AddListParameters(), Targets.Workspace){OnClick="highlight_sidebarlink(this);"})
                                  Icon="bi bi-credit-card-2-back-fill"
-                                 Text="Collaborator Payments" />
+                                 Text=@WebAPI.CollaboratorPayments.Endpoints.Title />
                     <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.Collections.Endpoints.List.AddListParameters(), Targets.Workspace){OnClick="highlight_sidebarlink(this);"})
                                  Icon="bi bi-coin"
-                                 Text="Collections" />
+                                 Text=@WebAPI.Collections.Endpoints.Title />
                     <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.Transactions.Endpoints.List.AddListParameters(), Targets.Workspace){OnClick="highlight_sidebarlink(this);"})
                                  Icon="bi bi-journals"
-                                 Text="Transactions" />
-                    <SidebarLink HtmxProps=@(new HtmxProps($"{WebAPI.Balance.Endpoints.List.AddListParameters()}&Currency=USD", Targets.Workspace){OnClick="highlight_sidebarlink(this);"})
+                                 Text=@WebAPI.Transactions.Endpoints.Title />
+                    <SidebarLink HtmxProps=@(new HtmxProps($"{WebAPI.BankBalance.Endpoints.List.AddListParameters()}&Currency=USD", Targets.Workspace){OnClick="highlight_sidebarlink(this);"})
                                  Icon="bi bi-bank"
-                                 Text="Balance" />
+                                 Text=@WebAPI.BankBalance.Endpoints.Title />
 
                 </Items>
             </Sidebar>

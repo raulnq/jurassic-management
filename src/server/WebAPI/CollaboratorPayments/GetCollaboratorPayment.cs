@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using WebAPI.Collaborators;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.SqlKata;
-using WebAPI.ProformaToCollaboratorPaymentProcesses;
 
 namespace WebAPI.CollaboratorPayments;
 
@@ -53,24 +52,5 @@ public static class GetCollaboratorPayment
     [FromRoute] Guid collaboratorPaymentId)
     {
         return TypedResults.Ok(await runner.Run(new Query() { CollaboratorPaymentId = collaboratorPaymentId }));
-    }
-
-    public static async Task<RazorComponentResult> HandlePage(
-    [FromServices] Runner runner,
-    [FromServices] ListProformaToCollaboratorPaymentProcessItems.Runner listProformaToCollaboratorPaymentProcessItemsRunner,
-    [FromRoute] Guid collaboratorPaymentId)
-    {
-        var result = await runner.Run(new Query() { CollaboratorPaymentId = collaboratorPaymentId });
-
-        var listProformaToCollaboratorPaymentProcessItemsQuery = new ListProformaToCollaboratorPaymentProcessItems.Query() { CollaboratorPaymentId = collaboratorPaymentId, PageSize = 5 };
-
-        var listProformaToCollaboratorPaymentProcessItemsResult = await listProformaToCollaboratorPaymentProcessItemsRunner.Run(listProformaToCollaboratorPaymentProcessItemsQuery);
-
-        return new RazorComponentResult<GetCollaboratorPaymentPage>(new
-        {
-            Result = result,
-            ListProformaToCollaboratorPaymentProcessItemsResult = listProformaToCollaboratorPaymentProcessItemsResult,
-            ListProformaToCollaboratorPaymentProcessItemsQuery = listProformaToCollaboratorPaymentProcessItemsQuery,
-        });
     }
 }

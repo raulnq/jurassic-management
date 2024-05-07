@@ -42,6 +42,15 @@ public class CollaboratorPayment
         Currency = currency;
         Refresh();
     }
+
+    public void Edit(decimal grossSalary, Currency currency, decimal withholdingPercentage)
+    {
+        GrossSalary = grossSalary;
+        Withholding = (grossSalary * withholdingPercentage) / 100;
+        NetSalary = GrossSalary - Withholding;
+        Currency = currency;
+        Refresh();
+    }
     private void Refresh()
     {
         if (NetSalary >= 1000)

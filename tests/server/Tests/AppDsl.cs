@@ -165,7 +165,7 @@ public class AppDsl : IAsyncDisposable
         return start!;
     }
 
-    public async Task<StartProformaToCollaboratorPaymentProcess.Result> RegisterCollaboratorPayment(Guid proformaId, Guid collaboratorId, Currency currency)
+    public async Task<StartProformaToCollaboratorPaymentProcess.Result> RegisterCollaboratorPaymentFromProforma(Guid proformaId, Guid collaboratorId, Currency currency)
     {
         var (_, start) = await ProformaToCollaboratorPaymentProcess.Start(c =>
         {

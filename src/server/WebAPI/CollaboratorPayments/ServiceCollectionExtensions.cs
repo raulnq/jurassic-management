@@ -13,7 +13,8 @@ public static class ServiceCollectionExtensions
             .AddTransient<PayCollaboratorPayment.Handler>()
             .AddTransient<CancelCollaboratorPayment.Handler>()
             .AddTransient<ListCollaboratorPayments.Runner>()
-            .AddTransient<GetCollaboratorPayment.Runner>();
+            .AddTransient<GetCollaboratorPayment.Runner>()
+            .AddTransient<EditCollaboratorPayment.Handler>();
 
         var connectionString = configuration["AzureStorageConnectionString"];
 

@@ -85,6 +85,6 @@ public static class ConfirmCollaboratorPayment
 
         context.Response.Headers.TriggerShowSuccessMessageAndCloseModal("collaborator payment", "confirmed", collaboratorPaymentId);
 
-        return await GetCollaboratorPayment.HandlePage(getCollaboratorPaymentRunner, listProformaToCollaboratorPaymentProcessItemsRunner, collaboratorPaymentId);
+        return await EditCollaboratorPayment.HandlePage(getCollaboratorPaymentRunner, listProformaToCollaboratorPaymentProcessItemsRunner, collaboratorPaymentId);
     }
 }

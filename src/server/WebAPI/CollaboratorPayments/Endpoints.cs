@@ -1,4 +1,6 @@
-﻿namespace WebAPI.CollaboratorPayments;
+﻿using WebAPI.Clients;
+
+namespace WebAPI.CollaboratorPayments;
 
 public static class Endpoints
 {
@@ -8,9 +10,13 @@ public static class Endpoints
 
     public const string ListTitle = "List collaborator payments";
 
-    public const string View = "/ui/collaborator-payments/{collaboratorPaymentId}/view";
+    public const string Register = "/ui/collaborator-payments/register";
 
-    public const string ViewTitle = "View collaborator payment";
+    public const string RegisterTitle = "Register collaborator payment";
+
+    public const string Edit = "/ui/collaborator-payments/{collaboratorPaymentId}/edit";
+
+    public const string EditTitle = "Edit collaborator payment";
 
     public const string Pay = "/ui/collaborator-payments/{collaboratorPaymentId}/pay";
 
@@ -28,9 +34,9 @@ public static class Endpoints
 
     public const string CancelTitle = "Cancel";
 
-    public static string GetView(Guid collaboratorPaymentId)
+    public static string GetEdit(Guid collaboratorPaymentId)
     {
-        return View.Replace("{collaboratorPaymentId}", collaboratorPaymentId.ToString());
+        return Edit.Replace("{collaboratorPaymentId}", collaboratorPaymentId.ToString());
     }
     public static string GetPay(Guid collaboratorPaymentId)
     {
@@ -61,6 +67,10 @@ public static class Endpoints
 
         group.MapPost("/{collaboratorPaymentId:guid}/pay", PayCollaboratorPayment.Handle);
 
+        group.MapPost("/", RegisterCollaboratorPayment.Handle);
+
+        group.MapPut("/{collaboratorPaymentId:guid}", EditCollaboratorPayment.Handle);
+
         group.MapGet("/", ListCollaboratorPayments.Handle);
 
         var uigroup = app.MapGroup("/ui/collaborator-payments")
@@ -69,7 +79,13 @@ public static class Endpoints
 
         uigroup.MapGet("/list", ListCollaboratorPayments.HandlePage);
 
-        uigroup.MapGet("/{collaboratorPaymentId:guid}/view", GetCollaboratorPayment.HandlePage);
+        uigroup.MapGet("/{collaboratorPaymentId:guid}/edit", EditCollaboratorPayment.HandlePage);
+
+        uigroup.MapPost("/{collaboratorPaymentId:guid}/edit", EditCollaboratorPayment.HandleAction);
+
+        uigroup.MapGet("/register", RegisterCollaboratorPayment.HandlePage);
+
+        uigroup.MapPost("/register", RegisterCollaboratorPayment.HandleAction);
 
         uigroup.MapGet("/{collaboratorPaymentId:guid}/upload-document", UploadDocument.HandlePage);
 

@@ -13,7 +13,7 @@ public class PayCollaboratorPaymentTests : BaseTest
 
         await _appDsl.RegisterInvoice(proformaResult.ProformaId, clientResult.ClientId, proformaCommand.Currency);
 
-        var start = await _appDsl.RegisterCollaboratorPayment(proformaResult.ProformaId, collaboratorResult.CollaboratorId, proformaCommand.Currency);
+        var start = await _appDsl.RegisterCollaboratorPaymentFromProforma(proformaResult.ProformaId, collaboratorResult.CollaboratorId, proformaCommand.Currency);
 
         await _appDsl.CollaboratorPayment.Pay(c =>
         {

@@ -2,7 +2,7 @@
 
 public static class Endpoints
 {
-    public const string RegisterTitle = "Register collaborator payment";
+    public const string RegisterTitle = "Register collaborator payment from proformas";
 
     public const string Register = "/ui/proforma-to-collaborator-payment-processes/register";
 

@@ -7,6 +7,10 @@
              Target=@(Infrastructure.Ui.Targets.Workspace) />
 <Toolbar>
     <Actions>
+        <ActionButton Text=@Endpoints.RegisterTitle
+                      Icon=@Icons.Add
+                      HtmxProps=@(new HtmxProps(
+                      Endpoints.Register, Infrastructure.Ui.Targets.Workspace)) />
         <ActionButton Text=@ProformaToCollaboratorPaymentProcesses.Endpoints.RegisterTitle
                       Icon=@Icons.Add
                       HtmxProps=@(new HtmxProps(
@@ -44,8 +48,8 @@
                 <RowTemplate>
                     <RowToolbar>
                         <Actions>
-                            <ActionLink HtmxProps=@(new HtmxProps(Endpoints.GetView(@item.CollaboratorPaymentId), Infrastructure.Ui.Targets.Workspace))
-                                        Icon=@Icons.View />
+                            <ActionLink HtmxProps=@(new HtmxProps(Endpoints.GetEdit(@item.CollaboratorPaymentId), Infrastructure.Ui.Targets.Workspace))
+                                        Icon=@Icons.Edit />
                         </Actions>
                     </RowToolbar>
                     <td>@item.CollaboratorPaymentId</td>

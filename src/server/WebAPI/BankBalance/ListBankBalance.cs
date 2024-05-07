@@ -4,9 +4,9 @@ using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Proformas;
 
-namespace WebAPI.Balance;
+namespace WebAPI.BankBalance;
 
-public static class ListBalance
+public static class ListBankBalance
 {
     public class Query : ListQuery
     {
@@ -49,24 +49,24 @@ public static class ListBalance
             return _queryRunner.List<Result>(qf =>
             {
                 var statement = qf
-                .Query(Tables.VwBalanceRecords)
-                .OrderBy(Tables.VwBalanceRecords.Field("IssuedAt"))
-                .Where(Tables.VwBalanceRecords.Field("Currency"), query.Currency);
+                .Query(Tables.VwBankBalance)
+                .OrderBy(Tables.VwBankBalance.Field("IssuedAt"))
+                .Where(Tables.VwBankBalance.Field("Currency"), query.Currency);
 
                 if (query.End.HasValue && query.Start.HasValue)
                 {
-                    statement = statement.WhereBetween(Tables.VwBalanceRecords.Field("IssuedAt"), query.Start, query.End);
+                    statement = statement.WhereBetween(Tables.VwBankBalance.Field("IssuedAt"), query.Start, query.End);
                 }
                 else
                 {
                     if (query.Start.HasValue)
                     {
-                        statement = statement.Where(Tables.VwBalanceRecords.Field("IssuedAt"), ">=", query.Start);
+                        statement = statement.Where(Tables.VwBankBalance.Field("IssuedAt"), ">=", query.Start);
                     }
 
                     if (query.End.HasValue)
                     {
-                        statement = statement.Where(Tables.VwBalanceRecords.Field("IssuedAt"), "<=", query.End);
+                        statement = statement.Where(Tables.VwBankBalance.Field("IssuedAt"), "<=", query.End);
                     }
                 }
 
@@ -77,7 +77,7 @@ public static class ListBalance
 
     public static async Task<RazorComponentResult> HandlePage(
     [AsParameters] Query query,
-    [FromServices] GetBalance.Runner getBalanceRunner,
+    [FromServices] GetBankBalance.Runner getBalanceRunner,
     [FromServices] Runner runner)
     {
         var result = await runner.Run(query);
@@ -86,7 +86,7 @@ public static class ListBalance
 
         if (query.Start.HasValue)
         {
-            startBalance = (await getBalanceRunner.Run(new GetBalance.Query() { Currency = query.Currency, End = query.Start.Value.AddDays(-1) })).Total;
+            startBalance = (await getBalanceRunner.Run(new GetBankBalance.Query() { Currency = query.Currency, End = query.Start.Value.AddDays(-1) })).Total;
         }
 
         var endBalance = startBalance;
@@ -97,6 +97,6 @@ public static class ListBalance
             endBalance = item.Amount + endBalance;
         }
 
-        return new RazorComponentResult<ListBalancePage>(new { Result = result, Query = query, StartBalance = startBalance, EndBalance = endBalance });
+        return new RazorComponentResult<ListBankBalancePage>(new { Result = result, Query = query, StartBalance = startBalance, EndBalance = endBalance });
     }
 }

@@ -1,4 +1,4 @@
-﻿CREATE VIEW $schema$.VwBalanceRecords
+﻿CREATE VIEW $schema$.VwBankBalance
 AS
 SELECT TransactionId as RecordId, IssuedAt, Type, Description, Currency, SubTotal, Taxes, Total, ITF, Number, 'Transactions' as Source, CreatedAt, CASE WHEN Type='Expenses' THEN -1 ELSE 1 END as Sign
 FROM $schema$.[Transactions]

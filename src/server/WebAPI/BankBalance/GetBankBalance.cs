@@ -1,9 +1,9 @@
 ﻿using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.SqlKata;
 
-namespace WebAPI.Balance;
+namespace WebAPI.BankBalance;
 
-public static class GetBalance
+public static class GetBankBalance
 {
     public class Query
     {
@@ -26,24 +26,24 @@ public static class GetBalance
             return _queryRunner.Get<Result>(qf =>
             {
                 var statement = qf
-                .Query(Tables.VwBalanceRecords)
+                .Query(Tables.VwBankBalance)
                 .SelectRaw("SUM(Total*Sign-ITF) as Total")
-                .Where(Tables.VwBalanceRecords.Field(Tables.VwBalanceRecords.Field("Currency")), query.Currency);
+                .Where(Tables.VwBankBalance.Field(Tables.VwBankBalance.Field("Currency")), query.Currency);
 
                 if (query.End.HasValue && query.Start.HasValue)
                 {
-                    statement = statement.WhereBetween(Tables.VwBalanceRecords.Field("IssuedAt"), query.Start, query.End);
+                    statement = statement.WhereBetween(Tables.VwBankBalance.Field("IssuedAt"), query.Start, query.End);
                 }
                 else
                 {
                     if (query.Start.HasValue)
                     {
-                        statement = statement.Where(Tables.VwBalanceRecords.Field("IssuedAt"), ">=", query.Start);
+                        statement = statement.Where(Tables.VwBankBalance.Field("IssuedAt"), ">=", query.Start);
                     }
 
                     if (query.End.HasValue)
                     {
-                        statement = statement.Where(Tables.VwBalanceRecords.Field("IssuedAt"), "<=", query.End);
+                        statement = statement.Where(Tables.VwBankBalance.Field("IssuedAt"), "<=", query.End);
                     }
                 }
 

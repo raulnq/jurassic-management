@@ -13,7 +13,7 @@
                 <div class="col">
                     <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}",Swap.OuterHTML,$"#{Targets.List}"))
                                   Label="Status"
-                                  Property=@(nameof(ListBalance.Query.Currency))
+                                  Property=@(nameof(ListBankBalance.Query.Currency))
                                   Query=@Query
                                   Value=@Currency.USD.ToString()
                                   Source=@(Enum.GetValues<Currency>().ToDictionary(i=>i.ToString(), i=>i.ToString())) />
@@ -72,9 +72,9 @@
 </Section>
 @code {
     [Parameter, EditorRequired]
-    public List<ListBalance.Result> Result { get; set; } = default!;
+    public List<ListBankBalance.Result> Result { get; set; } = default!;
     [Parameter, EditorRequired]
-    public ListBalance.Query Query { get; set; } = default!;
+    public ListBankBalance.Query Query { get; set; } = default!;
     [Parameter, EditorRequired]
     public decimal StartBalance { get; set; } = default!;
     [Parameter, EditorRequired]
