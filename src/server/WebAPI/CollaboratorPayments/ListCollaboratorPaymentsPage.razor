@@ -23,8 +23,7 @@
                                   Property=@(nameof(ListCollaboratorPayments.Query.Status))
                                   Query=@Query
                                   EmptyLabel="All Status"
-                                  Source=@(Enum.GetValues<CollaboratorPaymentStatus>().ToDictionary(i=>i.ToString(), i=>i.ToString()))>
-                    </SelectFilter>
+                                  Source=@(Enum.GetValues<CollaboratorPaymentStatus>().ToDictionary(i=>i.ToString(), i=>i.ToString())) />
                 </div>
             </Content>
         </FormRow>

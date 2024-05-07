@@ -16,6 +16,8 @@ public static class ConfirmCollection
         [JsonIgnore]
         public Guid CollectionId { get; set; }
         public decimal Total { get; set; }
+        public decimal Commission { get; set; }
+        public string Number { get; set; } = default!;
         public DateTime ConfirmedAt { get; set; }
     }
 
@@ -24,7 +26,9 @@ public static class ConfirmCollection
         public Validator()
         {
             RuleFor(command => command.CollectionId).NotEmpty();
+            RuleFor(command => command.Number).NotEmpty().MaximumLength(50);
             RuleFor(command => command.Total).GreaterThan(0);
+            RuleFor(command => command.Commission).GreaterThanOrEqualTo(0);
         }
     }
 
@@ -41,7 +45,7 @@ public static class ConfirmCollection
         {
             var collection = await _context.Get<Collection>(command.CollectionId);
 
-            collection.Confirm(command.Total, command.ConfirmedAt);
+            collection.Confirm(command.Total, command.Commission, command.Number, command.ConfirmedAt);
         }
     }
 

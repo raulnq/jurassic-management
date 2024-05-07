@@ -91,14 +91,14 @@ public class Proforma
         }
     }
 
-    public void Issue(DateTimeOffset issueAt)
+    public void Issue(DateTimeOffset issuedAt)
     {
         EnsureTotalGreaterThenZero();
         //TODO: Validate empty weeks/work items?
-        EnsureIssueAtGreaterOrEqualThanEnd(issueAt);
+        EnsureIssueAtGreaterOrEqualThanEnd(issuedAt);
         EnsureStatus(ProformaStatus.Pending);
         Status = ProformaStatus.Issued;
-        IssuedAt = issueAt;
+        IssuedAt = issuedAt;
     }
 
     public void Cancel(DateTimeOffset canceledAt)
@@ -108,9 +108,9 @@ public class Proforma
         CanceledAt = canceledAt;
     }
 
-    private void EnsureIssueAtGreaterOrEqualThanEnd(DateTimeOffset issueAt)
+    private void EnsureIssueAtGreaterOrEqualThanEnd(DateTimeOffset issuedAt)
     {
-        if (End > issueAt)
+        if (End > issuedAt)
         {
             throw new DomainException("proforma-issue-date-lower-than-end-date");
         }

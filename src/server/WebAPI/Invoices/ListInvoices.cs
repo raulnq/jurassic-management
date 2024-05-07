@@ -22,7 +22,7 @@ public static class ListInvoices
         public string? ClientName { get; set; }
         public string? Number { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
-        public DateTime? IssueAt { get; set; }
+        public DateTime? IssuedAt { get; set; }
         public decimal SubTotal { get; set; }
         public decimal Taxes { get; set; }
         public decimal Total { get; set; }

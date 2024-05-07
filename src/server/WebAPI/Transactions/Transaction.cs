@@ -4,7 +4,7 @@ namespace WebAPI.Transactions;
 
 public enum TransactionType
 {
-    Income = 0,
+    Incomes = 0,
     Expenses = 1
 }
 
@@ -77,7 +77,7 @@ public class Transaction
     {
         if (Total >= 1000)
         {
-            ITF = 0.0005m * Total;
+            ITF = 0.00005m * Total;
             ITF = Math.Round(ITF, 2, MidpointRounding.AwayFromZero);
         }
     }

@@ -4,6 +4,8 @@ public static class Tables
 {
     public static Table CollaboratorRoles = new Table("CollaboratorRoles");
 
+    public static Table VwBalanceRecords = new Table("VwBalanceRecords");
+
     public static Table Transactions = new Table("Transactions");
 
     public static Table Collaborators = new Table("Collaborators");

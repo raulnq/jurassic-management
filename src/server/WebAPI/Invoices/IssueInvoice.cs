@@ -15,7 +15,7 @@ public static class IssueInvoice
     {
         [JsonIgnore]
         public Guid InvoiceId { get; set; }
-        public DateTime IssueAt { get; set; }
+        public DateTime IssuedAt { get; set; }
         public string Number { get; set; } = default!;
     }
 
@@ -41,7 +41,7 @@ public static class IssueInvoice
         {
             var invoice = await _context.Get<Invoice>(command.InvoiceId);
 
-            invoice.Issue(command.IssueAt, command.Number);
+            invoice.Issue(command.IssuedAt, command.Number);
         }
     }
 

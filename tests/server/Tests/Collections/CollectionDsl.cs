@@ -18,6 +18,7 @@ public class CollectionDsl
     public async Task<ConfirmCollection.Command> Confirm(Action<ConfirmCollection.Command>? setup = null, string? errorDetail = null, IDictionary<string, string[]>? errors = null)
     {
         var faker = new Faker<ConfirmCollection.Command>()
+            .RuleFor(command => command.Number, faker => faker.Random.Guid().ToString())
             ;
         var request = faker.Generate();
 

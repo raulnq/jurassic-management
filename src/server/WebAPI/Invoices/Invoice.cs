@@ -15,7 +15,7 @@ public class Invoice
     public Guid InvoiceId { get; private set; }
     public Guid ClientId { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
-    public DateTime? IssueAt { get; private set; }
+    public DateTime? IssuedAt { get; private set; }
     public decimal SubTotal { get; private set; }
     public decimal Taxes { get; private set; }
     public decimal Total { get; private set; }
@@ -43,12 +43,12 @@ public class Invoice
         DocumentUrl = documentUrl;
     }
 
-    public void Issue(DateTime issueAt, string number)
+    public void Issue(DateTime issuedAt, string number)
     {
         EnsureDocumentIsNotEmpty();
         EnsureStatus(InvoiceStatus.Pending);
         Status = InvoiceStatus.Issued;
-        IssueAt = issueAt;
+        IssuedAt = issuedAt;
         Number = number;
     }
 

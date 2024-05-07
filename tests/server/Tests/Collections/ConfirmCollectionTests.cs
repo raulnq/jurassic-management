@@ -27,6 +27,7 @@ public class ConfirmCollectionTests : BaseTest
             c.CollectionId = start!.CollectionId;
             c.ConfirmedAt = today.AddDays(1);
             c.Total = collection!.Total;
+            c.Commission = collection!.Commission;
         });
 
     }

@@ -14,10 +14,28 @@
                                  Label="Total"
                                  Placeholder="Enter Total"
                                  Prefix="$"
+                                 Min=0.01m
+                                 Step=0.01m
+                                 Value=0
+                                 Required=true />
+                </div>
+                <div class="col-6">
+                    <NumberInput Property=@nameof(ConfirmCollection.Command.Commission)
+                                 Label="Commission"
+                                 Placeholder="Enter Commission"
+                                 Prefix="$"
                                  Min=0
                                  Step=0.01m
                                  Value=0
                                  Required=true />
+                </div>
+                <div class="col-6">
+                    <TextInput Property=@nameof(ConfirmCollection.Command.Number)
+                               Label="Number"
+                               Placeholder="Enter Number"
+                               MaxLenght=50
+                               Required=true>
+                    </TextInput>
                 </div>
                 <div class="col-6">
                     <DateInput Property=@nameof(ConfirmCollection.Command.ConfirmedAt)

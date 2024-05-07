@@ -29,7 +29,7 @@ CREATE TABLE $schema$.[Invoices] (
     [SubTotal] decimal(19,4) NOT NULL, 
     [CreatedAt] datetimeoffset NOT NULL,
     [CanceledAt] datetimeoffset NULL,
-    [IssueAt] date NULL,
+    [IssuedAt] date NULL,
     [Currency] nvarchar(50) NOT NULL,
     CONSTRAINT [PK_Invoices] PRIMARY KEY ([InvoiceId]),
     CONSTRAINT [FK_Invoices_Clients_ClientId] FOREIGN KEY ([ClientId]) REFERENCES $schema$.[Clients] ([ClientId]) ON DELETE CASCADE

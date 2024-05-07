@@ -23,6 +23,8 @@ CREATE TABLE $schema$.[Collections] (
     [ClientId] UNIQUEIDENTIFIER NOT NULL,
     [Status] nvarchar(50) NOT NULL,
     [Total] decimal(19,4) NOT NULL, 
+    [Commission] decimal(19,4) NOT NULL, 
+    [Number] nvarchar(50) NULL,
     [ITF] decimal(19,4) NOT NULL, 
     [CreatedAt] datetimeoffset NOT NULL,
     [CanceledAt] datetimeoffset NULL,

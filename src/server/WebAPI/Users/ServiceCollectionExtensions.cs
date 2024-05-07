@@ -1,6 +1,4 @@
-﻿using Transactions;
-
-namespace WebAPI.Users;
+﻿namespace WebAPI.Users;
 
 public static class ServiceCollectionExtensions
 {

@@ -46,7 +46,7 @@ public class CollaboratorPayment
     {
         if (NetSalary >= 1000)
         {
-            ITF = 0.0005m * NetSalary;
+            ITF = 0.00005m * NetSalary;
             ITF = Math.Round(ITF, 2, MidpointRounding.AwayFromZero);
         }
     }

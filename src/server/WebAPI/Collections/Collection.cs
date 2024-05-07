@@ -17,6 +17,8 @@ public class Collection
     public DateTimeOffset CreatedAt { get; private set; }
     public DateTime? ConfirmedAt { get; private set; }
     public decimal Total { get; private set; }
+    public string? Number { get; private set; }
+    public decimal Commission { get; private set; }
     public CollectionStatus Status { get; private set; }
     public decimal ITF { get; private set; }
     public Currency Currency { get; private set; }
@@ -38,15 +40,17 @@ public class Collection
     {
         if (Total >= 1000)
         {
-            ITF = 0.0005m * Total;
+            ITF = 0.00005m * Total;
             ITF = Math.Round(ITF, 2, MidpointRounding.AwayFromZero);
         }
     }
 
-    public void Confirm(decimal total, DateTime confirmedAt)
+    public void Confirm(decimal total, decimal commission, string number, DateTime confirmedAt)
     {
         EnsureStatus(CollectionStatus.Pending);
         Total = total;
+        Number = number;
+        Commission = commission;
         Status = CollectionStatus.Confirmed;
         ConfirmedAt = confirmedAt;
         Refresh();

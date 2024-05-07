@@ -1,6 +1,7 @@
 using Infrastructure;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Text.Json.Serialization;
+using WebAPI.Balance;
 using WebAPI.Clients;
 using WebAPI.CollaboratorPayments;
 using WebAPI.CollaboratorRoles;
@@ -73,9 +74,11 @@ builder.Services.AddCollaboratorPayments(builder.Configuration);
 builder.Services.AddProformaDocuments(builder.Configuration);
 builder.Services.AddTransactions(builder.Configuration);
 builder.Services.AddUsers();
+builder.Services.AddBalance();
 builder.Services.AddSingleton<IClock>(new Infrastructure.SystemClock());
 builder.Services.AddExceptionHandler<DefaultExceptionHandler>();
 builder.Services.AddRazorComponents();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -103,4 +106,5 @@ app.RegisterProformaToColaboratorPaymentProcessEndpoints();
 app.RegisterCollaboratorPaymentEndpoints();
 app.RegisterTransactionEndpoints();
 app.RegisterUserEndpoints();
+app.RegisterBalanceEndpoints();
 app.Run();

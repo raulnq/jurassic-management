@@ -17,7 +17,7 @@ public static class IssueProforma
     {
         [JsonIgnore]
         public Guid ProformaId { get; set; }
-        public DateTimeOffset IssueAt { get; set; }
+        public DateTimeOffset IssuedAt { get; set; }
     }
 
     public class Validator : AbstractValidator<Command>
@@ -49,7 +49,7 @@ public static class IssueProforma
                 throw new NotFoundException<Proforma>();
             }
 
-            proforma.Issue(command.IssueAt);
+            proforma.Issue(command.IssuedAt);
         }
     }
 

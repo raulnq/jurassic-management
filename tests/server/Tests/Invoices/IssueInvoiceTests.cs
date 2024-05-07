@@ -18,7 +18,7 @@ public class IssueInvoiceTests : BaseTest
         await _appDsl.Invoice.Issue(c =>
         {
             c.InvoiceId = start!.InvoiceId;
-            c.IssueAt = today.AddDays(1);
+            c.IssuedAt = today.AddDays(1);
         });
 
     }

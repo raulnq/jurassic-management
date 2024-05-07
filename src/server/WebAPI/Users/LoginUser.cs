@@ -3,9 +3,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using WebAPI.Transactions;
 using WebAPI.Infrastructure.Ui;
-using WebAPI.CollaboratorRoles;
 
 namespace WebAPI.Users;
 

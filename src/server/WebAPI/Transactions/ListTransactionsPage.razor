@@ -17,6 +17,12 @@
         <FormRow>
             <Content>
                 <div class="col">
+                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}",Swap.OuterHTML,$"#{Targets.List}"))
+                                  Label="Type"
+                                  Property=@(nameof(ListTransactions.Query.Type))
+                                  Query=@Query
+                                  EmptyLabel="All Types"
+                                  Source=@(Enum.GetValues<TransactionType>().ToDictionary(i=>i.ToString(), i=>i.ToString())) />
                 </div>
             </Content>
         </FormRow>

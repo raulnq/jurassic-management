@@ -24,7 +24,9 @@ public static class ListCollections
         public decimal Total { get; set; }
         public decimal ITF { get; set; }
         public string? Status { get; set; }
-        public string? Currency { get; private set; }
+        public string? Currency { get; set; }
+        public decimal Commission { get; set; }
+        public string? Number { get; set; }
     }
 
     public class Runner : BaseRunner

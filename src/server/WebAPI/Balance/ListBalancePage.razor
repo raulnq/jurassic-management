@@ -1,0 +1,82 @@
+﻿@using WebAPI.CollaboratorRoles;
+@using WebAPI.Infrastructure.SqlKata;
+@using WebAPI.Infrastructure.Ui;
+@using WebAPI.Proformas
+
+<Heading Text=@Endpoints.Title />
+<Breadcrumbs Links=@(new []{new Breadcrumbs.Link(Endpoints.ListTitle)})
+             Target=@(Infrastructure.Ui.Targets.Workspace) />
+<Section>
+    <Content>
+        <FormRow>
+            <Content>
+                <div class="col">
+                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}",Swap.OuterHTML,$"#{Targets.List}"))
+                                  Label="Status"
+                                  Property=@(nameof(ListBalance.Query.Currency))
+                                  Query=@Query
+                                  Value=@Currency.USD.ToString()
+                                  Source=@(Enum.GetValues<Currency>().ToDictionary(i=>i.ToString(), i=>i.ToString())) />
+                </div>
+            </Content>
+        </FormRow>
+        <div id=@Targets.List>
+            <table class="table">
+                <thead class="table-light">
+                <th>IssuedAt</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>SubTotal</th>
+                <th>Taxes</th>
+                <th>Total</th>
+                <th>ITF</th>
+                <th>Balance</th>
+                </thead>
+                <tbody>
+                    @if (Result is null || Result.Count() == 0)
+                    {
+                        //TODO: Mostrar mensaje de no resultados
+                    }
+                    else
+                    {
+                        @foreach (var item in Result)
+                        {
+                            <tr @key="@item">
+                                <td>@item.IssuedAt</td>
+                                <td>@item.Type</td>
+                                <td>@item.Description</td>
+                                <td>@item.Currency @(item.SubTotal * item.Sign)</td>
+                                <td>@(item.Taxes * item.Sign)</td>
+                                <td>@(item.Total * item.Sign)</td>
+                                <td>@(item.ITF * -1)</td>
+                                <td>@item.Balance</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>End Balance</td>
+                        <td>@EndBalance</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </Content>
+</Section>
+@code {
+    [Parameter, EditorRequired]
+    public List<ListBalance.Result> Result { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public ListBalance.Query Query { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public decimal StartBalance { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public decimal EndBalance { get; set; } = default!;
+}

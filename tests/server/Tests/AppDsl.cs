@@ -147,7 +147,7 @@ public class AppDsl : IAsyncDisposable
         await Proformas.Issue(c =>
         {
             c.ProformaId = proformaResult.ProformaId;
-            c.IssueAt = start.AddDays(days + 1);
+            c.IssuedAt = start.AddDays(days + 1);
         });
 
         return (proformaResult, proformaCommand, clientResult, collaboratorResult);
@@ -209,7 +209,7 @@ public class AppDsl : IAsyncDisposable
         await Invoice.Issue(c =>
         {
             c.InvoiceId = start!.InvoiceId;
-            c.IssueAt = today.AddDays(1);
+            c.IssuedAt = today.AddDays(1);
         });
 
         return start!;

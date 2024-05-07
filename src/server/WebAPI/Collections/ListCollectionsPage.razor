@@ -47,6 +47,8 @@
                     <th>CollectionId</th>
                     <th>Client</th>
                     <th>Total</th>
+                    <th>Commission</th>
+                    <th>Number</th>
                     <th>Status</th>
                 </TableHeader>
                 <RowTemplate>
@@ -59,6 +61,8 @@
                     <td>@item.CollectionId</td>
                     <td>@item.ClientName</td>
                     <td>@item.Currency @item.Total</td>
+                    <td>@item.Currency @item.Commission</td>
+                    <td>@item.Number</td>
                     <td>@item.Status</td>
                 </RowTemplate>
             </DataTable>

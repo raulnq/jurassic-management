@@ -38,18 +38,35 @@
                                  Value=@Result.ClientName
                                  Readonly=true />
                 </div>
-                <div class="col-2">
+                <div class="col-4">
                     <SelectInput Property=@nameof(GetCollection.Result.Currency)
                                  Label="Currency"
                                  TKey=int
                                  Value=@Result.Currency
                                  Readonly=true />
                 </div>
+                <div class="col-4">
+                    <TextInput Property=@nameof(GetCollection.Result.Number)
+                               Label="Number"
+                               Value=@Result.Number
+                               Readonly=true />
+                </div>
+            </Content>
+        </FormRow>
+        <FormRow>
+            <Content>
                 <div class="col-3">
                     <NumberInput Property=@nameof(GetCollection.Result.Total)
                                  Label="Total"
                                  Prefix="$"
                                  Value=@Result.Total
+                                 Readonly=true />
+                </div>
+                <div class="col-3">
+                    <NumberInput Property=@nameof(GetCollection.Result.Commission)
+                                 Label="Commission"
+                                 Prefix="$"
+                                 Value=@Result.Commission
                                  Readonly=true />
                 </div>
                 <div class="col-3">
@@ -61,6 +78,7 @@
                 </div>
             </Content>
         </FormRow>
+
         <FormRow>
             <Content>
                 <div class="col-4">

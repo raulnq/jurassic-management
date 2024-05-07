@@ -41,6 +41,9 @@
                     <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.Transactions.Endpoints.List.AddListParameters(), Targets.Workspace){OnClick="highlight_sidebarlink(this);"})
                                  Icon="bi bi-journals"
                                  Text="Transactions" />
+                    <SidebarLink HtmxProps=@(new HtmxProps($"{WebAPI.Balance.Endpoints.List.AddListParameters()}&Currency=USD", Targets.Workspace){OnClick="highlight_sidebarlink(this);"})
+                                 Icon="bi bi-bank"
+                                 Text="Balance" />
 
                 </Items>
             </Sidebar>
