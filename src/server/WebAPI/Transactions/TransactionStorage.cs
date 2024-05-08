@@ -8,10 +8,5 @@ namespace Transactions
         public TransactionStorage(string connectionString) : base(connectionString, "transactions")
         {
         }
-
-        public Task<string> Upload(string name, Stream stream)
-        {
-            return Upload(name, stream, MediaTypeNames.Application.Pdf);
-        }
     }
 }

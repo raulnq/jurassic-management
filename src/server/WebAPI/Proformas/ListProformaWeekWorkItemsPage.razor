@@ -1,6 +1,7 @@
 ﻿@using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
 @using WebAPI.Proformas;
+@using global::Infrastructure
 
 <Section Title=@Endpoints.WorkItemTitle>
     <Content>
@@ -14,7 +15,7 @@
         </Toolbar>
         <div id=@Targets.CollaboratorList>
             <DataTable TResult=ListProformaWeekWorkItems.Result
-                       Result=@Result
+                       Result=@Result.Items
                        Context="item">
                 <TableHeader>
                     <th></th>
@@ -22,8 +23,8 @@
                     <th>Role</th>
                     <th>Hours</th>
                     <th>Free Hours</th>
-                    <th>SubTotal</th>
-                    <th>Fee Amount</th>
+                    <th class="text-end">SubTotal</th>
+                    <th class="text-end">Fee Amount</th>
                 </TableHeader>
                 <RowTemplate>
                     <RowToolbar>
@@ -40,8 +41,8 @@
                     <td>@item.CollaboratorRoleName</td>
                     <td>@item.Hours</td>
                     <td>@item.FreeHours</td>
-                    <td>@item.SubTotal</td>
-                    <td>@item.FeeAmount</td>
+                    <td class="text-end">@item.SubTotal.ToMoneyFormat()</td>
+                    <td class="text-end">@item.FeeAmount.ToMoneyFormat()</td>
                 </RowTemplate>
             </DataTable>
             <Pagination Query=@Query

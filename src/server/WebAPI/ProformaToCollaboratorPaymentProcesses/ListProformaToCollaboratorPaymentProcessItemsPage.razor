@@ -1,10 +1,11 @@
 ﻿@using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
 @using WebAPI.Proformas;
+@using global::Infrastructure
 
 <div id=@Targets.List>
     <DataTable TResult=ListProformaToCollaboratorPaymentProcessItems.Result
-               Result=@Result
+               Result=@Result.Items
                Context="item">
         <TableHeader>
             <th>Project</th>
@@ -14,23 +15,23 @@
             <th>End Date</th>
             <th>Hours</th>
             <th>Free Hours</th>
-            <th>Fee Amount</th>
-            <th>SubTotal</th>
-            <th>Profit Percentage</th>
-            <th>Profit Amount</th>
+            <th class="text-end">Fee Amount</th>
+            <th class="text-end">SubTotal</th>
+            <th class="text-end">Profit Percentage</th>
+            <th class="text-end">Profit Amount</th>
         </TableHeader>
         <RowTemplate>
             <td>@item.ProjectName</td>
             <td>@item.ProformaNumber</td>
             <td>@item.Week</td>
-            <td>@item.ProformaWeekStart</td>
-            <td>@item.ProformaWeekEnd</td>
+            <td>@item.ProformaWeekStart.ToListFormat()</td>
+            <td>@item.ProformaWeekEnd.ToListFormat()</td>
             <td>@item.Hours</td>
             <td>@item.FreeHours</td>
-            <td>@item.ProformaCurrency @item.FeeAmount</td>
-            <td>@item.ProformaCurrency @item.SubTotal</td>
-            <td>@item.ProfitPercentage % </td>
-            <td>@item.ProformaCurrency @item.ProfitAmount</td>
+            <td class="text-end">@item.ProformaCurrency @item.FeeAmount.ToMoneyFormat()</td>
+            <td class="text-end">@item.SubTotal.ToMoneyFormat()</td>
+            <td class="text-end">@item.ProfitPercentage.ToPercentageFormat()</td>
+            <td class="text-end">@item.ProfitAmount.ToMoneyFormat()</td>
         </RowTemplate>
     </DataTable>
     <Pagination Query=@Query

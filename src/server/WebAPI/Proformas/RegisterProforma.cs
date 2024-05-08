@@ -36,7 +36,7 @@ public static class RegisterProforma
         public Validator()
         {
             RuleFor(command => command.ProjectId).NotEmpty();
-            RuleFor(command => command.End).GreaterThan(command => command.Start);
+            RuleFor(command => command.End).GreaterThanOrEqualTo(command => command.Start);
         }
     }
 

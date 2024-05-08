@@ -3,6 +3,7 @@
 @using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
 @using WebAPI.Proformas
+@using global::Infrastructure
 
 <Heading Text=@Endpoints.Title />
 <Breadcrumbs Links=@(new []{new Breadcrumbs.Link(Endpoints.ListTitle)})
@@ -42,55 +43,46 @@
             </Content>
         </FormRow>
         <div id=@Targets.List>
-            <table class="table">
-                <thead class="table-light">
-                <th>Date</th>
-                <th>CollaboratorId</th>
-                <th>Name</th>
-                <th>NetSalary</th>
-                <th>Start</th>
-                <th>End</th>
-                <th>Balance</th>
-                </thead>
-                <tbody>
-                    @if (Result is null || Result.Count() == 0)
-                    {
-                        //TODO: Mostrar mensaje de no resultados
-                    }
-                    else
-                    {
-                        @foreach (var item in Result)
-                        {
-                            <tr @key="@item">
-                                <td>@item.Date</td>
-                                <td>@item.CollaboratorId</td>
-                                <td>@item.Name</td>
-                                <td>@item.Currency @item.Amount</td>
-                                <td>@item.Start</td>
-                                <td>@item.End</td>
-                                <td>@item.Balance</td>
-                            </tr>
-                        }
-                    }
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td>Balance</td>
-                        <td>@EndBalance</td>
-                    </tr>
-                </tfoot>
-            </table>
+            <DataTable TResult=ListCollaboratorBalance.Result
+                       Result=@Result
+                       Context="item">
+                <TableHeader>
+                    <th>Date</th>
+                    <th>Name</th>
+                    <th class="text-end">Gross Salary</th>
+                    <th class="text-end">Withholding</th>
+                    <th class="text-end">Net Salary</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th class="text-end">Balance</th>
+                </TableHeader>
+                <RowTemplate>
+                    <td>@item.Date.ToListFormat()</td>
+                    <td>@item.Name</td>
+                    <td class="text-end">@item.Currency @item.SignedGrossSalary.ToMoneyFormat()</td>
+                    <td class="text-end">@item.SignedWithholding.ToMoneyFormat()</td>
+                    <td class="text-end">@item.SignedNetSalary.ToMoneyFormat()</td>
+                    <td>@item.Start.ToListFormat()</td>
+                    <td>@item.End.ToListFormat()</td>
+                    <td class="text-end">@item.Balance.ToMoneyFormat()</td>
+                </RowTemplate>
+                <TableFooter>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <th>Balance</th>
+                    <td class="text-end">@EndBalance</td>
+                </TableFooter>
+            </DataTable>
         </div>
     </Content>
 </Section>
 @code {
     [Parameter, EditorRequired]
-    public List<ListCollaboratorBalance.Result> Result { get; set; } = default!;
+    public IEnumerable<ListCollaboratorBalance.Result> Result { get; set; } = default!;
     [Parameter, EditorRequired]
     public ListCollaboratorBalance.Query Query { get; set; } = default!;
     [Parameter, EditorRequired]

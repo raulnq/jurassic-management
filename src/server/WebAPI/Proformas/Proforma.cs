@@ -1,5 +1,7 @@
-﻿using WebAPI.Clients;
+﻿using Microsoft.Azure.Amqp.Framing;
+using WebAPI.Clients;
 using WebAPI.CollaboratorRoles;
+using WebAPI.Collaborators;
 using WebAPI.Infrastructure.ExceptionHandling;
 
 namespace WebAPI.Proformas;
@@ -39,7 +41,7 @@ public class Proforma
     public decimal AdministrativeExpensesAmount { get; private set; }
     public decimal BankingExpensesAmount { get; private set; }
     public ProformaStatus Status { get; private set; }
-    public DateTimeOffset? IssuedAt { get; private set; }
+    public DateTime? IssuedAt { get; private set; }
     public DateTimeOffset? CanceledAt { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
     public Currency Currency { get; private set; }
@@ -51,13 +53,13 @@ public class Proforma
         ProformaId = proformaId;
         CreatedAt = createdAt;
         Status = ProformaStatus.Pending;
-        Start = start;
-        End = end;
+        Start = start.Date;
+        End = end.Date;
         Number = $"{End.ToString("yyyyMMdd")}-{count + 1}";
         ProjectId = projectId;
         Currency = currency;
         Weeks = [];
-        EnsureValidWeeklyPeriod();
+        EnsureValidPeriod();
         MinimumHours = client.PenaltyMinimumHours;
         PenaltyMinimumHours = client.PenaltyAmount;
         TaxesExpensesPercentage = client.TaxesExpensesPercentage;
@@ -69,29 +71,41 @@ public class Proforma
         Refresh();
     }
 
-    private void EnsureValidWeeklyPeriod()
+    private void EnsureValidPeriod()
     {
-        var days = (End - Start).TotalDays + 1;
-        if (days % 7 != 0)
+        if (End < Start)
         {
-            throw new DomainException("proforma-invalid-weekly-period");
+            throw new DomainException("proforma-invalid-period");
         }
     }
 
     private void FillWeeks()
     {
-        var weeks = ((End - Start).TotalDays + 1) / 7;
+        var flag = true;
         var start = Start;
-        for (int i = 1; i <= weeks; i++)
+        var i = 1;
+        do
         {
             var end = start.AddDays(6);
-            var week = new ProformaWeek(ProformaId, i, start, end, MinimumHours, PenaltyMinimumHours);
-            Weeks.Add(week);
-            start = end.AddDays(1);
-        }
+
+            if (end < End)
+            {
+                var week = new ProformaWeek(ProformaId, i, start, end, MinimumHours, PenaltyMinimumHours);
+                Weeks.Add(week);
+                start = end.AddDays(1);
+                i++;
+            }
+            else
+            {
+                var week = new ProformaWeek(ProformaId, i, start, End, MinimumHours, PenaltyMinimumHours);
+                Weeks.Add(week);
+                flag = false;
+            }
+
+        } while (flag);
     }
 
-    public void Issue(DateTimeOffset issuedAt)
+    public void Issue(DateTime issuedAt)
     {
         EnsureTotalGreaterThenZero();
         //TODO: Validate empty weeks/work items?
@@ -108,7 +122,7 @@ public class Proforma
         CanceledAt = canceledAt;
     }
 
-    private void EnsureIssueAtGreaterOrEqualThanEnd(DateTimeOffset issuedAt)
+    private void EnsureIssueAtGreaterOrEqualThanEnd(DateTime issuedAt)
     {
         if (End > issuedAt)
         {
@@ -132,7 +146,7 @@ public class Proforma
         }
     }
 
-    public void AddWorkItem(int week, Guid collaboratorId, CollaboratorRole collaboratorRole, decimal hours, decimal freeHours)
+    public void AddWorkItem(int week, Collaborator collaborator, CollaboratorRole collaboratorRole, decimal hours, decimal freeHours)
     {
         EnsureStatus(ProformaStatus.Pending);
 
@@ -143,7 +157,7 @@ public class Proforma
             throw new NotFoundException<ProformaWeek>();
         }
 
-        weekItem.Add(collaboratorId, collaboratorRole, hours, freeHours, MinimumHours, PenaltyMinimumHours);
+        weekItem.Add(collaborator, collaboratorRole, hours, freeHours, MinimumHours, PenaltyMinimumHours);
 
         Refresh();
     }

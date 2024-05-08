@@ -1,6 +1,7 @@
 ﻿@using WebAPI.Collaborators;
 @using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
+@using global::Infrastructure
 
 <Heading Text=@Endpoints.Title />
 <Breadcrumbs Links=@(new []{new Breadcrumbs.Link(Endpoints.ListTitle)})
@@ -26,13 +27,13 @@
         </FormRow>
         <div id=@Targets.List>
             <DataTable TResult=ListCollaborators.Result
-                       Result=@Result
+                       Result=@Result.Items
                        Context="item">
                 <TableHeader>
                     <th></th>
-                    <th>CollaboratorId</th>
+                    <th>#</th>
                     <th>Name</th>
-                    <th>Withholding Percentage</th>
+                    <th class="text-end">Withholding Percentage</th>
                 </TableHeader>
                 <RowTemplate>
                     <RowToolbar>
@@ -43,7 +44,7 @@
                     </RowToolbar>
                     <td>@item.CollaboratorId</td>
                     <td>@item.Name</td>
-                    <td>@item.WithholdingPercentage %</td>
+                    <td class="text-end">@item.WithholdingPercentage.ToPercentageFormat()</td>
                 </RowTemplate>
             </DataTable>
             <Pagination Query=@Query

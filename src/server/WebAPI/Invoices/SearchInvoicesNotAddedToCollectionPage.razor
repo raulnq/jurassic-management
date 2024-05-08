@@ -1,9 +1,10 @@
 ﻿@using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
+@using global::Infrastructure
 
 @foreach (var item in Result)
 {
-    <option value="@item.InvoiceId">Invoice @item.Number with a total of @item.Currency @item.Total</option>
+    <option value="@item.InvoiceId">Invoice @item.Number with a total of @item.Currency @item.Total.ToMoneyFormat()</option>
 }
 
 @code {

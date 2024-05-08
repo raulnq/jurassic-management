@@ -10,7 +10,7 @@
              Target=@(Infrastructure.Ui.Targets.Workspace)>
     <MenuItems>
         <MenuItem Text=@Endpoints.UploadTitle
-                  IsDisabled=@(Result.Status!=InvoiceStatus.Pending.ToString())
+                  IsDisabled=@(Result.Status==InvoiceStatus.Canceled.ToString())
                   HtmxProps=@(new HtmxProps(Endpoints.GetUpload(Result.InvoiceId), Infrastructure.Ui.Targets.Dialog)) />
         <MenuItem Text=@Endpoints.IssueTitle
                   IsDisabled=@(Result.Status!=InvoiceStatus.Pending.ToString())

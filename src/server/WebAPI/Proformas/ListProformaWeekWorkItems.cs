@@ -32,6 +32,9 @@ public static class ListProformaWeekWorkItems
         public decimal ProfitAmount { get; set; }
         public decimal ProfitPercentage { get; set; }
         public decimal WithholdingPercentage { get; set; }
+        public decimal Withholding { get; set; }
+        public decimal GrossSalary { get; set; }
+        public decimal NetSalary { get; set; }
         public string? Status { get; set; }
         public string Currency { get; set; } = default!;
     }
@@ -46,8 +49,8 @@ public static class ListProformaWeekWorkItems
             {
                 var statement = qf.Query(Tables.ProformaWeekWorkItems)
                 .Select(Tables.ProformaWeekWorkItems.AllFields)
-                .Select(Tables.Collaborators.Field(nameof(Collaborator.WithholdingPercentage)), Tables.Collaborators.Field(nameof(Collaborator.Name), nameof(Result.CollaboratorName)))
-                .Select(Tables.Collaborators.Field(nameof(CollaboratorRole.Name), nameof(Result.CollaboratorRoleName)))
+                .Select(Tables.Collaborators.Field(nameof(Collaborator.Name), nameof(Result.CollaboratorName)))
+                .Select(Tables.CollaboratorRoles.Field(nameof(CollaboratorRole.Name), nameof(Result.CollaboratorRoleName)))
                 .Select(Tables.Proformas.Field(nameof(Proforma.Status)), Tables.Proformas.Field(nameof(Proforma.Currency)))
                 .Join(Tables.Collaborators, Tables.ProformaWeekWorkItems.Field(nameof(ProformaWeekWorkItem.CollaboratorId)), Tables.Collaborators.Field(nameof(Collaborator.CollaboratorId)))
                 .Join(Tables.CollaboratorRoles, Tables.ProformaWeekWorkItems.Field(nameof(ProformaWeekWorkItem.CollaboratorRoleId)), Tables.CollaboratorRoles.Field(nameof(CollaboratorRole.CollaboratorRoleId)))

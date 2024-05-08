@@ -2,6 +2,7 @@
 @using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
 @using WebAPI.Proformas
+@using global::Infrastructure
 
 <Heading Text=@Endpoints.Title />
 <Breadcrumbs Links=@(new []{new Breadcrumbs.Link(Endpoints.ListTitle)})
@@ -31,58 +32,46 @@
             </Content>
         </FormRow>
         <div id=@Targets.List>
-            <table class="table">
-                <thead class="table-light">
-                <th>IssuedAt</th>
-                <th>Type</th>
-                <th>Description</th>
-                <th>SubTotal</th>
-                <th>Taxes</th>
-                <th>Total</th>
-                <th>ITF</th>
-                <th>Balance</th>
-                </thead>
-                <tbody>
-                    @if (Result is null || Result.Count() == 0)
-                    {
-                        //TODO: Mostrar mensaje de no resultados
-                    }
-                    else
-                    {
-                        @foreach (var item in Result)
-                        {
-                            <tr @key="@item">
-                                <td>@item.IssuedAt</td>
-                                <td>@item.Type</td>
-                                <td>@item.Description</td>
-                                <td>@item.Currency @(item.SubTotal * item.Sign)</td>
-                                <td>@(item.Taxes * item.Sign)</td>
-                                <td>@(item.Total * item.Sign)</td>
-                                <td>@(item.ITF * -1)</td>
-                                <td>@item.Balance</td>
-                            </tr>
-                        }
-                    }
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td>Balance</td>
-                        <td>@EndBalance</td>
-                    </tr>
-                </tfoot>
-            </table>
+            <DataTable TResult=ListBankBalance.Result
+                       Result=@Result
+                       Context="item">
+                <TableHeader>
+                    <th>IssuedAt</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>SubTotal</th>
+                    <th>Taxes</th>
+                    <th>Total</th>
+                    <th>ITF</th>
+                    <th>Balance</th>
+                </TableHeader>
+                <RowTemplate>
+                    <td>@item.IssuedAt.ToListFormat()</td>
+                    <td>@item.Type</td>
+                    <td>@item.Description</td>
+                    <td class="text-end">@item.Currency @(item.SubTotal * item.Sign)</td>
+                    <td class="text-end">@(item.Taxes * item.Sign)</td>
+                    <td class="text-end">@(item.Total * item.Sign)</td>
+                    <td class="text-end">@(item.ITF * -1)</td>
+                    <td class="text-end">@item.Balance</td>
+                </RowTemplate>
+                <TableFooter>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <th>Balance</th>
+                    <td class="text-end">@EndBalance</td>
+                </TableFooter>
+            </DataTable>
         </div>
     </Content>
 </Section>
 @code {
     [Parameter, EditorRequired]
-    public List<ListBankBalance.Result> Result { get; set; } = default!;
+    public IEnumerable<ListBankBalance.Result> Result { get; set; } = default!;
     [Parameter, EditorRequired]
     public ListBankBalance.Query Query { get; set; } = default!;
     [Parameter, EditorRequired]

@@ -1,6 +1,7 @@
 ﻿@using WebAPI.CollaboratorRoles;
 @using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
+@using global::Infrastructure
 
 <Heading Text=@Endpoints.Title />
 <Breadcrumbs Links=@(new []{new Breadcrumbs.Link(Endpoints.ListTitle)})
@@ -28,16 +29,17 @@
         </FormRow>
         <div id=@Targets.List>
             <DataTable TResult=ListTransactions.Result
-                       Result=@Result
+                       Result=@Result.Items
                        Context="item">
                 <TableHeader>
                     <th></th>
-                    <th>TransactionId</th>
+                    <th class="text-center">#</th>
                     <th>Description</th>
                     <th>Type</th>
-                    <th>SubTotal</th>
-                    <th>Taxes</th>
-                    <th>Total</th>
+                    <th>Currency</th>
+                    <th class="text-end">SubTotal</th>
+                    <th class="text-end">Taxes</th>
+                    <th class="text-end">Total</th>
                     <th>Issued at</th>
                 </TableHeader>
                 <RowTemplate>
@@ -50,10 +52,11 @@
                     <td>@item.TransactionId</td>
                     <td>@item.Description</td>
                     <td>@item.Type</td>
-                    <td>@item.Currency @item.SubTotal</td>
-                    <td>@item.Currency @item.Taxes</td>
-                    <td>@item.Currency @item.Total</td>
-                    <td>@item.IssuedAt</td>
+                    <td>@item.Currency</td>
+                    <td class="text-end">@item.SubTotal.ToMoneyFormat()</td>
+                    <td class="text-end">@item.Taxes.ToMoneyFormat()</td>
+                    <td class="text-end">@item.Total.ToMoneyFormat()</td>
+                    <td>@item.IssuedAt.ToListFormat()</td>
                 </RowTemplate>
             </DataTable>
             <Pagination Query=@Query

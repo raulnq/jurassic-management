@@ -55,8 +55,8 @@ public class CollaboratorPayment
     {
         if (NetSalary >= 1000)
         {
-            ITF = 0.00005m * NetSalary;
-            ITF = Math.Round(ITF, 2, MidpointRounding.AwayFromZero);
+            ITF = 0.00005m * NetSalary * 20m;
+            ITF = Math.Round(ITF) / 20m;
         }
     }
     public void Paid(DateTime paidAt)
@@ -68,13 +68,11 @@ public class CollaboratorPayment
 
     public void Upload(string documentUrl)
     {
-        EnsureStatus(CollaboratorPaymentStatus.Paid);
         DocumentUrl = documentUrl;
     }
 
     public void Confirm(DateTime confirmedAt, string number)
     {
-        EnsureDocumentIsNotEmpty();
         EnsureStatus(CollaboratorPaymentStatus.Paid);
         Number = number;
         Status = CollaboratorPaymentStatus.Confirmed;
@@ -93,14 +91,6 @@ public class CollaboratorPayment
         if (status != Status)
         {
             throw new DomainException($"collaborator-payment-status-not-{status.ToString().ToLower()}");
-        }
-    }
-
-    private void EnsureDocumentIsNotEmpty()
-    {
-        if (string.IsNullOrEmpty(DocumentUrl))
-        {
-            throw new DomainException("collaborator-payment-document-is-empty");
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using QuestPDF.Fluent;
+﻿using Infrastructure;
+using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using WebAPI.Proformas;
@@ -34,7 +35,7 @@ namespace WebAPI.ProformaDocuments
 
         void ComposeHeader(IContainer container)
         {
-            container.Row(row =>
+            container.DefaultTextStyle(x => x.FontSize(10)).Row(row =>
             {
                 row.ConstantItem(125).Height(135).Image("logo.jpg");
                 row.RelativeItem().Column(column =>
@@ -57,12 +58,12 @@ namespace WebAPI.ProformaDocuments
                     column.Item().Row(row =>
                     {
                         row.RelativeItem().Text("Desde:").Bold();
-                        row.RelativeItem().Text(GetProforma.Start.ToString("dd/MM/yyyy")).AlignRight();
+                        row.RelativeItem().Text(GetProforma.Start.ToListFormat()).AlignRight();
                     });
                     column.Item().Row(row =>
                     {
                         row.RelativeItem().Text("Hasta:").Bold();
-                        row.RelativeItem().Text(GetProforma.End.ToString("dd/MM/yyyy")).AlignRight();
+                        row.RelativeItem().Text(GetProforma.End.ToListFormat()).AlignRight();
                     });
                 });
             });
@@ -70,7 +71,7 @@ namespace WebAPI.ProformaDocuments
 
         void ComposeContent(IContainer container)
         {
-            container.PaddingTop(25).Column(column =>
+            container.DefaultTextStyle(x => x.FontSize(10)).PaddingTop(25).Column(column =>
             {
                 column.Spacing(20);
 
@@ -84,34 +85,34 @@ namespace WebAPI.ProformaDocuments
 
         void ComposeClient(IContainer container)
         {
-            container.Row(row =>
+            container.DefaultTextStyle(x => x.FontSize(10)).Row(row =>
             {
                 row.ConstantItem(125).Column(column =>
                 {
                     column.Spacing(5);
-                    column.Item().Text("Client:").FontSize(14);
-                    column.Item().Text("Dirección:").FontSize(14);
-                    column.Item().Text("NIT:").FontSize(14);
-                    column.Item().Text("Telefono:").FontSize(14);
+                    column.Item().Text("Client:");
+                    column.Item().Text("Dirección:");
+                    column.Item().Text("NIT:");
+                    column.Item().Text("Telefono:");
                 });
 
                 row.RelativeItem().Column(column =>
                 {
                     column.Spacing(5);
-                    column.Item().Text(GetProforma.ClientName).FontSize(14);
-                    column.Item().Text(GetProforma.ClientAddress).FontSize(14);
-                    column.Item().Text(GetProforma.ClientDocumentNumber).FontSize(14);
-                    column.Item().Text(GetProforma.ClientPhoneNumber).FontSize(14);
+                    column.Item().Text(GetProforma.ClientName);
+                    column.Item().Text(GetProforma.ClientAddress);
+                    column.Item().Text(GetProforma.ClientDocumentNumber);
+                    column.Item().Text(GetProforma.ClientPhoneNumber);
                 });
             });
         }
 
         void ComposeTerms(IContainer container)
         {
-            container.Column(column =>
+            container.DefaultTextStyle(x => x.FontSize(10)).Column(column =>
             {
                 //column.Spacing(5);
-                column.Item().Text("Términos y Condiciones").FontSize(14).Bold();
+                column.Item().Text("Términos y Condiciones").Bold();
                 column.Item().Text("1) Todos los costos están expresados en Dólares Americanos (USD).");
                 column.Item().Text("2) El precio representa una hora de trabajo (menos para Comisión Bancaria).");
                 column.Item().Text("3) Los items resaltados en color, representan servicios cobrados de manera independiente y no se miden en horas.");
@@ -120,7 +121,7 @@ namespace WebAPI.ProformaDocuments
 
         void ComposeTable(IContainer container)
         {
-            container.Table(table =>
+            container.DefaultTextStyle(x => x.FontSize(10)).Table(table =>
             {
                 table.ColumnsDefinition(columns =>
                 {
@@ -139,7 +140,7 @@ namespace WebAPI.ProformaDocuments
 
                     static IContainer CellStyle(IContainer container)
                     {
-                        return container.DefaultTextStyle(x => x.Bold().FontSize(14)).Border(1).BorderColor(Colors.Black);
+                        return container.DefaultTextStyle(x => x.Bold()).Border(1).BorderColor(Colors.Black);
                     }
                 });
 
@@ -195,7 +196,7 @@ namespace WebAPI.ProformaDocuments
 
             static IContainer CellStyle(IContainer container)
             {
-                return container.DefaultTextStyle(x => x.FontSize(14)).Border(1).BorderColor(Colors.Black);
+                return container.Border(1).BorderColor(Colors.Black);
             }
         }
     }

@@ -2,6 +2,7 @@
 @using WebAPI.Invoices;
 @using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
+@using global::Infrastructure
 
 <Heading Text=@Endpoints.Title />
 <Breadcrumbs Links=@(new []{new Breadcrumbs.Link(Endpoints.ListTitle)})
@@ -39,15 +40,15 @@
         </FormRow>
         <div id=@Targets.List>
             <DataTable TResult=ListInvoices.Result
-                       Result=@Result
+                       Result=@Result.Items
                        Context="item">
                 <TableHeader>
                     <th></th>
-                    <th>InvoiceId</th>
+                    <th>#</th>
                     <th>Client</th>
-                    <th>Total</th>
-                    <th>Status</th>
+                    <th class="text-end">Total</th>
                     <th>Number</th>
+                    <th>Status</th>
                 </TableHeader>
                 <RowTemplate>
                     <RowToolbar>
@@ -58,9 +59,9 @@
                     </RowToolbar>
                     <td>@item.InvoiceId</td>
                     <td>@item.ClientName</td>
-                    <td>@item.Currency @item.Total</td>
-                    <td>@item.Status</td>
+                    <td class="text-end">@item.Currency @item.Total.ToMoneyFormat()</td>
                     <td>@item.Number</td>
+                    <td>@item.Status</td>
                 </RowTemplate>
             </DataTable>
             <Pagination Query=@Query

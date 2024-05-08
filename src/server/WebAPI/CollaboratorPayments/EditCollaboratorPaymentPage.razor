@@ -11,7 +11,7 @@
              Target=@(Infrastructure.Ui.Targets.Workspace)>
     <MenuItems>
         <MenuItem Text=@Endpoints.UploadTitle
-                  IsDisabled=@(Result.Status!=CollaboratorPaymentStatus.Paid.ToString())
+                  IsDisabled=@(Result.Status==CollaboratorPaymentStatus.Canceled.ToString())
                   HtmxProps=@(new HtmxProps(Endpoints.GetUpload(Result.CollaboratorPaymentId), Infrastructure.Ui.Targets.Dialog)) />
         <MenuItem Text=@Endpoints.PayTitle
                   IsDisabled=@(Result.Status!=CollaboratorPaymentStatus.Pending.ToString())

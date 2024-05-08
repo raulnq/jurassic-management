@@ -1,4 +1,5 @@
-﻿using Azure.Storage.Blobs;
+﻿using AsyncAwaitBestPractices;
+using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 
 namespace Infrastructure
@@ -11,10 +12,10 @@ namespace Infrastructure
         {
             _container = new BlobContainerClient(connectionString, container);
 
-            _container.CreateIfNotExistsAsync(PublicAccessType.Blob);
+            _container.CreateIfNotExistsAsync(PublicAccessType.Blob).SafeFireAndForget();
         }
 
-        protected async Task<string> Upload(string name, Stream stream, string contentType)
+        public async Task<string> Upload(string name, Stream stream, string contentType)
         {
             var blob = _container.GetBlobClient(name);
 

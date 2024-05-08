@@ -1,9 +1,10 @@
 ﻿@using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
+@using global::Infrastructure
 
 @foreach (var item in Result)
 {
-    <option value="@item.ProformaId">Proforma @item.Number, started at @item.Start.ToString("dd/MM/yyy") and ended At @item.End.ToString("dd/MM/yyy") with a total of @item.Currency @item.Total</option>
+    <option value="@item.ProformaId">Proforma @item.Number from @item.Start.ToListFormat() to @item.End.ToListFormat() with a total of @item.Currency @item.Total.ToMoneyFormat()</option>
 }
 
 @code {

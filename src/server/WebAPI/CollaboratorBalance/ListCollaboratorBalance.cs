@@ -30,14 +30,31 @@ public static class ListCollaboratorBalance
         public string Name { get; set; } = default!;
         public string Currency { get; set; } = default!;
         public decimal NetSalary { get; set; }
+        public decimal GrossSalary { get; set; }
+        public decimal Withholding { get; set; }
         public decimal Balance { get; set; }
         public string? Number { get; set; }
         public int Sign { get; set; }
-        public decimal Amount
+        public decimal SignedNetSalary
         {
             get
             {
                 return NetSalary * Sign;
+            }
+        }
+        public decimal SignedGrossSalary
+        {
+            get
+            {
+                return GrossSalary * Sign;
+            }
+        }
+
+        public decimal SignedWithholding
+        {
+            get
+            {
+                return Withholding * Sign;
             }
         }
     }
@@ -117,8 +134,8 @@ public static class ListCollaboratorBalance
 
         foreach (var item in result)
         {
-            item.Balance = item.Amount + endBalance;
-            endBalance = item.Amount + endBalance;
+            item.Balance = item.SignedNetSalary + endBalance;
+            endBalance = item.SignedNetSalary + endBalance;
         }
 
         var searchCollaboratorsResult = await searchCollaboratorsRunner.Run(new SearchCollaborators.Query());

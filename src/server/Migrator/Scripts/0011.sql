@@ -15,7 +15,7 @@ JOIN $schema$.[Invoices] i on i.InvoiceId=ic.InvoiceId
 WHERE c.Status='Confirmed'
 group by c.ClientId, c.CollectionId, c.ConfirmedAt, c.CreatedAt, c.Currency, c.ITF, c.Status, c.Total, c.Commission,  c.Number
 UNION ALL
-SELECT c.CollectionId, ConfirmedAt, 'Expenses', CONCAT('Bank commission from invoices ', STRING_AGG(i.Number, ', ')), c.Currency, c.Commission, 0, c.Commission, ITF, c.Number, 'Collections', c.CreatedAt, -1
+SELECT c.CollectionId, ConfirmedAt, 'Expenses', CONCAT('Bank commission from invoices ', STRING_AGG(i.Number, ', ')), c.Currency, c.Commission, 0, c.Commission, 0, c.Number, 'Collections', c.CreatedAt, -1
 FROM $schema$.[Collections] c
 JOIN $schema$.[InvoiceToCollectionProcessItems] ic on c.CollectionId=ic.CollectionId
 JOIN $schema$.[Invoices] i on i.InvoiceId=ic.InvoiceId

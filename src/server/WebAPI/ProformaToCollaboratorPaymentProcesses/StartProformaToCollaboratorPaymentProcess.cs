@@ -87,7 +87,7 @@ public static class StartProformaToCollaboratorPaymentProcess
                     CollaboratorPaymentId = result.CollaboratorPaymentId,
                     CollaboratorId = collaborator.Key.CollaboratorId,
                     CreatedAt = command.CreatedAt,
-                    GrossSalary = collaborator.Sum(i => i.SubTotal - i.ProfitAmount),
+                    GrossSalary = collaborator.Sum(i => i.GrossSalary),
                     WithholdingPercentage = collaborator.Average(i => i.WithholdingPercentage),
                     Currency = command.Currency
                 });

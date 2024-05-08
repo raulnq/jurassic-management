@@ -1,6 +1,7 @@
 ﻿@using WebAPI.Invoices;
 @using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
+@using global::Infrastructure
 
 <Heading Text=@Endpoints.Title />
 <Breadcrumbs Links=@(new []{new Breadcrumbs.Link(Endpoints.ListTitle)})
@@ -33,17 +34,17 @@
         </FormRow>
         <div id=@Targets.List>
             <DataTable TResult=ListCollaboratorPayments.Result
-                       Result=@Result
+                       Result=@Result.Items
                        Context="item">
                 <TableHeader>
                     <th></th>
-                    <th>CollaboratorPaymentId</th>
+                    <th>#</th>
                     <th>Collaborator</th>
-                    <th>Gross Salary</th>
-                    <th>Withholding</th>
-                    <th>Net Salary</th>
-                    <th>Status</th>
+                    <th class="text-end">Gross Salary</th>
+                    <th class="text-end">Withholding</th>
+                    <th class="text-end">Net Salary</th>
                     <th>Number</th>
+                    <th>Status</th>
                 </TableHeader>
                 <RowTemplate>
                     <RowToolbar>
@@ -54,11 +55,11 @@
                     </RowToolbar>
                     <td>@item.CollaboratorPaymentId</td>
                     <td>@item.CollaboratorName</td>
-                    <td>@item.Currency @item.GrossSalary</td>
-                    <td>@item.Currency @item.Withholding</td>
-                    <td>@item.Currency @item.NetSalary</td>
-                    <td>@item.Status</td>
+                    <td class="text-end">@item.Currency @item.GrossSalary.ToMoneyFormat()</td>
+                    <td class="text-end">@item.Withholding.ToMoneyFormat()</td>
+                    <td class="text-end">@item.NetSalary.ToMoneyFormat()</td>
                     <td>@item.Number</td>
+                    <td>@item.Status</td>
                 </RowTemplate>
             </DataTable>
             <Pagination Query=@Query

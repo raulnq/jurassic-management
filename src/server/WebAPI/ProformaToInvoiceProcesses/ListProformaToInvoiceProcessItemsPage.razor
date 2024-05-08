@@ -1,28 +1,29 @@
 ﻿@using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
 @using WebAPI.Proformas;
+@using global::Infrastructure
 
 <div id=@Targets.List>
     <DataTable TResult=ListProformaToInvoiceProcessItems.Result
-               Result=@Result
+               Result=@Result.Items
                Context="item">
         <TableHeader>
             <th>Project</th>
             <th>Proforma Number</th>
             <th>Start Date</th>
             <th>End Date</th>
-            <th>SubTotal</th>
-            <th>Commission</th>
-            <th>Total</th>
+            <th class="text-end">SubTotal</th>
+            <th class="text-end">Commission</th>
+            <th class="text-end">Total</th>
         </TableHeader>
         <RowTemplate>
             <td>@item.ProjectName</td>
             <td>@item.ProformaNumber</td>
-            <td>@item.ProformaStart</td>
-            <td>@item.ProformaEnd</td>
-            <td>@item.ProformaCurrency @item.ProformaSubTotal</td>
-            <td>@item.ProformaCurrency @item.ProformaCommission</td>
-            <td>@item.ProformaCurrency @item.ProformaTotal</td>
+            <td>@item.ProformaStart.ToListFormat()</td>
+            <td>@item.ProformaEnd.ToListFormat()</td>
+            <td class="text-end">@item.ProformaCurrency @item.ProformaSubTotal.ToMoneyFormat()</td>
+            <td class="text-end">@item.ProformaCommission.ToMoneyFormat()</td>
+            <td class="text-end">@item.ProformaTotal.ToMoneyFormat()</td>
         </RowTemplate>
     </DataTable>
     <Pagination Query=@Query

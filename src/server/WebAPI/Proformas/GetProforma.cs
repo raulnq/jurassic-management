@@ -41,7 +41,7 @@ public static class GetProforma
         public decimal AdministrativeExpensesAmount { get; set; }
         public decimal BankingExpensesAmount { get; set; }
         public string? Status { get; set; }
-        public DateTimeOffset? IssuedAt { get; set; }
+        public DateTime? IssuedAt { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
         public DateTimeOffset? CanceledAt { get; set; }
         public string? Currency { get; set; }

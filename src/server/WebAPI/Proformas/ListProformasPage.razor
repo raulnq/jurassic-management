@@ -1,6 +1,7 @@
 ﻿@using WebAPI.Proformas;
 @using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
+@using global::Infrastructure
 
 <Heading Text=@Endpoints.Title />
 <Breadcrumbs Links=@(new []{new Breadcrumbs.Link(Endpoints.ListTitle)})
@@ -35,17 +36,17 @@
         </FormRow>
         <div id=@Targets.List>
             <DataTable TResult=ListProformas.Result
-                       Result=@Result
+                       Result=@Result.Items
                        Context="item">
                 <TableHeader>
                     <th></th>
-                    <th>ProformaId</th>
+                    <th>#</th>
                     <th>Number</th>
                     <th>Client</th>
                     <th>Project</th>
                     <th>Start Date</th>
                     <th>End Date</th>
-                    <th>Total</th>
+                    <th class="text-end">Total</th>
                     <th>Status</th>
                 </TableHeader>
                 <RowTemplate>
@@ -59,9 +60,9 @@
                     <td>@item.Number</td>
                     <td>@item.ClientName</td>
                     <td>@item.ProjectName</td>
-                    <td>@item.Start</td>
-                    <td>@item.End</td>
-                    <td>@item.Currency @item.Total</td>
+                    <td>@item.Start.ToListFormat()</td>
+                    <td>@item.End.ToListFormat()</td>
+                    <td class="text-end">@item.Currency @item.Total.ToMoneyFormat()</td>
                     <td>@item.Status</td>
                 </RowTemplate>
             </DataTable>

@@ -63,7 +63,7 @@ public static class AddWorkItem
 
             var collaboratorRole = await _context.Get<CollaboratorRole>(command.CollaboratorRoleId);
 
-            proforma.AddWorkItem(command.Week, command.CollaboratorId, collaboratorRole, command.Hours, command.FreeHours);
+            proforma.AddWorkItem(command.Week, collaborator, collaboratorRole, command.Hours, command.FreeHours);
         }
     }
     public static async Task<Ok> Handle(

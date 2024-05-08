@@ -1,10 +1,11 @@
 ﻿@using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
 @using WebAPI.Proformas;
+@using global::Infrastructure
 
 <div id=@Targets.WeekList>
     <DataTable TResult=ListProformaWeeks.Result
-               Result=@Result
+               Result=@Result.Items
                PreRenderRow="false"
                Context="item">
         <TableHeader>
@@ -12,8 +13,8 @@
             <th>Week</th>
             <th>Start Date</th>
             <th>End Date</th>
-            <th>Penalty</th>
-            <th>SubTotal</th>
+            <th class="text-end">Penalty</th>
+            <th class="text-end">SubTotal</th>
         </TableHeader>
         <RowTemplate>
             <tr>
@@ -26,8 +27,8 @@
                 <td>@item.Week</td>
                 <td>@item.Start</td>
                 <td>@item.End</td>
-                <td><div id="@Targets.WeekColumnPenalty-@item.Week">@item.Penalty</div></td>
-                <td><div id="@Targets.WeekColumnSubTotal-@item.Week">@item.SubTotal</div></td>
+                <td class="text-end"><div id="@Targets.WeekColumnPenalty-@item.Week">@item.Penalty.ToMoneyFormat()</div></td>
+                <td class="text-end"><div id="@Targets.WeekColumnSubTotal-@item.Week">@item.SubTotal.ToMoneyFormat()</div></td>
             </tr>
         </RowTemplate>
     </DataTable>

@@ -24,7 +24,7 @@ public static class ListTransactions
         public string? DocumentUrl { get; set; }
         public string? Currency { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
-        public DateTime? IssuedAt { get; set; }
+        public DateTime IssuedAt { get; set; }
         public string Type { get; set; } = default!;
     }
 

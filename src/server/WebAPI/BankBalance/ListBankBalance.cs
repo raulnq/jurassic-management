@@ -39,7 +39,7 @@ public static class ListBankBalance
         public string Source { get; set; } = default!;
         public DateTimeOffset CreatedAt { get; set; }
         public int Sign { get; set; }
-        public decimal Amount
+        public decimal SignedTotal
         {
             get
             {
@@ -122,8 +122,8 @@ public static class ListBankBalance
 
         foreach (var item in result)
         {
-            item.Balance = item.Amount + endBalance;
-            endBalance = item.Amount + endBalance;
+            item.Balance = item.SignedTotal + endBalance;
+            endBalance = item.SignedTotal + endBalance;
         }
 
         return new RazorComponentResult<ListBankBalancePage>(new { Result = result, Query = query, StartBalance = startBalance, EndBalance = endBalance });

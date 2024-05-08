@@ -22,7 +22,7 @@ public static class LoginUser
 
     public static async Task<RazorComponentResult> HandleAction(HttpContext context, [FromBody] Command command)
     {
-        if (command.UserName != "admin" || command.Password != "admin")
+        if (command.UserName != "admin" || command.Password != "Yus4Xczj%,7JC!2Db3eB&")
         {
             return new RazorComponentResult<Alert>(new { Text = "Invalid username or password. Please try again" });
         }
@@ -39,6 +39,7 @@ public static class LoginUser
         var authProperties = new AuthenticationProperties
         {
             IsPersistent = true,
+            AllowRefresh = true
         };
         await context.SignInAsync(
             CookieAuthenticationDefaults.AuthenticationScheme,

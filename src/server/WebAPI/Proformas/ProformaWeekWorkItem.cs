@@ -1,4 +1,5 @@
 ﻿using WebAPI.CollaboratorRoles;
+using WebAPI.Collaborators;
 
 namespace WebAPI.Proformas;
 
@@ -14,21 +15,26 @@ public class ProformaWeekWorkItem
     public decimal SubTotal { get; private set; }
     public decimal ProfitAmount { get; private set; }
     public decimal ProfitPercentage { get; private set; }
+    public decimal Withholding { get; private set; }
+    public decimal WithholdingPercentage { get; private set; }
+    public decimal GrossSalary { get; private set; }
+    public decimal NetSalary { get; private set; }
 
     private ProformaWeekWorkItem()
     {
 
     }
-    public ProformaWeekWorkItem(Guid proformId, int week, decimal hours, decimal freeHours, Guid collaboratorId, CollaboratorRole collaboratorRole)
+    public ProformaWeekWorkItem(Guid proformId, int week, decimal hours, decimal freeHours, CollaboratorRole collaboratorRole, Collaborator collaborator)
     {
         ProformaId = proformId;
         Week = week;
-        CollaboratorId = collaboratorId;
+        CollaboratorId = collaborator.CollaboratorId;
         CollaboratorRoleId = collaboratorRole.CollaboratorRoleId;
         Hours = hours;
         FreeHours = freeHours;
         FeeAmount = collaboratorRole.FeeAmount;
         ProfitPercentage = collaboratorRole.ProfitPercentage;
+        WithholdingPercentage = collaborator.WithholdingPercentage;
         Refresh();
     }
 
@@ -36,6 +42,9 @@ public class ProformaWeekWorkItem
     {
         SubTotal = (Hours - FreeHours) * FeeAmount;
         ProfitAmount = (SubTotal * ProfitPercentage) / 100;
+        GrossSalary = SubTotal - ProfitAmount;
+        Withholding = (GrossSalary * WithholdingPercentage) / 100;
+        NetSalary = GrossSalary - Withholding;
     }
 
     public void Edit(decimal hours, decimal freeHours)

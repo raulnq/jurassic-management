@@ -142,5 +142,20 @@ public class WorkItemEntityTypeConfiguration : IEntityTypeConfiguration<Proforma
             .Property(c => c.ProfitPercentage)
             .HasColumnType("decimal(19, 4)");
 
+        builder
+            .Property(c => c.WithholdingPercentage)
+            .HasColumnType("decimal(19, 4)");
+
+        builder
+            .Property(c => c.Withholding)
+            .HasColumnType("decimal(19, 4)");
+
+        builder
+            .Property(c => c.GrossSalary)
+            .HasColumnType("decimal(19, 4)");
+
+        builder
+            .Property(c => c.NetSalary)
+            .HasColumnType("decimal(19, 4)");
     }
 }

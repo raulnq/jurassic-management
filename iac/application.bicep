@@ -98,7 +98,7 @@ module appSettings 'settings.bicep' = {
     currentAppSettings: list(resourceId('Microsoft.Web/sites/config', appService.name, 'appsettings'), appService.apiVersion).properties
     appSettings: {
       ASPNETCORE_ENVIRONMENT: aspNetCoreEnvironment
-      AzureStorageConnectionString__ConnectionString: blobStorageConnectionString
+      AzureStorageConnectionString: blobStorageConnectionString
       DbConnectionString: dbConnectionString
       AzureServiceBus__ConnectionString: serviceBusConnectionString
       WEBSITE_TIME_ZONE: 'America/Lima'

@@ -17,7 +17,7 @@ public static class IssueProforma
     {
         [JsonIgnore]
         public Guid ProformaId { get; set; }
-        public DateTimeOffset IssuedAt { get; set; }
+        public DateTime IssuedAt { get; set; }
     }
 
     public class Validator : AbstractValidator<Command>

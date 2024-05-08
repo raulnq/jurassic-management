@@ -1,4 +1,5 @@
 ﻿using WebAPI.CollaboratorRoles;
+using WebAPI.Collaborators;
 using WebAPI.Infrastructure.ExceptionHandling;
 
 namespace WebAPI.Proformas;
@@ -28,14 +29,14 @@ public class ProformaWeek
         Refresh(minimumHours, penaltyMinimumHours);
     }
 
-    public void Add(Guid collaboratorId, CollaboratorRole collaboratorRole, decimal hours, decimal freeHours, decimal minimumHours, decimal penaltyMinimumHours)
+    public void Add(Collaborator collaborator, CollaboratorRole collaboratorRole, decimal hours, decimal freeHours, decimal minimumHours, decimal penaltyMinimumHours)
     {
-        if (WorkItems.Any(i => i.CollaboratorId == collaboratorId))
+        if (WorkItems.Any(i => i.CollaboratorId == collaborator.CollaboratorId))
         {
             throw new DomainException(ExceptionCodes.Duplicated);
         }
 
-        WorkItems.Add(new ProformaWeekWorkItem(ProformaId, Week, hours, freeHours, collaboratorId, collaboratorRole));
+        WorkItems.Add(new ProformaWeekWorkItem(ProformaId, Week, hours, freeHours, collaboratorRole, collaborator));
 
 
         Refresh(minimumHours, penaltyMinimumHours);
@@ -73,9 +74,16 @@ public class ProformaWeek
     {
         var hours = WorkItems.Sum(i => i.Hours);
 
-        if (minimumHours > hours)
+        if (IsCompleteWeek())
         {
-            Penalty = (minimumHours - hours) * penaltyMinimumHours;
+            if (minimumHours > hours)
+            {
+                Penalty = (minimumHours - hours) * penaltyMinimumHours;
+            }
+            else
+            {
+                Penalty = 0;
+            }
         }
         else
         {
@@ -83,5 +91,10 @@ public class ProformaWeek
         }
 
         SubTotal = WorkItems.Sum(i => i.SubTotal) + Penalty;
+    }
+
+    private bool IsCompleteWeek()
+    {
+        return (End - Start).TotalDays == 6;
     }
 }

@@ -45,7 +45,6 @@ public class Invoice
 
     public void Issue(DateTime issuedAt, string number)
     {
-        EnsureDocumentIsNotEmpty();
         EnsureStatus(InvoiceStatus.Pending);
         Status = InvoiceStatus.Issued;
         IssuedAt = issuedAt;
@@ -64,14 +63,6 @@ public class Invoice
         if (status != Status)
         {
             throw new DomainException($"invoice-status-not-{status.ToString().ToLower()}");
-        }
-    }
-
-    private void EnsureDocumentIsNotEmpty()
-    {
-        if (string.IsNullOrEmpty(DocumentUrl))
-        {
-            throw new DomainException("invoice-document-is-empty");
         }
     }
 }

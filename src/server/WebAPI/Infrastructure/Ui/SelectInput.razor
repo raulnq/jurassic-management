@@ -28,6 +28,7 @@
                         hx-on:change=@HtmxProps.OnChange
                         required
                         multiple>
+
                     @foreach (var item in Source)
                     {
                         <option value=@item.Key>@item.Value</option>
@@ -47,6 +48,10 @@
                         hx-on:change=@HtmxProps.OnChange
                         hx-trigger="input changed"
                         required>
+                    @if (string.IsNullOrEmpty(Value))
+                    {
+                        <option value="" selected></option>
+                    }
                     @foreach (var item in Source)
                     {
                         @if (Value == item.Value)
@@ -76,7 +81,7 @@
                         hx-on:change=@HtmxProps.OnChange
                         id=@Property
                         multiple>
-                    <option value="" selected></option>
+
                     @foreach (var item in Source)
                     {
                         <option value=@item.Key>@item.Value</option>
@@ -96,8 +101,7 @@
                         hx-trigger="input changed"
                         id=@Property>
 
-
-                    @if (!string.IsNullOrEmpty(Value))
+                    @if (string.IsNullOrEmpty(Value))
                     {
                         <option value="" selected></option>
                     }

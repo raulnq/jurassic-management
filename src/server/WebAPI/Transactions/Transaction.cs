@@ -77,8 +77,8 @@ public class Transaction
     {
         if (Total >= 1000)
         {
-            ITF = 0.00005m * Total;
-            ITF = Math.Round(ITF, 2, MidpointRounding.AwayFromZero);
+            ITF = 0.00005m * Total * 20m;
+            ITF = Math.Round(ITF) / 20m;
         }
     }
 }
