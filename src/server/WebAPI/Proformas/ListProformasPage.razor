@@ -40,12 +40,13 @@
                        Context="item">
                 <TableHeader>
                     <th></th>
-                    <th>#</th>
+                    <th class="text-center">#</th>
                     <th>Number</th>
                     <th>Client</th>
                     <th>Project</th>
                     <th>Start Date</th>
                     <th>End Date</th>
+                    <th>Currency</th>
                     <th class="text-end">Total</th>
                     <th>Status</th>
                 </TableHeader>
@@ -62,7 +63,8 @@
                     <td>@item.ProjectName</td>
                     <td>@item.Start.ToListFormat()</td>
                     <td>@item.End.ToListFormat()</td>
-                    <td class="text-end">@item.Currency @item.Total.ToMoneyFormat()</td>
+                    <td>@item.Currency</td>
+                    <td class="text-end">@item.Total.ToMoneyFormat()</td>
                     <td>@item.Status</td>
                 </RowTemplate>
             </DataTable>

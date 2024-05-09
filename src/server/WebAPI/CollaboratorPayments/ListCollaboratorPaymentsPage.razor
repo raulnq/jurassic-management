@@ -38,8 +38,9 @@
                        Context="item">
                 <TableHeader>
                     <th></th>
-                    <th>#</th>
+                    <th class="text-center">#</th>
                     <th>Collaborator</th>
+                    <th>Currency</th>
                     <th class="text-end">Gross Salary</th>
                     <th class="text-end">Withholding</th>
                     <th class="text-end">Net Salary</th>
@@ -55,7 +56,8 @@
                     </RowToolbar>
                     <td>@item.CollaboratorPaymentId</td>
                     <td>@item.CollaboratorName</td>
-                    <td class="text-end">@item.Currency @item.GrossSalary.ToMoneyFormat()</td>
+                    <td>@item.Currency</td>
+                    <td class="text-end">@item.GrossSalary.ToMoneyFormat()</td>
                     <td class="text-end">@item.Withholding.ToMoneyFormat()</td>
                     <td class="text-end">@item.NetSalary.ToMoneyFormat()</td>
                     <td>@item.Number</td>

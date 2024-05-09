@@ -35,9 +35,9 @@ public class CollaboratorPayment
         CollaboratorPaymentId = collaboratorPaymentId;
         CollaboratorId = collaboratoId;
         GrossSalary = grossSalary;
-        Withholding = (grossSalary * withholdingPercentage) / 100;
+        Withholding = Math.Round((grossSalary * withholdingPercentage) / 100, 2, MidpointRounding.AwayFromZero);
         CreatedAt = createdAt;
-        NetSalary = GrossSalary - Withholding;
+        NetSalary = Math.Round(GrossSalary - Withholding, 2, MidpointRounding.AwayFromZero);
         Status = CollaboratorPaymentStatus.Pending;
         Currency = currency;
         Refresh();

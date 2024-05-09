@@ -9,15 +9,17 @@
                Context="item">
         <TableHeader>
             <th>Invoice Number</th>
+            <th>Invoice Curreny</th>
             <th class="text-end">SubTotal</th>
             <th class="text-end">Taxes</th>
             <th class="text-end">Total</th>
         </TableHeader>
         <RowTemplate>
             <td>@item.InvoiceNumber</td>
-            <td class="text-end">@item.InvoiceCurreny @item.InvoiceSubTotal.ToMoneyFormat()</td>
-            <td class="text-end">@item.InvoiceTaxes</td>
-            <td class="text-end">@item.InvoiceTotal</td>
+            <td>@item.InvoiceCurreny</td>
+            <td class="text-end">@item.InvoiceSubTotal.ToMoneyFormat()</td>
+            <td class="text-end">@item.InvoiceTaxes.ToMoneyFormat()</td>
+            <td class="text-end">@item.InvoiceTotal.ToMoneyFormat()</td>
         </RowTemplate>
     </DataTable>
     <Pagination Query=@Query

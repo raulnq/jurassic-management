@@ -49,6 +49,7 @@
                 <TableHeader>
                     <th>Date</th>
                     <th>Name</th>
+                    <th>Currency</th>
                     <th class="text-end">Gross Salary</th>
                     <th class="text-end">Withholding</th>
                     <th class="text-end">Net Salary</th>
@@ -59,7 +60,8 @@
                 <RowTemplate>
                     <td>@item.Date.ToListFormat()</td>
                     <td>@item.Name</td>
-                    <td class="text-end">@item.Currency @item.SignedGrossSalary.ToMoneyFormat()</td>
+                    <td>@item.Currency</td>
+                    <td class="text-end">@item.SignedGrossSalary.ToMoneyFormat()</td>
                     <td class="text-end">@item.SignedWithholding.ToMoneyFormat()</td>
                     <td class="text-end">@item.SignedNetSalary.ToMoneyFormat()</td>
                     <td>@item.Start.ToListFormat()</td>

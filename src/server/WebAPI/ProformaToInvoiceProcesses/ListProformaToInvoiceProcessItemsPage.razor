@@ -12,6 +12,7 @@
             <th>Proforma Number</th>
             <th>Start Date</th>
             <th>End Date</th>
+            <th>Proforma Currency</th>
             <th class="text-end">SubTotal</th>
             <th class="text-end">Commission</th>
             <th class="text-end">Total</th>
@@ -21,7 +22,8 @@
             <td>@item.ProformaNumber</td>
             <td>@item.ProformaStart.ToListFormat()</td>
             <td>@item.ProformaEnd.ToListFormat()</td>
-            <td class="text-end">@item.ProformaCurrency @item.ProformaSubTotal.ToMoneyFormat()</td>
+            <td>@item.ProformaCurrency</td>
+            <td class="text-end">@item.ProformaSubTotal.ToMoneyFormat()</td>
             <td class="text-end">@item.ProformaCommission.ToMoneyFormat()</td>
             <td class="text-end">@item.ProformaTotal.ToMoneyFormat()</td>
         </RowTemplate>

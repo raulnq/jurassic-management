@@ -43,8 +43,8 @@ public class ProformaWeekWorkItem
         SubTotal = (Hours - FreeHours) * FeeAmount;
         ProfitAmount = (SubTotal * ProfitPercentage) / 100;
         GrossSalary = SubTotal - ProfitAmount;
-        Withholding = (GrossSalary * WithholdingPercentage) / 100;
-        NetSalary = GrossSalary - Withholding;
+        Withholding = Math.Round((GrossSalary * WithholdingPercentage) / 100, 2, MidpointRounding.AwayFromZero);
+        NetSalary = Math.Round(GrossSalary - Withholding, 2, MidpointRounding.AwayFromZero);
     }
 
     public void Edit(decimal hours, decimal freeHours)

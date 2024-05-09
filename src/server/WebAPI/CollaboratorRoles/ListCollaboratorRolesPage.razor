@@ -31,7 +31,7 @@
                        Context="item">
                 <TableHeader>
                     <th></th>
-                    <th>#</th>
+                    <th class="text-center">#</th>
                     <th>Name</th>
                     <th class="text-end">Fee Amount</th>
                     <th class="text-end">Profit Percentage</th>
@@ -45,7 +45,7 @@
                     </RowToolbar>
                     <td>@item.CollaboratorRoleId</td>
                     <td>@item.Name</td>
-                    <td class="text-end">$ @item.FeeAmount.ToMoneyFormat()</td>
+                    <td class="text-end">@item.FeeAmount.ToMoneyFormat()</td>
                     <td class="text-end">@item.ProfitPercentage.ToPercentageFormat()</td>
                 </RowTemplate>
             </DataTable>

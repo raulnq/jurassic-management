@@ -15,6 +15,7 @@
             <th>End Date</th>
             <th>Hours</th>
             <th>Free Hours</th>
+            <th>Proforma Currency</th>
             <th class="text-end">Fee Amount</th>
             <th class="text-end">SubTotal</th>
             <th class="text-end">Profit Percentage</th>
@@ -28,7 +29,8 @@
             <td>@item.ProformaWeekEnd.ToListFormat()</td>
             <td>@item.Hours</td>
             <td>@item.FreeHours</td>
-            <td class="text-end">@item.ProformaCurrency @item.FeeAmount.ToMoneyFormat()</td>
+            <td>@item.ProformaCurrency</td>
+            <td class="text-end">@item.FeeAmount.ToMoneyFormat()</td>
             <td class="text-end">@item.SubTotal.ToMoneyFormat()</td>
             <td class="text-end">@item.ProfitPercentage.ToPercentageFormat()</td>
             <td class="text-end">@item.ProfitAmount.ToMoneyFormat()</td>

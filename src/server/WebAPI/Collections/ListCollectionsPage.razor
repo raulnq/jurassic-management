@@ -45,8 +45,9 @@
                        Context="item">
                 <TableHeader>
                     <th></th>
-                    <th>#</th>
+                    <th class="text-center">#</th>
                     <th>Client</th>
+                    <th>Currency</th>
                     <th class="text-end">Total</th>
                     <th class="text-end">Commission</th>
                     <th>Number</th>
@@ -61,7 +62,8 @@
                     </RowToolbar>
                     <td>@item.CollectionId</td>
                     <td>@item.ClientName</td>
-                    <td class="text-end">@item.Currency @item.Total.ToMoneyFormat()</td>
+                    <td>@item.Currency</td>
+                    <td class="text-end">@item.Total.ToMoneyFormat()</td>
                     <td class="text-end">@item.Commission.ToMoneyFormat()</td>
                     <td>@item.Number</td>
                     <td>@item.Status</td>
