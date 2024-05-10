@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.ExceptionHandling;
 using WebAPI.Infrastructure.Ui;
+using WebAPI.JiraProfiles;
 
 namespace WebAPI.Proformas;
 
@@ -102,6 +103,7 @@ public static class EditWorkItem
         [FromServices] ListProformaWeekWorkItems.Runner runner,
         [FromServices] GetProforma.Runner getProformaRunner,
         [FromServices] GetProformaWeek.Runner getProformaWeekRunner,
+        [FromServices] GetJiraProfileProject.Runner getJiraProfileProjectRunner,
         [FromBody] Command command,
         Guid proformaId,
         int week,
@@ -117,7 +119,9 @@ public static class EditWorkItem
             runner,
             getProformaRunner,
             getProformaWeekRunner,
-            proformaId, week);
+            getJiraProfileProjectRunner,
+            proformaId,
+            week);
 
     }
 }

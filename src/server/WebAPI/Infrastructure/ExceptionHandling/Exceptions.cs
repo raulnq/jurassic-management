@@ -50,6 +50,21 @@ public class DomainException : BaseException
     }
 }
 
+public class InfrastructureException : BaseException
+{
+    public InfrastructureException(string code, params object[] parameters) : base(code, parameters)
+    {
+    }
+
+    public InfrastructureException(string code, string description) : base(code, description)
+    {
+    }
+
+    public InfrastructureException(string code) : base(code)
+    {
+    }
+}
+
 public static class ExceptionCodes
 {
     public const string Duplicated = "the-resource-is-duplicated";

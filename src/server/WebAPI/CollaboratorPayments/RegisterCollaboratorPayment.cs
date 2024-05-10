@@ -4,8 +4,6 @@ using MassTransit;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
-using WebAPI.Clients;
-using WebAPI.CollaboratorRoles;
 using WebAPI.Collaborators;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.Ui;

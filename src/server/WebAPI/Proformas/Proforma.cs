@@ -1,5 +1,4 @@
-﻿using Microsoft.Azure.Amqp.Framing;
-using WebAPI.Clients;
+﻿using WebAPI.Clients;
 using WebAPI.CollaboratorRoles;
 using WebAPI.Collaborators;
 using WebAPI.Infrastructure.ExceptionHandling;

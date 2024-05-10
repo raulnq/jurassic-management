@@ -4,6 +4,7 @@ using WebAPI.CollaboratorRoles;
 using WebAPI.Collaborators;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.SqlKata;
+using WebAPI.JiraProfiles;
 
 namespace WebAPI.Proformas;
 
@@ -101,6 +102,7 @@ public static class ListProformaWeekWorkItems
     [FromServices] Runner runner,
     [FromServices] GetProforma.Runner getProformaRunner,
     [FromServices] GetProformaWeek.Runner getProformaWeekRunner,
+    [FromServices] GetJiraProfileProject.Runner getJiraProfileProjectRunner,
     [FromRoute] Guid proformaId,
     [FromRoute] int week)
     {
@@ -109,12 +111,14 @@ public static class ListProformaWeekWorkItems
         var result = await runner.Run(query);
         var getProformaResult = await getProformaRunner.Run(new GetProforma.Query() { ProformaId = proformaId });
         var getProformaWeekResult = await getProformaWeekRunner.Run(new GetProformaWeek.Query() { ProformaId = proformaId, Week = week });
+        var getJiraProfileProjectResult = await getJiraProfileProjectRunner.Run(new GetJiraProfileProject.Query() { ProjectId = getProformaResult.ProjectId });
         return new RazorComponentResult<ListProformaWeekWorkItemsPage>(new
         {
             Result = result,
             Query = query,
             GetProformaResult = getProformaResult,
-            GetProformaWeekResult = getProformaWeekResult
+            GetProformaWeekResult = getProformaWeekResult,
+            GetJiraProfileProjectResult = getJiraProfileProjectResult
         });
     }
 }

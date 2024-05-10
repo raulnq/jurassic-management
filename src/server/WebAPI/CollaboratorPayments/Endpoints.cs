@@ -1,6 +1,4 @@
-﻿using WebAPI.Clients;
-
-namespace WebAPI.CollaboratorPayments;
+﻿namespace WebAPI.CollaboratorPayments;
 
 public static class Endpoints
 {

@@ -1,5 +1,4 @@
 ﻿using Infrastructure;
-using System.Net.Mime;
 
 namespace Transactions
 {

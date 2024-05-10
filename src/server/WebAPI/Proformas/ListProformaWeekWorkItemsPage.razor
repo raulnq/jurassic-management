@@ -1,5 +1,6 @@
 ﻿@using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
+@using WebAPI.JiraProfiles
 @using WebAPI.Proformas;
 @using global::Infrastructure
 
@@ -11,6 +12,11 @@
                               Icon=@Icons.Add
                               IsDisabled=@(GetProformaResult.Status !=ProformaStatus.Pending.ToString())
                               HtmxProps=@(new HtmxProps(Endpoints.GetAddWorkItem(Query.ProformaId!.Value, Query.Week!.Value), Infrastructure.Ui.Targets.Dialog)) />
+                <ActionButton Text=@Endpoints.LoadWorkItemsTitle
+                              Icon=@Icons.Add
+                              Id="load"
+                              IsDisabled=@(GetProformaResult.Status !=ProformaStatus.Pending.ToString() && GetJiraProfileProjectResult!=null)
+                              HtmxProps=@(new HtmxProps(Endpoints.GetLoadWorkItems(Query.ProformaId!.Value, Query.Week!.Value), $"#{Targets.CollaboratorList}",Swap.OuterHTML,$"#{Targets.CollaboratorList}"){ Confirm = "Are you sure?", HttpMethod="POST", Vals=$"{{\"Start\": \"{GetProformaWeekResult.Start:yyy-MM-dd}\", \"End\": \"{GetProformaWeekResult.End:yyyy-MM-dd}\"}}"}) />
             </Actions>
         </Toolbar>
         <div id=@Targets.CollaboratorList>
@@ -65,4 +71,6 @@
     public GetProforma.Result GetProformaResult { get; set; } = default!;
     [Parameter, EditorRequired]
     public GetProformaWeek.Result GetProformaWeekResult { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public GetJiraProfileProject.Result? GetJiraProfileProjectResult { get; set; }
 }

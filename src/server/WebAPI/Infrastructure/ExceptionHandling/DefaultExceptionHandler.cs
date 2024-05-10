@@ -58,6 +58,24 @@ public class DefaultExceptionHandler : IExceptionHandler
             });
         }
 
+        if (exception is InfrastructureException iex)
+        {
+            httpContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
+
+            return _problemDetailsService.TryWriteAsync(new ProblemDetailsContext
+            {
+                HttpContext = httpContext,
+                ProblemDetails =
+                {
+                    Title = "An infrastructure error occurred",
+                    Detail = iex.Message,
+                    Status = (int)HttpStatusCode.NotFound,
+                    Type = "infrastructure-error",
+                },
+                Exception = exception
+            });
+        }
+
         if (exception is DomainException dex)
         {
             httpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;

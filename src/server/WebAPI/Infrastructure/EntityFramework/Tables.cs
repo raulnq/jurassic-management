@@ -20,6 +20,12 @@ public static class Tables
 
     public static Table Clients = new Table("Clients");
 
+    public static Table JiraProfileProjects = new Table("JiraProfileProjects");
+
+    public static Table JiraProfiles = new Table("JiraProfiles");
+
+    public static Table JiraProfileAccounts = new Table("JiraProfileAccounts");
+
     public static Table Proformas = new Table("Proformas");
 
     public static Table VwNotAddedToInvoiceProformas = new Table("VwNotAddedToInvoiceProformas");

@@ -1,5 +1,6 @@
 ﻿@using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
+@using WebAPI.JiraProfiles
 @using WebAPI.Proformas;
 @using global::Infrastructure
 
@@ -25,8 +26,8 @@
                     </Actions>
                 </RowToolbar>
                 <td>@item.Week</td>
-                <td>@item.Start</td>
-                <td>@item.End</td>
+                <td>@item.Start.ToListFormat()</td>
+                <td>@item.End.ToListFormat()</td>
                 <td class="text-end"><div id="@Targets.WeekColumnPenalty-@item.Week">@item.Penalty.ToMoneyFormat()</div></td>
                 <td class="text-end"><div id="@Targets.WeekColumnSubTotal-@item.Week">@item.SubTotal.ToMoneyFormat()</div></td>
             </tr>

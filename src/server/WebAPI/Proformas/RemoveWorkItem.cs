@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.ExceptionHandling;
+using WebAPI.JiraProfiles;
 
 namespace WebAPI.Proformas;
 
@@ -83,6 +84,7 @@ public static class RemoveWorkItem
         [FromServices] ListProformaWeekWorkItems.Runner runner,
         [FromServices] GetProforma.Runner getProformaRunner,
         [FromServices] GetProformaWeek.Runner getProformaWeekRunner,
+        [FromServices] GetJiraProfileProject.Runner getJiraProfileProjectRunner,
         Guid proformaId,
         int week,
         Guid collaboratorId)
@@ -103,7 +105,9 @@ public static class RemoveWorkItem
             runner,
             getProformaRunner,
             getProformaWeekRunner,
-            proformaId, week);
+            getJiraProfileProjectRunner,
+            proformaId,
+            week);
 
     }
 }

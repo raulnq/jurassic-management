@@ -8,6 +8,7 @@ using WebAPI.Collaborators;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.ExceptionHandling;
 using WebAPI.Infrastructure.Ui;
+using WebAPI.JiraProfiles;
 
 namespace WebAPI.Proformas;
 
@@ -112,6 +113,7 @@ public static class AddWorkItem
     [FromServices] ListProformaWeekWorkItems.Runner runner,
     [FromServices] GetProforma.Runner getProformaRunner,
     [FromServices] GetProformaWeek.Runner getProformaWeekRunner,
+    [FromServices] GetJiraProfileProject.Runner getJiraProfileProjectRunner,
     [FromBody] Command command,
     [FromRoute] Guid proformaId,
     [FromRoute] int week,
@@ -122,7 +124,7 @@ public static class AddWorkItem
         context.Response.Headers.TriggerShowSuccessMessageAndCloseModal($"collaborator", "added", command.CollaboratorId);
 
         return await ListProformaWeekWorkItems.HandlePage(new ListProformaWeekWorkItems.Query() { ProformaId = command.ProformaId, Week = command.Week },
-            runner, getProformaRunner, getProformaWeekRunner, proformaId, week);
+            runner, getProformaRunner, getProformaWeekRunner, getJiraProfileProjectRunner, proformaId, week);
     }
 
 }

@@ -1,12 +1,8 @@
-﻿using Infrastructure;
-using Microsoft.AspNetCore.Http.HttpResults;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.ComponentModel;
 using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.SqlKata;
-using WebAPI.Proformas;
 
 namespace WebAPI.BankBalance;
 

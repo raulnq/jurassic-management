@@ -32,6 +32,10 @@ public static class Endpoints
 
     public const string AddWorkItem = "/ui/proformas/{proformaId}/weeks/{week}/work-items/add";
 
+    public const string LoadWorkItemsTitle = "Load work items";
+
+    public const string LoadWorkItems = "/ui/proformas/{proformaId}/weeks/{week}/work-items/load";
+
     public const string AddWorkItemTitle = "Add work item";
 
     public const string EditWorkItem = "/ui/proformas/{proformaId}/weeks/{week}/work-items/{collaboratorId}/edit";
@@ -69,6 +73,11 @@ public static class Endpoints
     public static string GetAddWorkItem(Guid proformaId, int week)
     {
         return AddWorkItem.Replace("{proformaId}", proformaId.ToString()).Replace("{week}", week.ToString());
+    }
+
+    public static string GetLoadWorkItems(Guid proformaId, int week)
+    {
+        return LoadWorkItems.Replace("{proformaId}", proformaId.ToString()).Replace("{week}", week.ToString());
     }
 
     public static string GetListWorkItems(Guid proformaId, int week)
@@ -144,6 +153,8 @@ public static class Endpoints
         uigroup.MapGet("/{proformaId:guid}/weeks/{week:int}/work-items/add", Proformas.AddWorkItem.HandlePage);
 
         uigroup.MapPost("/{proformaId:guid}/weeks/{week:int}/work-items/add", Proformas.AddWorkItem.HandleAction);
+
+        uigroup.MapPost("/{proformaId:guid}/weeks/{week:int}/work-items/load", JiraProfiles.LoadJiraWorklogs.HandleAction);
 
         uigroup.MapGet("/{proformaId:guid}/weeks/{week:int}/work-items/{collaboratorId:guid}/edit", Proformas.EditWorkItem.HandlePage);
 

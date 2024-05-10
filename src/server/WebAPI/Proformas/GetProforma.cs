@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using WebAPI.Clients;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.SqlKata;
+using WebAPI.JiraProfiles;
 using WebAPI.ProformaDocuments;
 using WebAPI.Projects;
 
@@ -95,7 +96,7 @@ public static class GetProforma
             Result = result,
             ListProformaWeeksResult = listProformaWeeksResult,
             ListProformaWeeksQuery = listProformaWeeksQuery,
-            GetProformaDocumentResult = getProformaDocumentResult
+            GetProformaDocumentResult = getProformaDocumentResult,
         });
     }
 }

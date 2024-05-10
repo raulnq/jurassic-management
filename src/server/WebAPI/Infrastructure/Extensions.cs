@@ -1,9 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System.ComponentModel;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-
-namespace Infrastructure;
+﻿namespace Infrastructure;
 
 public static class Extensions
 {
