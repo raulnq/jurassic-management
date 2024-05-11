@@ -52,7 +52,9 @@ public static class UploadDocument
     {
         using (var stream = file.OpenReadStream())
         {
-            var url = await storage.Upload(Guid.NewGuid().ToString(), stream);
+            var ext = Path.GetExtension(file.FileName);
+
+            var url = await storage.Upload($"{Guid.NewGuid()}{ext}".ToString(), stream);
 
             var command = new Command
             {

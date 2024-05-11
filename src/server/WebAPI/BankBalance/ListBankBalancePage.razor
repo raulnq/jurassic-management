@@ -39,11 +39,11 @@
                     <th>IssuedAt</th>
                     <th>Type</th>
                     <th>Description</th>
-                    <th>SubTotal</th>
-                    <th>Taxes</th>
-                    <th>Total</th>
-                    <th>ITF</th>
-                    <th>Balance</th>
+                    <th class="text-end">SubTotal</th>
+                    <th class="text-end">Taxes</th>
+                    <th class="text-end">Total</th>
+                    <th class="text-end">ITF</th>
+                    <th class="text-end">Balance</th>
                 </TableHeader>
                 <RowTemplate>
                     <td>@item.IssuedAt.ToListFormat()</td>
@@ -56,7 +56,6 @@
                     <td class="text-end">@item.Balance</td>
                 </RowTemplate>
                 <TableFooter>
-                    <td></td>
                     <td></td>
                     <td></td>
                     <td></td>

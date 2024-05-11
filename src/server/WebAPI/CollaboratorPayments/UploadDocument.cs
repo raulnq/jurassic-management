@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using CollaboratorPayments;
+using FluentValidation;
 using Invoices;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -46,13 +47,15 @@ public static class UploadDocument
     public static async Task<Ok> Handle(
     [FromServices] TransactionBehavior behavior,
     [FromServices] Handler handler,
-    [FromServices] InvoiceStorage storage,
+    [FromServices] CollaboratorPaymentStorage storage,
     [FromRoute] Guid collaboratorPaymentId,
     IFormFile file)
     {
         using (var stream = file.OpenReadStream())
         {
-            var url = await storage.Upload(Guid.NewGuid().ToString(), stream);
+            var ext = Path.GetExtension(file.FileName);
+
+            var url = await storage.Upload($"{Guid.NewGuid()}{ext}".ToString(), stream);
 
             var command = new Command
             {
@@ -85,7 +88,7 @@ public static class UploadDocument
     [FromServices] Handler handler,
     [FromServices] GetCollaboratorPayment.Runner getCollaboratorPaymentRunner,
     [FromServices] ListProformaToCollaboratorPaymentProcessItems.Runner listProformaToCollaboratorPaymentProcessItemsRunner,
-    [FromServices] InvoiceStorage storage,
+    [FromServices] CollaboratorPaymentStorage storage,
     IFormFile file,
     Guid collaboratorPaymentId,
     HttpContext context)

@@ -38,7 +38,7 @@
                 <RowTemplate>
                     <RowToolbar>
                         <Actions>
-                            <ActionLink HtmxProps=@(new HtmxProps(Endpoints.GetEdit(@item.CollaboratorId), Infrastructure.Ui.Targets.Workspace))
+                            <ActionLink HtmxProps=@(new HtmxProps(Endpoints.Edit, Infrastructure.Ui.Targets.Workspace){ Vals=$$"""{"collaboratorId":"{{@item.CollaboratorId}}"}"""})
                                         Icon=@Icons.Edit />
                         </Actions>
                     </RowToolbar>
