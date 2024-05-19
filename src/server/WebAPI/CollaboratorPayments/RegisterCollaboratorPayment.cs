@@ -3,7 +3,9 @@ using Infrastructure;
 using MassTransit;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
+using WebAPI.CollaboratorRoles;
 using WebAPI.Collaborators;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.Ui;
@@ -68,7 +70,7 @@ public static class RegisterCollaboratorPayment
     public static async Task<Ok<Result>> Handle(
         [FromServices] TransactionBehavior behavior,
         [FromServices] Handler handler,
-        [FromServices] GetCollaborator.Runner getCollaboratorRunner,
+        [FromServices] ApplicationDbContext dbContext,
         [FromServices] IClock clock,
         [FromBody] Command command)
     {
@@ -76,9 +78,9 @@ public static class RegisterCollaboratorPayment
 
         command.CollaboratorPaymentId = NewId.Next().ToSequentialGuid();
 
-        var collaboratorResult = await getCollaboratorRunner.Run(new GetCollaborator.Query() { CollaboratorId = command.CollaboratorId });
+        var collaborator = await dbContext.Set<Collaborator>().AsNoTracking().FirstAsync(cr => cr.CollaboratorId == command.CollaboratorId);
 
-        command.WithholdingPercentage = collaboratorResult.WithholdingPercentage;
+        command.WithholdingPercentage = collaborator.WithholdingPercentage;
 
         new Validator().ValidateAndThrow(command);
 
@@ -88,26 +90,26 @@ public static class RegisterCollaboratorPayment
     }
 
     public static async Task<RazorComponentResult> HandlePage(
-        [FromServices] SearchCollaborators.Runner searchCollaboratorsRunner)
+        [FromServices] ApplicationDbContext dbContext)
     {
-        var searchCollaboratorsResult = await searchCollaboratorsRunner.Run(new SearchCollaborators.Query());
+        var collaborators = await dbContext.Set<Collaborator>().AsNoTracking().ToListAsync();
 
         return new RazorComponentResult<RegisterCollaboratorPaymentPage>(new
         {
-            SearchCollaboratorsResult = searchCollaboratorsResult
+            Collaborators = collaborators
         });
     }
 
     public static async Task<RazorComponentResult> HandleAction(
         [FromServices] TransactionBehavior behavior,
         [FromServices] Handler handler,
-        [FromServices] GetCollaborator.Runner getCollaboratorRunner,
+        [FromServices] ApplicationDbContext dbContext,
         [FromServices] ListCollaboratorPayments.Runner listCollaboratorPaymentsRunner,
         [FromServices] IClock clock,
         [FromBody] Command command,
         HttpContext context)
     {
-        var result = await Handle(behavior, handler, getCollaboratorRunner, clock, command);
+        var result = await Handle(behavior, handler, dbContext, clock, command);
 
         context.Response.Headers.TriggerShowRegisterSuccessMessage("collaborator payment", result.Value!.CollaboratorPaymentId);
 

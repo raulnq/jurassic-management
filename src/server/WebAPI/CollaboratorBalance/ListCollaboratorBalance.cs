@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using WebAPI.Collaborators;
 using WebAPI.Infrastructure.EntityFramework;
@@ -97,7 +98,7 @@ public static class ListCollaboratorBalance
     public static async Task<RazorComponentResult> HandlePage(
     [AsParameters] Query query,
     [FromServices] GetCollaboratorBalance.Runner getBalanceRunner,
-    [FromServices] SearchCollaborators.Runner searchCollaboratorsRunner,
+    [FromServices] ApplicationDbContext dbContext,
     [FromServices] Runner runner)
     {
         var result = new List<Result>();
@@ -138,7 +139,7 @@ public static class ListCollaboratorBalance
             endBalance = item.SignedNetSalary + endBalance;
         }
 
-        var searchCollaboratorsResult = await searchCollaboratorsRunner.Run(new SearchCollaborators.Query());
+        var collaborators = await dbContext.Set<Collaborator>().AsNoTracking().ToListAsync();
 
         return new RazorComponentResult<ListCollaboratorBalancePage>(new
         {
@@ -146,7 +147,7 @@ public static class ListCollaboratorBalance
             Query = query,
             StartBalance = startBalance,
             EndBalance = endBalance,
-            SearchCollaboratorsResult = searchCollaboratorsResult
+            SearchCollaboratorsResult = collaborators
         });
     }
 }

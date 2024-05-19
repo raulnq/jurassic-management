@@ -3,6 +3,7 @@ using Infrastructure;
 using MassTransit;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using WebAPI.CollaboratorPayments;
 using WebAPI.Collaborators;
@@ -100,13 +101,13 @@ public static class StartProformaToCollaboratorPaymentProcess
     }
 
     public static async Task<RazorComponentResult> HandlePage(
-    [FromServices] SearchCollaborators.Runner runner)
+        [FromServices] ApplicationDbContext dbContext)
     {
-        var result = await runner.Run(new SearchCollaborators.Query() { });
+        var collaborators = await dbContext.Set<Collaborator>().AsNoTracking().ToListAsync();
 
         return new RazorComponentResult<StartProformaToCollaboratorPaymentProcessPage>(new
         {
-            Collaborators = result
+            Collaborators = collaborators
         });
     }
 

@@ -86,24 +86,23 @@ public static class AddWorkItem
     }
 
     public static async Task<RazorComponentResult> HandlePage(
-    [FromServices] SearchCollaboratorRoles.Runner searchCollaboratorRolesRunner,
-    [FromServices] SearchCollaborators.Runner searchCollaboratorsRunner,
+    [FromServices] ApplicationDbContext dbContext,
     [FromRoute] Guid proformaId,
     [FromRoute] int week,
     HttpContext context)
     {
         context.Response.Headers.TriggerOpenModal();
 
-        var searchCollaboratorRolesResult = await searchCollaboratorRolesRunner.Run(new SearchCollaboratorRoles.Query());
+        var collaboratorRoles = await dbContext.Set<CollaboratorRole>().AsNoTracking().ToListAsync();
 
-        var searchCollaboratorsResult = await searchCollaboratorsRunner.Run(new SearchCollaborators.Query());
+        var collaborators = await dbContext.Set<Collaborator>().AsNoTracking().ToListAsync();
 
         return new RazorComponentResult<AddWorkItemPage>(new
         {
             ProformaId = proformaId,
             Week = week,
-            SearchCollaboratorRolesResult = searchCollaboratorRolesResult,
-            SearchCollaboratorsResult = searchCollaboratorsResult
+            CollaboratorRoles = collaboratorRoles,
+            Collaborators = collaborators
         });
     }
 

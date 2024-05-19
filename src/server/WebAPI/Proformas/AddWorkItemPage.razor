@@ -12,7 +12,7 @@
                 <div class="col">
                     <SelectInput Property=@(nameof(AddWorkItem.Command.CollaboratorRoleId))
                                  Label="Collaborator Role"
-                                 Source=@SearchCollaboratorRolesResult.ToDictionary(c=>c.CollaboratorRoleId, c=>c.Name)
+                                 Source=@CollaboratorRoles.ToDictionary(c=>c.CollaboratorRoleId, c=>c.Name)
                                  Required=true />
                 </div>
             </Content>
@@ -22,7 +22,7 @@
                 <div class="col">
                     <SelectInput Property=@(nameof(AddWorkItem.Command.CollaboratorId))
                                  Label="Collaborator"
-                                 Source=@SearchCollaboratorsResult.ToDictionary(c=>c.CollaboratorId, c=>c.Name)
+                                 Source=@Collaborators.ToDictionary(c=>c.CollaboratorId, c=>c.Name)
                                  Required=true />
                 </div>
             </Content>
@@ -60,8 +60,8 @@
     [Parameter, EditorRequired]
     public int Week { get; set; } = default!;
     [Parameter, EditorRequired]
-    public List<SearchCollaboratorRoles.Result> SearchCollaboratorRolesResult { get; set; } = default!;
+    public IEnumerable<CollaboratorRole> CollaboratorRoles { get; set; } = default!;
     [Parameter, EditorRequired]
-    public List<SearchCollaborators.Result> SearchCollaboratorsResult { get; set; } = default!;
+    public IEnumerable<Collaborator> Collaborators { get; set; } = default!;
 
 }

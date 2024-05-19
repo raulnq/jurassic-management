@@ -20,7 +20,7 @@
                         <div class="col-9">
                             <SelectInput Property=@(nameof(RegisterCollaboratorPayment.Command.CollaboratorId))
                                          Label="Collaborator"
-                                         Source=@SearchCollaboratorsResult.ToDictionary(c=>c.CollaboratorId, c=>c.Name)
+                                         Source=@Collaborators.ToDictionary(c=>c.CollaboratorId, c=>c.Name)
                                          Required=true />
                         </div>
                         <div class="col-3">
@@ -53,5 +53,5 @@
 
 @code {
     [Parameter, EditorRequired]
-    public List<SearchCollaborators.Result> SearchCollaboratorsResult { get; set; } = default!;
+    public IEnumerable<Collaborator> Collaborators { get; set; } = default!;
 }

@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using WebAPI.Collaborators;
 using WebAPI.Infrastructure.EntityFramework;
@@ -53,16 +54,16 @@ public static class EditCollaboratorPayment
     [FromServices] Handler handler,
     [FromRoute] Guid collaboratorPaymentId,
     [FromServices] GetCollaboratorPayment.Runner runner,
-    [FromServices] GetCollaborator.Runner getCollaboratorRunner,
+    [FromServices] ApplicationDbContext dbContext,
     [FromBody] Command command)
     {
         command.CollaboratorPaymentId = collaboratorPaymentId;
 
         var collaboratorPaymentResult = await runner.Run(new GetCollaboratorPayment.Query() { CollaboratorPaymentId = collaboratorPaymentId });
 
-        var collaboratorResult = await getCollaboratorRunner.Run(new GetCollaborator.Query() { CollaboratorId = collaboratorPaymentResult.CollaboratorId });
+        var collaborator = await dbContext.Set<Collaborator>().AsNoTracking().FirstAsync(cr => cr.CollaboratorId == collaboratorPaymentResult.CollaboratorId);
 
-        command.WithholdingPercentage = collaboratorResult.WithholdingPercentage;
+        command.WithholdingPercentage = collaborator.WithholdingPercentage;
 
         new Validator().ValidateAndThrow(command);
 
@@ -78,11 +79,11 @@ public static class EditCollaboratorPayment
     [FromServices] ListProformaToCollaboratorPaymentProcessItems.Runner listProformaToCollaboratorPaymentProcessItemsRunner,
     [FromBody] Command command,
     [FromServices] GetCollaboratorPayment.Runner runner,
-    [FromServices] GetCollaborator.Runner getCollaboratorRunner,
+    [FromServices] ApplicationDbContext dbContext,
     Guid collaboratorPaymentId,
     HttpContext context)
     {
-        await Handle(behavior, handler, collaboratorPaymentId, runner, getCollaboratorRunner, command);
+        await Handle(behavior, handler, collaboratorPaymentId, runner, dbContext, command);
 
         context.Response.Headers.TriggerShowEditSuccessMessage("collaborator payment", collaboratorPaymentId);
 

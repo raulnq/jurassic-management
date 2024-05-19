@@ -27,7 +27,7 @@
                                   Label="Collaborator"
                                   EmptyLabel="None"
                                   EmptyValue="00000000-0000-0000-0000-000000000000"
-                                  Source=@(SearchCollaboratorsResult.ToDictionary(c=>c.CollaboratorId, c=>c.Name)) />
+                                  Source=@(Collaborators.ToDictionary(c=>c.CollaboratorId, c=>c.Name)) />
                 </div>
                 <div class="col-3">
                     <DateFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}",Swap.OuterHTML,$"#{Targets.List}"){ Include=$"#{nameof(ListCollaboratorBalance.Query.Currency)}, #{nameof(ListCollaboratorBalance.Query.StringEnd)}, #{nameof(ListCollaboratorBalance.Query.CollaboratorId)}"})
@@ -93,5 +93,5 @@
     [Parameter, EditorRequired]
     public decimal EndBalance { get; set; } = default!;
     [Parameter, EditorRequired]
-    public List<SearchCollaborators.Result> SearchCollaboratorsResult { get; set; } = default!;
+    public IEnumerable<Collaborator> Collaborators { get; set; } = default!;
 }
