@@ -3,6 +3,7 @@ using MassTransit;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Infrastructure.EntityFramework;
+using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Infrastructure.Ui;
 
 namespace WebAPI.CollaboratorRoles;
@@ -31,37 +32,24 @@ public static class RegisterCollaboratorRole
         }
     }
 
-    public class Handler
+    public static async Task<Ok<Result>> Handle(
+    [FromServices] TransactionBehavior behavior,
+    [FromServices] ApplicationDbContext context,
+    [FromBody] Command command)
     {
-        private readonly ApplicationDbContext _context;
+        new Validator().ValidateAndThrow(command);
 
-        public Handler(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
-        public Task<Result> Handle(Command command)
+        var result = await behavior.Handle(() =>
         {
             var collaboratorRole = new CollaboratorRole(NewId.Next().ToSequentialGuid(), command.Name!, command.FeeAmount, command.ProfitPercentage);
 
-            _context.Set<CollaboratorRole>().Add(collaboratorRole);
+            context.Set<CollaboratorRole>().Add(collaboratorRole);
 
             return Task.FromResult(new Result()
             {
                 CollaboratorRoleId = collaboratorRole.CollaboratorRoleId
             });
-        }
-    }
-
-
-    public static async Task<Ok<Result>> Handle(
-    [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
-    [FromBody] Command command)
-    {
-        new Validator().ValidateAndThrow(command);
-
-        var result = await behavior.Handle(() => handler.Handle(command));
+        });
 
         return TypedResults.Ok(result);
     }
@@ -73,14 +61,14 @@ public static class RegisterCollaboratorRole
 
     public static async Task<RazorComponentResult> HandleAction(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
-    [FromServices] ListCollaboratorRoles.Runner runner,
+    [FromServices] ApplicationDbContext dbContext,
+    [FromServices] SqlKataQueryRunner runner,
     [FromBody] Command command,
-    HttpContext context)
+    HttpContext httpContext)
     {
-        var result = await Handle(behavior, handler, command);
+        var result = await Handle(behavior, dbContext, command);
 
-        context.Response.Headers.TriggerShowRegisterSuccessMessage("collaborator role", result.Value!.CollaboratorRoleId);
+        httpContext.Response.Headers.TriggerShowRegisterSuccessMessage("collaborator role", result.Value!.CollaboratorRoleId);
 
         return await ListCollaboratorRoles.HandlePage(new ListCollaboratorRoles.Query() { }, runner);
     }

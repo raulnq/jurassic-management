@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.Ui;
@@ -29,21 +30,9 @@ public static class EditCollaboratorRole
         }
     }
 
-    public class Handler(ApplicationDbContext context)
-    {
-        private readonly ApplicationDbContext _context = context;
-
-        public async Task Handle(Command command)
-        {
-            var collaboratorRole = await _context.Get<CollaboratorRole>(command.CollaboratorRoleId);
-
-            collaboratorRole.Edit(command.Name!, command.FeeAmount, command.ProfitPercentage);
-        }
-    }
-
     public static async Task<Ok> Handle(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
+    [FromServices] ApplicationDbContext context,
     [FromRoute] Guid collaboratorRoleId,
     [FromBody] Command command)
     {
@@ -51,32 +40,36 @@ public static class EditCollaboratorRole
 
         new Validator().ValidateAndThrow(command);
 
-        await behavior.Handle(() => handler.Handle(command));
+        await behavior.Handle(async () =>
+        {
+            var collaboratorRole = await context.Get<CollaboratorRole>(command.CollaboratorRoleId);
+
+            collaboratorRole.Edit(command.Name!, command.FeeAmount, command.ProfitPercentage);
+        });
 
         return TypedResults.Ok();
     }
 
     public static async Task<RazorComponentResult> HandlePage(
-    [FromServices] GetCollaboratorRole.Runner runner,
+    [FromServices] ApplicationDbContext dbContext,
     [FromRoute] Guid collaboratorRoleId)
     {
-        var result = await runner.Run(new GetCollaboratorRole.Query() { CollaboratorRoleId = collaboratorRoleId });
+        var result = await dbContext.Set<CollaboratorRole>().AsNoTracking().FirstAsync(cr => cr.CollaboratorRoleId == collaboratorRoleId);
 
         return new RazorComponentResult<EditCollaboratorRolePage>(new { Result = result });
     }
 
     public static async Task<RazorComponentResult> HandleAction(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
-    [FromServices] GetCollaboratorRole.Runner runner,
+    [FromServices] ApplicationDbContext dbcontext,
     [FromRoute] Guid collaboratorRoleId,
     [FromBody] Command command,
     HttpContext context)
     {
-        await Handle(behavior, handler, collaboratorRoleId, command);
+        await Handle(behavior, dbcontext, collaboratorRoleId, command);
 
         context.Response.Headers.TriggerShowEditSuccessMessage("collaborator role", command.CollaboratorRoleId);
 
-        return await HandlePage(runner, command.CollaboratorRoleId);
+        return await HandlePage(dbcontext, command.CollaboratorRoleId);
     }
 }

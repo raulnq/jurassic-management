@@ -1,6 +1,6 @@
 ﻿@using WebAPI.Infrastructure.Ui;
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en" data-bs-theme="auto">
 <head>
     <meta charset="UTF-8">
@@ -52,7 +52,7 @@
                 </Items>
             </Sidebar>
             <div class="col-1"></div>
-            <div class="col-8 pt-2" id=@(Targets.Workspace.Replace("#", ""))>
+            <div class="col-8 pt-2" id=@Workspace>
             </div>
             <div class="col-1"></div>
         </div>
@@ -127,5 +127,5 @@
 </body>
 </html>
 @code {
-
+    public const string Workspace = "workspace";
 }

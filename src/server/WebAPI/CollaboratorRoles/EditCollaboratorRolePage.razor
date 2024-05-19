@@ -4,10 +4,10 @@
 
 <Heading Text=@Endpoints.Title />
 <Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new(Endpoints.ListTitle, Endpoints.List.AddListParameters()), new(Endpoints.EditTitle) })
-             Target=@(Infrastructure.Ui.Targets.Workspace) />
+             Target=@($"#{WebAPI.Users.MainPage.Workspace}") />
 <Section>
     <Content>
-        <Form HtmxProps=@(new HtmxProps(Endpoints.GetEdit(@Result.CollaboratorRoleId),Infrastructure.Ui.Targets.Workspace))>
+        <Form HtmxProps=@(new HtmxProps(Endpoints.Edit, $"#{WebAPI.Users.MainPage.Workspace}"){Vals=$$"""{"collaboratorRoleId":"{{Result.CollaboratorRoleId}}"}"""})>
             <Content>
                 <FormRow>
                     <Content>
@@ -52,5 +52,5 @@
 
 @code {
     [Parameter, EditorRequired]
-    public GetCollaboratorRole.Result Result { get; set; } = default!;
+    public CollaboratorRole Result { get; set; } = default!;
 }

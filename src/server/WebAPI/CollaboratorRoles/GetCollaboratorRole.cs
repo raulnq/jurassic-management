@@ -20,22 +20,14 @@ public static class GetCollaboratorRole
         public decimal ProfitPercentage { get; set; }
     }
 
-    public class Runner : BaseRunner
-    {
-        public Runner(SqlKataQueryRunner queryRunner) : base(queryRunner) { }
-
-        public Task<Result> Run(Query query)
-        {
-            return _queryRunner.Get<Result>((qf) => qf
-                .Query(Tables.CollaboratorRoles)
-                .Where(Tables.CollaboratorRoles.Field(nameof(CollaboratorRole.CollaboratorRoleId)), query.CollaboratorRoleId));
-        }
-    }
-
     public static async Task<Ok<Result>> Handle(
-    [FromServices] Runner runner,
+    [FromServices] SqlKataQueryRunner runner,
     [FromRoute] Guid collaboratorRoleId)
     {
-        return TypedResults.Ok(await runner.Run(new Query() { CollaboratorRoleId = collaboratorRoleId }));
+        var result = await runner.Get<Result>((qf) => qf
+                .Query(Tables.CollaboratorRoles)
+                .Where(Tables.CollaboratorRoles.Field(nameof(CollaboratorRole.CollaboratorRoleId)), collaboratorRoleId));
+
+        return TypedResults.Ok(result);
     }
 }

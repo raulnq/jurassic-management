@@ -1,4 +1,8 @@
-﻿namespace WebAPI.CollaboratorRoles;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using WebAPI.Infrastructure.EntityFramework;
+
+namespace WebAPI.CollaboratorRoles;
 
 public class CollaboratorRole
 {
@@ -22,5 +26,25 @@ public class CollaboratorRole
         Name = name;
         FeeAmount = feeAmount;
         ProfitPercentage = profitPercentage;
+    }
+}
+
+public class EntityTypeConfiguration : IEntityTypeConfiguration<CollaboratorRole>
+{
+    public void Configure(EntityTypeBuilder<CollaboratorRole> builder)
+    {
+        builder
+            .ToTable(Tables.CollaboratorRoles);
+
+        builder
+            .HasKey(cr => cr.CollaboratorRoleId);
+
+        builder
+            .Property(c => c.ProfitPercentage)
+            .HasColumnType("decimal(19, 4)");
+
+        builder
+            .Property(c => c.FeeAmount)
+            .HasColumnType("decimal(19, 4)");
     }
 }
