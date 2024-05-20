@@ -1,5 +1,9 @@
-﻿using WebAPI.Infrastructure.ExceptionHandling;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore;
+using WebAPI.Infrastructure.EntityFramework;
+using WebAPI.Infrastructure.ExceptionHandling;
 using WebAPI.Proformas;
+using Infrastructure;
 
 namespace WebAPI.Invoices;
 
@@ -63,6 +67,38 @@ public class Invoice
         if (status != Status)
         {
             throw new DomainException($"invoice-status-not-{status.ToString().ToLower()}");
+        }
+    }
+
+    public class EntityTypeConfiguration : IEntityTypeConfiguration<Invoice>
+    {
+        public void Configure(EntityTypeBuilder<Invoice> builder)
+        {
+            builder
+                .ToTable(Tables.Invoices);
+
+            builder
+                .HasKey(c => c.InvoiceId);
+
+            builder
+                .Property(c => c.Total)
+                .HasColumnType("decimal(19, 4)");
+
+            builder
+                .Property(c => c.SubTotal)
+                .HasColumnType("decimal(19, 4)");
+
+            builder
+                .Property(c => c.Taxes)
+                .HasColumnType("decimal(19, 4)");
+
+            builder
+                .Property(c => c.Currency)
+                .HasConversion(s => s.ToString(), value => value.ToEnum<Currency>());
+
+            builder
+                .Property(c => c.Status)
+                .HasConversion(s => s.ToString(), value => value.ToEnum<InvoiceStatus>());
         }
     }
 }

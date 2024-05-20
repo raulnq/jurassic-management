@@ -3,7 +3,7 @@
 @using WebAPI.Proformas;
 @using global::Infrastructure
 
-<div id=@Targets.List>
+<div id=@List>
     <DataTable TResult=ListProformaToInvoiceProcessItems.Result
                Result=@Result.Items
                Context="item">
@@ -30,7 +30,7 @@
     </DataTable>
     <Pagination Query=@Query
                 Result=@Result
-                HtmxProps=@(new HtmxProps(Endpoints.GetListItems(Query.InvoiceId!.Value), $"#{Targets.List}", Swap.OuterHTML)) />
+                HtmxProps=@(new HtmxProps(Endpoints.ListItems, $"#{List}", Swap.OuterHTML){Vals=$$"""{"invoiceId":"{{Query.InvoiceId}}"}"""}) />
 </div>
 
 @code {
@@ -38,4 +38,6 @@
     public ListResults<ListProformaToInvoiceProcessItems.Result> Result { get; set; } = default!;
     [Parameter, EditorRequired]
     public ListProformaToInvoiceProcessItems.Query Query { get; set; } = default!;
+
+    public const string List = "process-items-list-target";
 }

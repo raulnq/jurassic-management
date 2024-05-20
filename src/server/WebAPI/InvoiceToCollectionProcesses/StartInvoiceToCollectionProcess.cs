@@ -20,8 +20,6 @@ public static class StartInvoiceToCollectionProcess
     {
         public IEnumerable<Guid>? InvoiceId { get; set; }
         [JsonIgnore]
-        public IEnumerable<ListInvoices.Result>? Invoices { get; set; }
-        [JsonIgnore]
         public DateTimeOffset CreatedAt { get; set; }
         public Guid ClientId { get; set; }
         public Currency Currency { get; set; }
@@ -40,33 +38,10 @@ public static class StartInvoiceToCollectionProcess
         }
     }
 
-    public class Handler
-    {
-        private readonly ApplicationDbContext _context;
-
-        public Handler(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
-        public Task<Result> Handle(Command command)
-        {
-            var process = new InvoiceToCollectionProcess(NewId.Next().ToSequentialGuid(), command.ClientId, command.Currency, command.Invoices!.Select(p => (p.InvoiceId, p.Status!.ToEnum<InvoiceStatus>())), command.CreatedAt);
-
-            _context.Set<InvoiceToCollectionProcess>().Add(process);
-
-            return Task.FromResult(new Result()
-            {
-                CollectionId = process.CollectionId
-            });
-        }
-    }
-
     public static async Task<Ok<Result>> Handle(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
     [FromServices] RegisterCollection.Handler registerCollectionHandler,
-    [FromServices] ListInvoices.Runner listInvoiceHandler,
+    [FromServices] ApplicationDbContext dbContext,
     [FromServices] IClock clock,
     [FromBody] Command command)
     {
@@ -74,24 +49,27 @@ public static class StartInvoiceToCollectionProcess
 
         command.CreatedAt = clock.Now;
 
-        var invoices = await listInvoiceHandler.Run(new ListInvoices.Query() { InvoiceId = command.InvoiceId, PageSize = 50 });
-
-        command.Invoices = invoices.Items;
+        var invoices = await dbContext.Set<Invoice>().AsNoTracking().Where(i => command.InvoiceId!.Contains(i.InvoiceId)).ToListAsync();
 
         var result = await behavior.Handle(async () =>
         {
-            var result = await handler.Handle(command);
+            var process = new InvoiceToCollectionProcess(NewId.Next().ToSequentialGuid(), command.ClientId, command.Currency, invoices, command.CreatedAt);
+
+            dbContext.Set<InvoiceToCollectionProcess>().Add(process);
 
             await registerCollectionHandler.Handle(new RegisterCollection.Command()
             {
-                CollectionId = result.CollectionId,
+                CollectionId = process.CollectionId,
                 ClientId = command.ClientId,
                 CreatedAt = command.CreatedAt,
-                Total = invoices.Items.Sum(p => p.Total),
+                Total = invoices.Sum(i => i.Total),
                 Currency = command.Currency
             });
 
-            return result;
+            return new Result()
+            {
+                CollectionId = process.CollectionId
+            };
         });
 
         return TypedResults.Ok(result);
@@ -110,16 +88,14 @@ public static class StartInvoiceToCollectionProcess
 
     public static async Task<RazorComponentResult> HandleAction(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
     [FromServices] RegisterCollection.Handler registerCollectionHandler,
-    [FromServices] ListInvoices.Runner listInvoicesRunner,
     [FromServices] ListCollections.Runner listCollectionsRunner,
     [FromServices] ApplicationDbContext dbContext,
     [FromBody] Command command,
     [FromServices] IClock clock,
     HttpContext context)
     {
-        var register = await Handle(behavior, handler, registerCollectionHandler, listInvoicesRunner, clock, command);
+        var register = await Handle(behavior, registerCollectionHandler, dbContext, clock, command);
 
         context.Response.Headers.TriggerShowRegisterSuccessMessage($"collection", register.Value!.CollectionId);
 

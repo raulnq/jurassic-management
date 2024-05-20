@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.ExceptionHandling;
+using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Infrastructure.Ui;
 using WebAPI.ProformaToInvoiceProcesses;
 
@@ -28,31 +29,9 @@ public static class CancelInvoice
         }
     }
 
-    public class Handler
-    {
-        private readonly ApplicationDbContext _context;
-
-        public Handler(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
-        public async Task Handle(Command command)
-        {
-            var invoice = await _context.Get<Invoice>(command.InvoiceId);
-
-            if (invoice == null)
-            {
-                throw new NotFoundException<Invoice>();
-            }
-
-            invoice.Cancel(command.CanceledAt);
-        }
-    }
-
     public static async Task<Ok> Handle(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
+    [FromServices] ApplicationDbContext dbContext,
     [FromRoute] Guid invoiceId,
     [FromServices] IClock clock,
     [FromBody] Command command)
@@ -63,15 +42,25 @@ public static class CancelInvoice
 
         new Validator().ValidateAndThrow(command);
 
-        await behavior.Handle(() => handler.Handle(command));
+        await behavior.Handle(async () =>
+        {
+            var invoice = await dbContext.Get<Invoice>(command.InvoiceId);
+
+            if (invoice == null)
+            {
+                throw new NotFoundException<Invoice>();
+            }
+
+            invoice.Cancel(command.CanceledAt);
+        });
 
         return TypedResults.Ok();
     }
 
     public static async Task<RazorComponentResult> HandleAction(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
-    [FromServices] GetInvoice.Runner getInvoiceRunner,
+    [FromServices] ApplicationDbContext dbContext,
+    [FromServices] SqlKataQueryRunner runner,
     [FromServices] ListProformaToInvoiceProcessItems.Runner listProformaToInvoiceProcessItems,
     [FromServices] IClock clock,
     HttpContext context,
@@ -83,10 +72,10 @@ public static class CancelInvoice
             CanceledAt = clock.Now
         };
 
-        await Handle(behavior, handler, invoiceId, clock, command);
+        await Handle(behavior, dbContext, invoiceId, clock, command);
 
         context.Response.Headers.TriggerShowSuccessMessage("invoice", "canceled", command.InvoiceId);
 
-        return await GetInvoice.HandlePage(getInvoiceRunner, listProformaToInvoiceProcessItems, command.InvoiceId);
+        return await GetInvoice.HandlePage(runner, listProformaToInvoiceProcessItems, command.InvoiceId);
     }
 }

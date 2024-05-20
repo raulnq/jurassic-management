@@ -6,7 +6,6 @@ using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.ExceptionHandling;
 using WebAPI.Infrastructure.Ui;
-using WebAPI.JiraProfiles;
 
 namespace WebAPI.Proformas;
 

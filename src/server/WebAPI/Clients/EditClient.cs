@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
-using WebAPI.Collaborators;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.Ui;
 using WebAPI.Projects;

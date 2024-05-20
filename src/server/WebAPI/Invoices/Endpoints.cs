@@ -26,25 +26,6 @@ public static class Endpoints
 
     public const string SearchNotAddedToCollection = "/ui/invoices/search-not-added-to-collection";
 
-    public static string GetView(Guid invoiceId)
-    {
-        return View.Replace("{invoiceId}", invoiceId.ToString());
-    }
-    public static string GetIssue(Guid invoiceId)
-    {
-        return Issue.Replace("{invoiceId}", invoiceId.ToString());
-    }
-
-    public static string GetCancel(Guid invoiceId)
-    {
-        return Cancel.Replace("{invoiceId}", invoiceId.ToString());
-    }
-
-    public static string GetUpload(Guid invoiceId)
-    {
-        return Upload.Replace("{invoiceId}", invoiceId.ToString());
-    }
-
     public static void RegisterInvoiceEndpoints(this WebApplication app)
     {
         var group = app.MapGroup("/invoices")

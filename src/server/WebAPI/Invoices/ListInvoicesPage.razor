@@ -20,7 +20,7 @@
         <FormRow>
             <Content>
                 <div class="col-6">
-                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}",Swap.OuterHTML,$"#{Targets.List}"){ Include=$"#{nameof(ListInvoices.Query.ClientId)}"})
+                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{List}",Swap.OuterHTML,$"#{List}"){ Include=$"#{nameof(ListInvoices.Query.ClientId)}"})
                                   Label="Status"
                                   Property=@(nameof(ListInvoices.Query.Status))
                                   Query=@Query
@@ -28,7 +28,7 @@
                                   Source=@(Enum.GetValues<InvoiceStatus>().ToDictionary(i=>i.ToString(), i=>i.ToString())) />
                 </div>
                 <div class="col-6">
-                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}",Swap.OuterHTML,$"#{Targets.List}"){ Include=$"#{nameof(ListInvoices.Query.Status)}"})
+                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{List}",Swap.OuterHTML,$"#{List}"){ Include=$"#{nameof(ListInvoices.Query.Status)}"})
                                   Label="Client"
                                   Property=@(nameof(ListInvoices.Query.ClientId))
                                   Query=@Query
@@ -38,7 +38,7 @@
                 </div>
             </Content>
         </FormRow>
-        <div id=@Targets.List>
+        <div id=@List>
             <DataTable TResult=ListInvoices.Result
                        Result=@Result.Items
                        Context="item">
@@ -54,7 +54,7 @@
                 <RowTemplate>
                     <RowToolbar>
                         <Actions>
-                            <ActionLink HtmxProps=@(new HtmxProps(Endpoints.GetView(@item.InvoiceId), $"#{WebAPI.Users.MainPage.Workspace}"))
+                            <ActionLink HtmxProps=@(new HtmxProps(Endpoints.View, $"#{WebAPI.Users.MainPage.Workspace}"){Vals=$$"""{"invoiceId":"{{item.InvoiceId}}"}"""})
                                         Icon=@Icons.View />
                         </Actions>
                     </RowToolbar>
@@ -68,7 +68,7 @@
             </DataTable>
             <Pagination Query=@Query
                         Result=@Result
-                        HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}", Swap.OuterHTML, $"#{Targets.List}"))
+                        HtmxProps=@(new HtmxProps(Endpoints.List, $"#{List}", Swap.OuterHTML, $"#{List}"))
                         Parameters=@(new KeyValuePair<string, object?>[]{ new (nameof(ListInvoices.Query.Status), Query.Status), new (nameof(ListInvoices.Query.ClientId), Query.ClientId)}) />
         </div>
     </Content>
@@ -80,4 +80,6 @@
     public ListInvoices.Query Query { get; set; } = default!;
     [Parameter, EditorRequired]
     public IEnumerable<Client> Clients { get; set; } = default!;
+
+    public const string List = "invoice-list-target";
 }

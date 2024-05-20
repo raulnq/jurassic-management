@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using WebAPI.Clients;
 using WebAPI.Infrastructure.EntityFramework;
+using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Infrastructure.Ui;
 using WebAPI.Invoices;
 using WebAPI.Proformas;
@@ -20,8 +21,6 @@ public static class StartProformaToInvoiceProcess
         public IEnumerable<Guid>? ProformaId { get; set; }
         public Guid ClientId { get; set; }
         public Currency Currency { get; set; }
-        [JsonIgnore]
-        public IEnumerable<ListProformas.Result>? Proformas { get; set; }
         [JsonIgnore]
         public DateTimeOffset CreatedAt { get; set; }
     }
@@ -89,18 +88,18 @@ public static class StartProformaToInvoiceProcess
     }
 
     public static async Task<RazorComponentResult> HandleAction(
-    [FromServices] TransactionBehavior behavior,
-    [FromServices] RegisterInvoice.Handler registerInvoiceHandler,
-    [FromServices] ListInvoices.Runner listInvoicesRunner,
-    [FromServices] ApplicationDbContext dbContext,
-    [FromBody] Command command,
-    [FromServices] IClock clock,
-    HttpContext context)
+        [FromServices] TransactionBehavior behavior,
+        [FromServices] RegisterInvoice.Handler registerInvoiceHandler,
+        [FromServices] SqlKataQueryRunner runner,
+        [FromServices] ApplicationDbContext dbContext,
+        [FromBody] Command command,
+        [FromServices] IClock clock,
+        HttpContext httpContext)
     {
         var register = await Handle(behavior, registerInvoiceHandler, dbContext, clock, command);
 
-        context.Response.Headers.TriggerShowRegisterSuccessMessage($"invoice", register.Value!.InvoiceId);
+        httpContext.Response.Headers.TriggerShowRegisterSuccessMessage($"invoice", register.Value!.InvoiceId);
 
-        return await ListInvoices.HandlePage(new ListInvoices.Query() { }, dbContext, listInvoicesRunner);
+        return await ListInvoices.HandlePage(new ListInvoices.Query() { }, dbContext, runner);
     }
 }

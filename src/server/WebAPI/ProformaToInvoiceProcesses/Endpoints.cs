@@ -8,11 +8,6 @@ public static class Endpoints
 
     public const string ListItems = "/ui/proforma-to-invoice-processes/{invoiceId}/items/list";
 
-    public static string GetListItems(Guid invoiceId)
-    {
-        return ListItems.Replace("{invoiceId}", invoiceId.ToString());
-    }
-
     public static void RegisterProformaToInvoiceProcessEndpoints(this WebApplication app)
     {
         var group = app.MapGroup("/proforma-to-invoice-processes")

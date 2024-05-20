@@ -21,36 +21,25 @@ public static class SearchInvoicesNotAddedToCollection
         public string? Currency { get; set; }
         public decimal Total { get; set; }
     }
-
-    public class Runner : BaseRunner
-    {
-        public Runner(SqlKataQueryRunner queryRunner) : base(queryRunner) { }
-
-        public Task<List<Result>> Run(Query query)
-        {
-            return _queryRunner.List<Result>((qf) =>
-            {
-                var statement = qf.Query(Tables.VwNotAddedToCollectionInvoices)
-                .Where(Tables.VwNotAddedToCollectionInvoices.Field(nameof(Invoice.Status)), InvoiceStatus.Issued.ToString())
-                ;
-                if (query.ClientId.HasValue)
-                {
-                    statement = statement.Where(Tables.VwNotAddedToCollectionInvoices.Field(nameof(Invoice.ClientId)), query.ClientId);
-                }
-                if (!string.IsNullOrEmpty(query.Currency))
-                {
-                    statement = statement.Where(Tables.VwNotAddedToCollectionInvoices.Field(nameof(Invoice.Currency)), query.Currency);
-                }
-                return statement;
-            });
-        }
-    }
-
     public static async Task<RazorComponentResult> HandlePage(
     [AsParameters] Query query,
-    [FromServices] Runner runner)
+    [FromServices] SqlKataQueryRunner runner)
     {
-        var result = await runner.Run(query);
+        var result = await runner.List<Result>((qf) =>
+        {
+            var statement = qf.Query(Tables.VwNotAddedToCollectionInvoices)
+            .Where(Tables.VwNotAddedToCollectionInvoices.Field(nameof(Invoice.Status)), InvoiceStatus.Issued.ToString())
+            ;
+            if (query.ClientId.HasValue)
+            {
+                statement = statement.Where(Tables.VwNotAddedToCollectionInvoices.Field(nameof(Invoice.ClientId)), query.ClientId);
+            }
+            if (!string.IsNullOrEmpty(query.Currency))
+            {
+                statement = statement.Where(Tables.VwNotAddedToCollectionInvoices.Field(nameof(Invoice.Currency)), query.Currency);
+            }
+            return statement;
+        }); ;
 
         return new RazorComponentResult<SearchInvoicesNotAddedToCollectionPage>(new { Result = result });
     }

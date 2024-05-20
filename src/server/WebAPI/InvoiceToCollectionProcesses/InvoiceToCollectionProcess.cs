@@ -13,20 +13,20 @@ public class InvoiceToCollectionProcess
     public Currency Currency { get; private set; }
     private InvoiceToCollectionProcess() { Items = []; }
 
-    public InvoiceToCollectionProcess(Guid collectionId, Guid clientId, Currency currency, IEnumerable<(Guid InvoiceId, InvoiceStatus Status)> proformas, DateTimeOffset createdAt)
+    public InvoiceToCollectionProcess(Guid collectionId, Guid clientId, Currency currency, IEnumerable<Invoice> invoices, DateTimeOffset createdAt)
     {
         CollectionId = collectionId;
         ClientId = clientId;
         Currency = currency;
         CreatedAt = createdAt;
         Items = [];
-        foreach (var proforma in proformas)
+        foreach (var invoice in invoices)
         {
-            if (proforma.Status != InvoiceStatus.Issued)
+            if (invoice.Status != InvoiceStatus.Issued)
             {
                 throw new DomainException("invoice-is-not-issued");
             }
-            Items.Add(new InvoiceToCollectionProcessItem(proforma.InvoiceId, CollectionId));
+            Items.Add(new InvoiceToCollectionProcessItem(invoice.InvoiceId, CollectionId));
         }
     }
 }

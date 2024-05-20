@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
+using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Infrastructure.Ui;
 using WebAPI.ProformaToInvoiceProcesses;
 
@@ -28,26 +29,9 @@ public static class IssueInvoice
         }
     }
 
-    public class Handler
-    {
-        private readonly ApplicationDbContext _context;
-
-        public Handler(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
-        public async Task Handle(Command command)
-        {
-            var invoice = await _context.Get<Invoice>(command.InvoiceId);
-
-            invoice.Issue(command.IssuedAt, command.Number);
-        }
-    }
-
     public static async Task<Ok> Handle(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
+    [FromServices] ApplicationDbContext dbContext,
     [FromRoute] Guid invoiceId,
     [FromBody] Command command)
     {
@@ -55,7 +39,12 @@ public static class IssueInvoice
 
         new Validator().ValidateAndThrow(command);
 
-        await behavior.Handle(() => handler.Handle(command));
+        await behavior.Handle(async () =>
+        {
+            var invoice = await dbContext.Get<Invoice>(command.InvoiceId);
+
+            invoice.Issue(command.IssuedAt, command.Number);
+        });
 
         return TypedResults.Ok();
     }
@@ -74,17 +63,17 @@ public static class IssueInvoice
 
     public static async Task<RazorComponentResult> HandleAction(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
-    [FromServices] GetInvoice.Runner getInvoiceRunner,
+    [FromServices] ApplicationDbContext bdContext,
+    [FromServices] SqlKataQueryRunner runner,
     [FromServices] ListProformaToInvoiceProcessItems.Runner listProformaToInvoiceProcessItemsRunner,
     [FromBody] Command command,
     Guid invoiceId,
     HttpContext context)
     {
-        await Handle(behavior, handler, invoiceId, command);
+        await Handle(behavior, bdContext, invoiceId, command);
 
         context.Response.Headers.TriggerShowSuccessMessageAndCloseModal("invoice", "issued", invoiceId);
 
-        return await GetInvoice.HandlePage(getInvoiceRunner, listProformaToInvoiceProcessItemsRunner, invoiceId);
+        return await GetInvoice.HandlePage(runner, listProformaToInvoiceProcessItemsRunner, invoiceId);
     }
 }

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using WebAPI.Clients;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.SqlKata;
-using WebAPI.JiraProfiles;
 using WebAPI.ProformaDocuments;
 using WebAPI.Projects;
 

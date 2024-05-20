@@ -1,6 +1,9 @@
-﻿using WebAPI.Infrastructure.ExceptionHandling;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore;
+using WebAPI.Infrastructure.EntityFramework;
+using WebAPI.Infrastructure.ExceptionHandling;
 using WebAPI.Proformas;
-using WebAPI.Projects;
+using Infrastructure;
 
 namespace WebAPI.ProformaToInvoiceProcesses;
 
@@ -29,5 +32,55 @@ public class ProformaToInvoiceProcess
             }
             Items.Add(new ProformaToInvoiceProcessItem(InvoiceId, proforma.ProformaId));
         }
+    }
+}
+
+public class EntityTypeConfiguration : IEntityTypeConfiguration<ProformaToInvoiceProcess>
+{
+    public void Configure(EntityTypeBuilder<ProformaToInvoiceProcess> builder)
+    {
+        builder
+            .ToTable(Tables.ProformaToInvoiceProcesses);
+
+        builder
+            .HasKey(field => field.InvoiceId);
+
+        builder
+        .Property(c => c.Currency)
+        .HasConversion(s => s.ToString(), value => value.ToEnum<Currency>());
+
+        builder
+            .HasMany(p => p.Items)
+            .WithOne()
+            .HasForeignKey(pti => pti.InvoiceId);
+    }
+}
+
+public class ProformaToInvoiceProcessItem
+{
+    public Guid InvoiceId { get; private set; }
+    public Guid ProformaId { get; private set; }
+    private ProformaToInvoiceProcessItem()
+    {
+
+    }
+
+    public ProformaToInvoiceProcessItem(Guid invoiceId, Guid proformaId)
+    {
+        InvoiceId = invoiceId;
+        ProformaId = proformaId;
+    }
+}
+
+
+public class ItemEntityTypeConfiguration : IEntityTypeConfiguration<ProformaToInvoiceProcessItem>
+{
+    public void Configure(EntityTypeBuilder<ProformaToInvoiceProcessItem> builder)
+    {
+        builder
+            .ToTable(Tables.ProformaToInvoiceProcessItems);
+
+        builder
+            .HasKey(field => new { field.InvoiceId, field.ProformaId });
     }
 }

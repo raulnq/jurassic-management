@@ -32,34 +32,26 @@ public static class GetInvoice
         public decimal ITF { get; set; }
     }
 
-    public class Runner : BaseRunner
+    public static async Task<Ok<Result>> Handle(
+    [FromServices] SqlKataQueryRunner runner,
+    [FromRoute] Guid invoiceId)
     {
-        public Runner(SqlKataQueryRunner queryRunner) : base(queryRunner) { }
-
-        public Task<Result> Run(Query query)
-        {
-            return _queryRunner.Get<Result>((qf) => qf
+        var result = await runner.Get<Result>((qf) => qf
                 .Query(Tables.Invoices)
                 .Select(Tables.Invoices.AllFields)
                 .Select(Tables.Clients.Field(nameof(Client.Name), nameof(Result.ClientName)))
                 .Join(Tables.Clients, Tables.Invoices.Field(nameof(Invoice.ClientId)), Tables.Clients.Field(nameof(Invoice.ClientId)))
-                .Where(Tables.Invoices.Field(nameof(Invoice.InvoiceId)), query.InvoiceId));
-        }
-    }
+                .Where(Tables.Invoices.Field(nameof(Invoice.InvoiceId)), invoiceId));
 
-    public static async Task<Ok<Result>> Handle(
-    [FromServices] Runner runner,
-    [FromRoute] Guid invoiceId)
-    {
-        return TypedResults.Ok(await runner.Run(new Query() { InvoiceId = invoiceId }));
+        return TypedResults.Ok(result);
     }
 
     public static async Task<RazorComponentResult> HandlePage(
-    [FromServices] Runner runner,
+    [FromServices] SqlKataQueryRunner runner,
     [FromServices] ListProformaToInvoiceProcessItems.Runner listProformaToInvoiceProcessItems,
     [FromRoute] Guid invoiceId)
     {
-        var result = await runner.Run(new Query() { InvoiceId = invoiceId });
+        var result = await Handle(runner, invoiceId);
 
         var listProformaToInvoiceProcessItemsQuery = new ListProformaToInvoiceProcessItems.Query() { InvoiceId = invoiceId, PageSize = 5 };
 
@@ -67,7 +59,7 @@ public static class GetInvoice
 
         return new RazorComponentResult<GetInvoicePage>(new
         {
-            Result = result,
+            Result = result.Value,
             ListProformaToInvoiceProcessItemsResult = listProformaToInvoiceProcessItemsResult,
             ListProformaToInvoiceProcessItemsQuery = listProformaToInvoiceProcessItemsQuery,
         });

@@ -2,7 +2,9 @@
 using Invoices;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WebAPI.Infrastructure.EntityFramework;
+using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Infrastructure.Ui;
 using WebAPI.ProformaToInvoiceProcesses;
 
@@ -26,26 +28,9 @@ public static class UploadDocument
         }
     }
 
-    public class Handler
-    {
-        private readonly ApplicationDbContext _context;
-
-        public Handler(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
-        public async Task Handle(Command command)
-        {
-            var invoice = await _context.Get<Invoice>(command.InvoiceId);
-
-            invoice.UploadDocument(command.DocumentUrl!);
-        }
-    }
-
     public static async Task<Ok> Handle(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
+    [FromServices] ApplicationDbContext dbContext,
     [FromServices] InvoiceStorage storage,
     [FromRoute] Guid invoiceId,
     IFormFile file)
@@ -64,7 +49,12 @@ public static class UploadDocument
 
             new Validator().ValidateAndThrow(command);
 
-            await behavior.Handle(() => handler.Handle(command));
+            await behavior.Handle(async () =>
+            {
+                var invoice = await dbContext.Get<Invoice>(command.InvoiceId);
+
+                invoice.UploadDocument(command.DocumentUrl!);
+            });
 
             return TypedResults.Ok();
         }
@@ -84,18 +74,18 @@ public static class UploadDocument
 
     public static async Task<RazorComponentResult> HandleAction(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
-    [FromServices] GetInvoice.Runner getInvoiceRunner,
+    [FromServices] ApplicationDbContext dbContext,
+    [FromServices] SqlKataQueryRunner runner,
     [FromServices] ListProformaToInvoiceProcessItems.Runner listProformaToInvoiceProcessItemsRunner,
     [FromServices] InvoiceStorage storage,
     IFormFile file,
     Guid invoiceId,
     HttpContext context)
     {
-        await Handle(behavior, handler, storage, invoiceId, file);
+        await Handle(behavior, dbContext, storage, invoiceId, file);
 
         context.Response.Headers.TriggerShowSuccessMessageAndCloseModal("document for the invoice", "uploaded", invoiceId);
 
-        return await GetInvoice.HandlePage(getInvoiceRunner, listProformaToInvoiceProcessItemsRunner, invoiceId);
+        return await GetInvoice.HandlePage(runner, listProformaToInvoiceProcessItemsRunner, invoiceId);
     }
 }

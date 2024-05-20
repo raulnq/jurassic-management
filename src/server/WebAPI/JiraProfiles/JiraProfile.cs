@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 using WebAPI.Infrastructure.EntityFramework;
-using WebAPI.Invoices;
 
 namespace WebAPI.JiraProfiles;
 

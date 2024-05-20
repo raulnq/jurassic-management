@@ -1,6 +1,5 @@
 ﻿using CollaboratorPayments;
 using FluentValidation;
-using Invoices;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Infrastructure.EntityFramework;

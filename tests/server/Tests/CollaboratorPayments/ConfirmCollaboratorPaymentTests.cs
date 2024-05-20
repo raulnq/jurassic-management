@@ -1,5 +1,4 @@
 ﻿using Tests.Infrastructure;
-using WebAPI.Collaborators;
 
 namespace Tests.CollaboratorPayments;
 
