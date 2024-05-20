@@ -44,13 +44,31 @@ public static class ListBankBalance
         }
     }
 
-    public class Runner : BaseRunner
+    public static async Task<RazorComponentResult> HandlePage(
+    [AsParameters] Query query,
+    [FromServices] SqlKataQueryRunner runner)
     {
-        public Runner(SqlKataQueryRunner queryRunner) : base(queryRunner) { }
+        var result = new List<Result>();
 
-        public Task<List<Result>> Run(Query query)
+        if (!string.IsNullOrEmpty(query.StringStart))
         {
-            return _queryRunner.List<Result>(qf =>
+            if (DateTime.TryParse(query.StringStart, out DateTime dts))
+            {
+                query.Start = dts;
+            }
+        }
+
+        if (!string.IsNullOrEmpty(query.StringEnd))
+        {
+            if (DateTime.TryParse(query.StringEnd, out DateTime dts))
+            {
+                query.End = dts;
+            }
+        }
+
+        if (!string.IsNullOrEmpty(query.Currency))
+        {
+            result = await runner.List<Result>(qf =>
             {
                 var statement = qf
                 .Query(Tables.VwBankBalance)
@@ -77,41 +95,12 @@ public static class ListBankBalance
                 return statement;
             });
         }
-    }
-
-    public static async Task<RazorComponentResult> HandlePage(
-    [AsParameters] Query query,
-    [FromServices] GetBankBalance.Runner getBalanceRunner,
-    [FromServices] Runner runner)
-    {
-        var result = new List<Result>();
-
-        if (!string.IsNullOrEmpty(query.StringStart))
-        {
-            if (DateTime.TryParse(query.StringStart, out DateTime dts))
-            {
-                query.Start = dts;
-            }
-        }
-
-        if (!string.IsNullOrEmpty(query.StringEnd))
-        {
-            if (DateTime.TryParse(query.StringEnd, out DateTime dts))
-            {
-                query.End = dts;
-            }
-        }
-
-        if (!string.IsNullOrEmpty(query.Currency))
-        {
-            result = await runner.Run(query);
-        }
 
         var startBalance = 0m;
 
         if (query.Start.HasValue && !string.IsNullOrEmpty(query.Currency))
         {
-            startBalance = (await getBalanceRunner.Run(new GetBankBalance.Query() { Currency = query.Currency, End = query.Start.Value.AddDays(-1) })).Total;
+            startBalance = (await new GetBankBalance.Runner(runner).Run(new GetBankBalance.Query() { Currency = query.Currency, End = query.Start.Value.AddDays(-1) })).Total;
         }
 
         var endBalance = startBalance;

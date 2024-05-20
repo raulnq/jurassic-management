@@ -68,7 +68,6 @@ builder.Services.AddCollaboratorPayments(builder.Configuration);
 builder.Services.AddProformaDocuments(builder.Configuration);
 builder.Services.AddTransactions(builder.Configuration);
 builder.Services.AddUsers();
-builder.Services.AddBankBalance();
 builder.Services.AddJiraProfiles(builder.Configuration);
 builder.Services.AddCollaboratorBalance();
 builder.Services.AddSingleton<IClock>(new SystemClock());

@@ -12,7 +12,7 @@
         <FormRow>
             <Content>
                 <div class="col-4">
-                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}",Swap.OuterHTML,$"#{Targets.List}"){ Include=$"#{nameof(ListBankBalance.Query.StringStart)}, #{nameof(ListBankBalance.Query.StringEnd)}"})
+                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{List}",Swap.OuterHTML,$"#{List}"){ Include=$"#{nameof(ListBankBalance.Query.StringStart)}, #{nameof(ListBankBalance.Query.StringEnd)}"})
                                   Label="Status"
                                   Property=@(nameof(ListBankBalance.Query.Currency))
                                   Query=@Query
@@ -20,18 +20,18 @@
                                   Source=@(Enum.GetValues<Currency>().ToDictionary(i=>i.ToString(), i=>i.ToString())) />
                 </div>
                 <div class="col-4">
-                    <DateFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}",Swap.OuterHTML,$"#{Targets.List}"){ Include=$"#{nameof(ListBankBalance.Query.Currency)}, #{nameof(ListBankBalance.Query.StringEnd)}"})
+                    <DateFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{List}",Swap.OuterHTML,$"#{List}"){ Include=$"#{nameof(ListBankBalance.Query.Currency)}, #{nameof(ListBankBalance.Query.StringEnd)}"})
                                 Property=@(nameof(ListBankBalance.Query.StringStart))
                                 Query=@Query />
                 </div>
                 <div class="col-4">
-                    <DateFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}",Swap.OuterHTML,$"#{Targets.List}"){ Include=$"#{nameof(ListBankBalance.Query.Currency)}, #{nameof(ListBankBalance.Query.StringStart)}"})
+                    <DateFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{List}",Swap.OuterHTML,$"#{List}"){ Include=$"#{nameof(ListBankBalance.Query.Currency)}, #{nameof(ListBankBalance.Query.StringStart)}"})
                                 Property=@(nameof(ListBankBalance.Query.StringEnd))
                                 Query=@Query />
                 </div>
             </Content>
         </FormRow>
-        <div id=@Targets.List>
+        <div id=@List>
             <DataTable TResult=ListBankBalance.Result
                        Result=@Result
                        Context="item">
@@ -78,4 +78,6 @@
     public decimal StartBalance { get; set; } = default!;
     [Parameter, EditorRequired]
     public decimal EndBalance { get; set; } = default!;
+
+    public const string List = "bank-balance-list-target";
 }
