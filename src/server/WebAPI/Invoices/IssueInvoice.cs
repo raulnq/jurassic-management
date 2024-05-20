@@ -5,7 +5,6 @@ using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Infrastructure.Ui;
-using WebAPI.ProformaToInvoiceProcesses;
 
 
 namespace WebAPI.Invoices;
@@ -62,18 +61,17 @@ public static class IssueInvoice
     }
 
     public static async Task<RazorComponentResult> HandleAction(
-    [FromServices] TransactionBehavior behavior,
-    [FromServices] ApplicationDbContext bdContext,
-    [FromServices] SqlKataQueryRunner runner,
-    [FromServices] ListProformaToInvoiceProcessItems.Runner listProformaToInvoiceProcessItemsRunner,
-    [FromBody] Command command,
-    Guid invoiceId,
-    HttpContext context)
+        [FromServices] TransactionBehavior behavior,
+        [FromServices] ApplicationDbContext bdContext,
+        [FromServices] SqlKataQueryRunner runner,
+        [FromBody] Command command,
+        Guid invoiceId,
+        HttpContext context)
     {
         await Handle(behavior, bdContext, invoiceId, command);
 
         context.Response.Headers.TriggerShowSuccessMessageAndCloseModal("invoice", "issued", invoiceId);
 
-        return await GetInvoice.HandlePage(runner, listProformaToInvoiceProcessItemsRunner, invoiceId);
+        return await GetInvoice.HandlePage(runner, invoiceId);
     }
 }

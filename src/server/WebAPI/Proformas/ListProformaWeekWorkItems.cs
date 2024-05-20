@@ -88,28 +88,28 @@ public static class ListProformaWeekWorkItems
     }
 
     public static async Task<Ok<ListResults<Result>>> Handle(
-    [FromServices] Runner runner,
+    [FromServices] SqlKataQueryRunner runner,
     [FromRoute] Guid proformaId,
     [FromRoute] int week,
     [AsParameters] Query query)
     {
         query.ProformaId = proformaId;
         query.Week = week;
-        return TypedResults.Ok(await runner.Run(query));
+        return TypedResults.Ok(await new Runner(runner).Run(query));
     }
 
     public static async Task<RazorComponentResult> HandlePage(
-    [AsParameters] Query query,
-    [FromServices] Runner runner,
-    [FromServices] ApplicationDbContext dbContext,
-    [FromRoute] Guid proformaId,
-    [FromRoute] int week)
+        [AsParameters] Query query,
+        [FromServices] SqlKataQueryRunner runner,
+        [FromServices] ApplicationDbContext dbContext,
+        [FromRoute] Guid proformaId,
+        [FromRoute] int week)
     {
         query.ProformaId = proformaId;
 
         query.Week = week;
 
-        var result = await runner.Run(query);
+        var result = await new Runner(runner).Run(query);
 
         var proforma = await dbContext.Set<Proforma>().AsNoTracking().FirstAsync(p => p.ProformaId == proformaId);
 

@@ -46,11 +46,4 @@ public static class GetCollaboratorPayment
                 .Where(Tables.CollaboratorPayments.Field(nameof(CollaboratorPayment.CollaboratorPaymentId)), query.CollaboratorPaymentId));
         }
     }
-
-    public static async Task<Ok<Result>> Handle(
-    [FromServices] Runner runner,
-    [FromRoute] Guid collaboratorPaymentId)
-    {
-        return TypedResults.Ok(await runner.Run(new Query() { CollaboratorPaymentId = collaboratorPaymentId }));
-    }
 }

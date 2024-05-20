@@ -23,24 +23,16 @@ public static class GetProformaWeek
         public decimal SubTotal { get; set; }
     }
 
-    public class Runner : BaseRunner
-    {
-        public Runner(SqlKataQueryRunner queryRunner) : base(queryRunner) { }
-
-        public Task<Result> Run(Query query)
-        {
-            return _queryRunner.Get<Result>((qf) => qf
-                .Query(Tables.ProformaWeeks)
-                .Where(Tables.ProformaWeeks.Field(nameof(ProformaWeek.Week)), query.Week)
-                .Where(Tables.ProformaWeeks.Field(nameof(ProformaWeek.ProformaId)), query.ProformaId));
-        }
-    }
-
     public static async Task<Ok<Result>> Handle(
-    [FromServices] Runner runner,
+    [FromServices] SqlKataQueryRunner runner,
     [FromRoute] Guid proformaId,
     [FromRoute] int week)
     {
-        return TypedResults.Ok(await runner.Run(new Query() { Week = week, ProformaId = proformaId }));
+        var result = await runner.Get<Result>((qf) => qf
+                .Query(Tables.ProformaWeeks)
+                .Where(Tables.ProformaWeeks.Field(nameof(ProformaWeek.Week)), week)
+                .Where(Tables.ProformaWeeks.Field(nameof(ProformaWeek.ProformaId)), proformaId));
+
+        return TypedResults.Ok(result);
     }
 }

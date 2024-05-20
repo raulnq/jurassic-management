@@ -8,6 +8,7 @@ using System.Text.Json.Serialization;
 using WebAPI.CollaboratorPayments;
 using WebAPI.Collaborators;
 using WebAPI.Infrastructure.EntityFramework;
+using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Infrastructure.Ui;
 using WebAPI.Proformas;
 
@@ -20,8 +21,6 @@ public static class StartProformaToCollaboratorPaymentProcess
         public Guid CollaboratorId { get; set; }
         public Currency Currency { get; set; }
         public IEnumerable<Guid>? ProformaId { get; set; }
-        [JsonIgnore]
-        public IEnumerable<ListProformaWeekWorkItems.Result>? ProformaWeekWorkItems { get; set; }
         [JsonIgnore]
         public DateTimeOffset CreatedAt { get; set; }
     }
@@ -41,7 +40,6 @@ public static class StartProformaToCollaboratorPaymentProcess
 
     public static async Task<Ok<Result>> Handle(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] RegisterCollaboratorPayment.Handler registerCollaboratorPaymentHandler,
     [FromServices] IClock clock,
     [FromServices] ApplicationDbContext dbContext,
     [FromBody] Command command)
@@ -51,6 +49,8 @@ public static class StartProformaToCollaboratorPaymentProcess
         command.CreatedAt = clock.Now;
 
         var proformas = await dbContext.Set<Proforma>().AsNoTracking().Include(p => p.Weeks).ThenInclude(w => w.WorkItems).AsNoTracking().Where(i => command.ProformaId!.Contains(i.ProformaId)).ToListAsync();
+
+        var registerCollaboratorPaymentHandler = new RegisterCollaboratorPayment.Handler(dbContext);
 
         var result = await behavior.Handle(async () =>
         {
@@ -66,7 +66,6 @@ public static class StartProformaToCollaboratorPaymentProcess
                     CollaboratorId = collaborator.Key.CollaboratorId,
                     CreatedAt = command.CreatedAt,
                     GrossSalary = collaborator.Sum(i => i.GrossSalary),
-                    WithholdingPercentage = collaborator.Average(i => i.WithholdingPercentage),
                     Currency = command.Currency
                 });
             }
@@ -93,17 +92,16 @@ public static class StartProformaToCollaboratorPaymentProcess
 
     public static async Task<RazorComponentResult> HandleAction(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] RegisterCollaboratorPayment.Handler registerCollaboratorPaymentHandler,
-    [FromServices] ListCollaboratorPayments.Runner listCollaboratorPaymentsRunner,
+    [FromServices] SqlKataQueryRunner runner,
     [FromServices] ApplicationDbContext dbContext,
     [FromBody] Command command,
     [FromServices] IClock clock,
     HttpContext context)
     {
-        var register = await Handle(behavior, registerCollaboratorPaymentHandler, clock, dbContext, command);
+        var register = await Handle(behavior, clock, dbContext, command);
 
         context.Response.Headers.TriggerShowRegisterSuccessMessage($"collaborator payment", register.Value!.CollaboratorPaymentId);
 
-        return await ListCollaboratorPayments.HandlePage(new ListCollaboratorPayments.Query() { }, listCollaboratorPaymentsRunner);
+        return await ListCollaboratorPayments.HandlePage(new ListCollaboratorPayments.Query() { }, runner);
     }
 }

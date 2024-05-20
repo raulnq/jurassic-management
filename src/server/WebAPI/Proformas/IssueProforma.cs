@@ -6,8 +6,8 @@ using Rebus.Bus;
 using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.ExceptionHandling;
+using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Infrastructure.Ui;
-using WebAPI.ProformaDocuments;
 
 namespace WebAPI.Proformas;
 
@@ -80,9 +80,7 @@ public static class IssueProforma
     public static async Task<RazorComponentResult> HandleAction(
     [FromServices] TransactionBehavior behavior,
     [FromServices] ApplicationDbContext dbContext,
-    [FromServices] GetProforma.Runner getProformaRunner,
-    [FromServices] ListProformaWeeks.Runner listProformasWeeksRunner,
-    [FromServices] GetProformaDocument.Runner getProformaDocumentRunner,
+    [FromServices] SqlKataQueryRunner runner,
     [FromServices] IBus bus,
     [FromBody] Command command,
     Guid proformaId,
@@ -92,6 +90,6 @@ public static class IssueProforma
 
         context.Response.Headers.TriggerShowSuccessMessageAndCloseModal("proforma", "issued", proformaId);
 
-        return await GetProforma.HandlePage(getProformaRunner, listProformasWeeksRunner, getProformaDocumentRunner, command.ProformaId);
+        return await GetProforma.HandlePage(runner, dbContext, proformaId);
     }
 }

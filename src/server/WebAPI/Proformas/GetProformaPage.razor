@@ -10,10 +10,10 @@
              Target=@($"#{WebAPI.Users.MainPage.Workspace}")>
     <MenuItems>
         <MenuItem Text="Issue"
-                  IsDisabled=@(Result.Status!=ProformaStatus.Pending.ToString())
-                  HtmxProps=@(new HtmxProps(Endpoints.Issue, $"#{WebAPI.Users.MainPage.Dialog}"){Vals=$$"""{"proformaId":"{{Result.ProformaId}}"}"""}) />
-        <MenuItem HtmxProps=@(new HtmxProps(Endpoints.Cancel, $"#{WebAPI.Users.MainPage.Workspace}"){ Confirm = "Are you sure?", HttpMethod="POST", Vals=$$"""{"proformaId":"{{Result.ProformaId}}"}"""})
-                  IsDisabled=@(Result.Status !=ProformaStatus.Pending.ToString())
+                  IsDisabled=@(GetProformaResult.Status!=ProformaStatus.Pending.ToString())
+                  HtmxProps=@(new HtmxProps(Endpoints.Issue, $"#{WebAPI.Users.MainPage.Dialog}"){Vals=$$"""{"proformaId":"{{GetProformaResult.ProformaId}}"}"""}) />
+        <MenuItem HtmxProps=@(new HtmxProps(Endpoints.Cancel, $"#{WebAPI.Users.MainPage.Workspace}"){ Confirm = "Are you sure?", HttpMethod="POST", Vals=$$"""{"proformaId":"{{GetProformaResult.ProformaId}}"}"""})
+                  IsDisabled=@(GetProformaResult.Status !=ProformaStatus.Pending.ToString())
                   Text="Cancel" />
     </MenuItems>
 </Breadcrumbs>
@@ -21,17 +21,17 @@
     <Actions>
         <Divider />
         <Text Property=@nameof(GetProforma.Result.Number)
-              Value=@Result.Number
+              Value=@GetProformaResult.Number
               Label="Number" />
         <Divider />
         <Link Property=@nameof(GetProformaDocument.Result.Url)
               Value="View"
-              Href=@GetProformaDocumentResult?.Url
-              IsDisabled=@(GetProformaDocumentResult==null)
+              Href=@ProformaDocument?.Url
+              IsDisabled=@(ProformaDocument==null)
               Label="PDF" />
         <Divider />
         <Text Property=@nameof(GetProforma.Result.Status)
-              Value=@Result.Status
+              Value=@GetProformaResult.Status
               Label="Status" />
         <Divider />
     </Actions>
@@ -43,20 +43,20 @@
                 <div class="col-4">
                     <DateInput Property=@nameof(GetProforma.Result.Start)
                                Label="Start date"
-                               Value=@Result.Start
+                               Value=@GetProformaResult.Start
                                Readonly=true />
                 </div>
                 <div class="col-4">
                     <DateInput Property=@nameof(GetProforma.Result.End)
                                Label="End date"
-                               Value=@Result.End
+                               Value=@GetProformaResult.End
                                Readonly=true />
                 </div>
                 <div class="col-4">
                     <SelectInput Property=@nameof(GetProforma.Result.Currency)
                                  Label="Currency"
                                  TKey=int
-                                 Value=@Result.Currency
+                                 Value=@GetProformaResult.Currency
                                  Readonly=true>
                     </SelectInput>
                 </div>
@@ -68,14 +68,14 @@
                     <SelectInput Property=@nameof(GetProforma.Result.ClientName)
                                  Label="Client"
                                  TKey=Guid
-                                 Value=@Result.ClientName
+                                 Value=@GetProformaResult.ClientName
                                  Readonly=true>
                     </SelectInput>
                 </div>
                 <div class="col-6">
                     <SelectInput Property=@nameof(GetProforma.Result.ProjectName)
                                  Label="Project"
-                                 Value=@Result.ProjectName
+                                 Value=@GetProformaResult.ProjectName
                                  Readonly=true
                                  TKey=Guid>
                     </SelectInput>
@@ -83,10 +83,10 @@
             </Content>
         </FormRow>
         <div id=@Totals>
-            <TotalsSectionPage Total=@Result.Total
-                               Commission=@Result.Commission
-                               Discount=@Result.Discount
-                               SubTotal=@Result.SubTotal />
+            <TotalsSectionPage Total=@GetProformaResult.Total
+                               Commission=@GetProformaResult.Commission
+                               Discount=@GetProformaResult.Discount
+                               SubTotal=@GetProformaResult.SubTotal />
         </div>
     </Content>
 </Section>
@@ -101,13 +101,13 @@
 
 @code {
     [Parameter, EditorRequired]
-    public GetProforma.Result Result { get; set; } = default!;
+    public GetProforma.Result GetProformaResult { get; set; } = default!;
     [Parameter, EditorRequired]
     public ListResults<ListProformaWeeks.Result> ListProformaWeeksResult { get; set; } = default!;
     [Parameter, EditorRequired]
     public ListProformaWeeks.Query ListProformaWeeksQuery { get; set; } = default!;
     [Parameter, EditorRequired]
-    public GetProformaDocument.Result? GetProformaDocumentResult { get; set; }
+    public ProformaDocument? ProformaDocument { get; set; }
 
     public const string Totals = "proforma-totals-target";
 

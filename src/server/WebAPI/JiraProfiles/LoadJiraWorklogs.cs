@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.ExceptionHandling;
+using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Proformas;
 
 namespace WebAPI.JiraProfiles;
@@ -22,9 +23,7 @@ public static class LoadJiraWorklogs
     [FromServices] GetJiraProfileProject.Runner getJiraProfileProjectRunner,
     [FromServices] ListJiraProfileAccounts.Runner listJiraProfileAccountsRunner,
     [FromServices] TempoService tempoService,
-    [FromServices] AddWorkItem.Handler addWorkItemHandler,
     [FromServices] TransactionBehavior behavior,
-    [FromServices] RemoveWorkItem.Handler removeWorkItemHandler,
     [FromServices] ApplicationDbContext dbContext,
     [FromBody] Command command)
     {
@@ -45,6 +44,10 @@ public static class LoadJiraWorklogs
             var listJiraProfileAccountsResult = await listJiraProfileAccountsRunner.Run(new ListJiraProfileAccounts.Query() { ClientId = getJiraProfileProjectResult.ClientId });
 
             var proformaWeelWorkItems = await dbContext.Set<ProformaWeekWorkItem>().AsNoTracking().Where(i => i.ProformaId == proformaId && i.Week == week).ToListAsync();
+
+            var addWorkItemHandler = new AddWorkItem.Handler(dbContext);
+
+            var removeWorkItemHandler = new RemoveWorkItem.Handler(dbContext);
 
             await behavior.Handle(async () =>
             {
@@ -83,20 +86,18 @@ public static class LoadJiraWorklogs
     }
 
     public static async Task<RazorComponentResult> HandleAction(
-    [FromServices] ListProformaWeekWorkItems.Runner runner,
+    [FromServices] SqlKataQueryRunner runner,
     [FromServices] ApplicationDbContext dbContext,
     [FromServices] GetJiraProfileProject.Runner getJiraProfileProjectRunner,
     [FromServices] ListJiraProfileAccounts.Runner listJiraProfileAccountsRunner,
     [FromServices] TempoService tempoService,
-    [FromServices] AddWorkItem.Handler addWorkItemHandler,
     [FromServices] TransactionBehavior behavior,
-    [FromServices] RemoveWorkItem.Handler removeWorkItemHandler,
     Guid proformaId,
     int week,
     [FromBody] Command command)
     {
         await Handle(proformaId, week, getJiraProfileProjectRunner,
-            listJiraProfileAccountsRunner, tempoService, addWorkItemHandler, behavior, removeWorkItemHandler, dbContext, command);
+            listJiraProfileAccountsRunner, tempoService, behavior, dbContext, command);
 
         return await ListProformaWeekWorkItems.HandlePage(
             new ListProformaWeekWorkItems.Query() { ProformaId = proformaId, Week = week },

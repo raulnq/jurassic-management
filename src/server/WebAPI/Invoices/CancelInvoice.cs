@@ -7,7 +7,6 @@ using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.ExceptionHandling;
 using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Infrastructure.Ui;
-using WebAPI.ProformaToInvoiceProcesses;
 
 namespace WebAPI.Invoices;
 
@@ -61,7 +60,6 @@ public static class CancelInvoice
     [FromServices] TransactionBehavior behavior,
     [FromServices] ApplicationDbContext dbContext,
     [FromServices] SqlKataQueryRunner runner,
-    [FromServices] ListProformaToInvoiceProcessItems.Runner listProformaToInvoiceProcessItems,
     [FromServices] IClock clock,
     HttpContext context,
     Guid invoiceId)
@@ -76,6 +74,6 @@ public static class CancelInvoice
 
         context.Response.Headers.TriggerShowSuccessMessage("invoice", "canceled", command.InvoiceId);
 
-        return await GetInvoice.HandlePage(runner, listProformaToInvoiceProcessItems, command.InvoiceId);
+        return await GetInvoice.HandlePage(runner, command.InvoiceId);
     }
 }

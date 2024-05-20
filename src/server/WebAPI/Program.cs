@@ -61,13 +61,8 @@ builder.Services.AddRebus(builder.Configuration, onCreated: bus =>
 {
     return bus.SubscribeToProforma();
 });
-builder.Services.AddCollaboratorRoles();
-builder.Services.AddCollaborators();
-builder.Services.AddProjects();
-builder.Services.AddClients();
 builder.Services.AddProblemDetails();
-builder.Services.AddProformas();
-builder.Services.AddProformaToInvoiceProcesses();
+
 builder.Services.AddInvoices(builder.Configuration);
 builder.Services.AddInvoiceToCollectionProcesses();
 builder.Services.AddCollections();
@@ -79,7 +74,7 @@ builder.Services.AddUsers();
 builder.Services.AddBankBalance();
 builder.Services.AddJiraProfiles(builder.Configuration);
 builder.Services.AddCollaboratorBalance();
-builder.Services.AddSingleton<IClock>(new Infrastructure.SystemClock());
+builder.Services.AddSingleton<IClock>(new SystemClock());
 builder.Services.AddExceptionHandler<DefaultExceptionHandler>();
 builder.Services.AddRazorComponents();
 

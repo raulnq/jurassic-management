@@ -38,7 +38,7 @@
     </DataTable>
     <Pagination Query=@Query
                 Result=@Result
-                HtmxProps=@(new HtmxProps(Endpoints.GetListItems(Query.CollaboratorPaymentId!.Value), $"#{Targets.List}", Swap.OuterHTML)) />
+                HtmxProps=@(new HtmxProps(Endpoints.ListItems, $"#{Targets.List}", Swap.OuterHTML){Vals=$$"""{"collaboratorPaymentId":"{{Query.CollaboratorPaymentId}}"}"""}) />
 </div>
 
 @code {

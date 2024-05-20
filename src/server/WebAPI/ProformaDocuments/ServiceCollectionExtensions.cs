@@ -6,10 +6,6 @@ public static class ServiceCollectionExtensions
     {
         QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 
-        services.AddTransient<RegisterProformaDocument.Handler>();
-
-        services.AddTransient<GetProformaDocument.Runner>();
-
         var connectionString = configuration["AzureStorageConnectionString"];
 
         if (string.IsNullOrEmpty(connectionString))

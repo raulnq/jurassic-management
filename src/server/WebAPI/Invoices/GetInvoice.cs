@@ -47,15 +47,14 @@ public static class GetInvoice
     }
 
     public static async Task<RazorComponentResult> HandlePage(
-    [FromServices] SqlKataQueryRunner runner,
-    [FromServices] ListProformaToInvoiceProcessItems.Runner listProformaToInvoiceProcessItems,
-    [FromRoute] Guid invoiceId)
+        [FromServices] SqlKataQueryRunner runner,
+        [FromRoute] Guid invoiceId)
     {
         var result = await Handle(runner, invoiceId);
 
         var listProformaToInvoiceProcessItemsQuery = new ListProformaToInvoiceProcessItems.Query() { InvoiceId = invoiceId, PageSize = 5 };
 
-        var listProformaToInvoiceProcessItemsResult = await listProformaToInvoiceProcessItems.Run(listProformaToInvoiceProcessItemsQuery);
+        var listProformaToInvoiceProcessItemsResult = await new ListProformaToInvoiceProcessItems.Runner(runner).Run(listProformaToInvoiceProcessItemsQuery);
 
         return new RazorComponentResult<GetInvoicePage>(new
         {

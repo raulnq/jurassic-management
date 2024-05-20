@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.ExceptionHandling;
+using WebAPI.Infrastructure.SqlKata;
 
 namespace WebAPI.Proformas;
 
@@ -57,11 +58,11 @@ public static class RemoveWorkItem
 
 
     public static async Task<Ok> Handle(
-    [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
-    [FromRoute] Guid proformaId,
-    [FromRoute] int week,
-    [FromRoute] Guid collaboratorId)
+        [FromServices] TransactionBehavior behavior,
+        [FromServices] ApplicationDbContext dbContext,
+        [FromRoute] Guid proformaId,
+        [FromRoute] int week,
+        [FromRoute] Guid collaboratorId)
     {
         var command = new Command()
         {
@@ -72,6 +73,8 @@ public static class RemoveWorkItem
 
         new Validator().ValidateAndThrow(command);
 
+        var handler = new Handler(dbContext);
+
         await behavior.Handle(() => handler.Handle(command));
 
         return TypedResults.Ok();
@@ -79,26 +82,20 @@ public static class RemoveWorkItem
 
     public static async Task<RazorComponentResult> HandleAction(
         [FromServices] TransactionBehavior behavior,
-        [FromServices] Handler handler,
-        [FromServices] ListProformaWeekWorkItems.Runner runner,
+        [FromServices] SqlKataQueryRunner runner,
         [FromServices] ApplicationDbContext dbContext,
         Guid proformaId,
         int week,
         Guid collaboratorId)
     {
-        var command = new Command
-        {
-            ProformaId = proformaId,
-            Week = week,
-            CollaboratorId = collaboratorId
-        };
-
-        new Validator().ValidateAndThrow(command);
-
-        await behavior.Handle(() => handler.Handle(command));
+        await Handle(behavior, dbContext, proformaId, week, collaboratorId);
 
         return await ListProformaWeekWorkItems.HandlePage(
-            new ListProformaWeekWorkItems.Query() { ProformaId = command.ProformaId, Week = command.Week },
+            new ListProformaWeekWorkItems.Query()
+            {
+                ProformaId = proformaId,
+                Week = week
+            },
             runner,
             dbContext,
             proformaId,

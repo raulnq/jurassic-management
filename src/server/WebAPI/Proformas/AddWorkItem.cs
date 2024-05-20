@@ -7,6 +7,7 @@ using WebAPI.CollaboratorRoles;
 using WebAPI.Collaborators;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.ExceptionHandling;
+using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Infrastructure.Ui;
 
 namespace WebAPI.Proformas;
@@ -67,11 +68,11 @@ public static class AddWorkItem
         }
     }
     public static async Task<Ok> Handle(
-    [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
-    [FromRoute] Guid proformaId,
-    [FromRoute] int week,
-    [FromBody] Command command)
+        [FromServices] TransactionBehavior behavior,
+        [FromServices] ApplicationDbContext dbContext,
+        [FromRoute] Guid proformaId,
+        [FromRoute] int week,
+        [FromBody] Command command)
     {
         command.ProformaId = proformaId;
 
@@ -79,16 +80,18 @@ public static class AddWorkItem
 
         new Validator().ValidateAndThrow(command);
 
+        var handler = new Handler(dbContext);
+
         await behavior.Handle(() => handler.Handle(command));
 
         return TypedResults.Ok();
     }
 
     public static async Task<RazorComponentResult> HandlePage(
-    [FromServices] ApplicationDbContext dbContext,
-    [FromRoute] Guid proformaId,
-    [FromRoute] int week,
-    HttpContext context)
+        [FromServices] ApplicationDbContext dbContext,
+        [FromRoute] Guid proformaId,
+        [FromRoute] int week,
+        HttpContext context)
     {
         context.Response.Headers.TriggerOpenModal();
 
@@ -107,20 +110,22 @@ public static class AddWorkItem
 
     public static async Task<RazorComponentResult> HandleAction(
         [FromServices] TransactionBehavior behavior,
-        [FromServices] Handler handler,
-        [FromServices] ListProformaWeekWorkItems.Runner runner,
+        [FromServices] SqlKataQueryRunner runner,
         [FromServices] ApplicationDbContext dbContext,
         [FromBody] Command command,
         [FromRoute] Guid proformaId,
         [FromRoute] int week,
         HttpContext context)
     {
-        await Handle(behavior, handler, proformaId, week, command);
+        await Handle(behavior, dbContext, proformaId, week, command);
 
         context.Response.Headers.TriggerShowSuccessMessageAndCloseModal($"collaborator", "added", command.CollaboratorId);
 
-        return await ListProformaWeekWorkItems.HandlePage(new ListProformaWeekWorkItems.Query() { ProformaId = command.ProformaId, Week = command.Week },
-            runner, dbContext, proformaId, week);
+        return await ListProformaWeekWorkItems.HandlePage(new ListProformaWeekWorkItems.Query()
+        {
+            ProformaId = command.ProformaId,
+            Week = command.Week
+        }, runner, dbContext, proformaId, week);
     }
 
 }

@@ -32,40 +32,32 @@ public static class ListCollaboratorPayments
         public DateTimeOffset? CanceledAt { get; set; }
     }
 
-    public class Runner : BaseRunner
-    {
-        public Runner(SqlKataQueryRunner queryRunner) : base(queryRunner) { }
-
-        public Task<ListResults<Result>> Run(Query query)
-        {
-            return _queryRunner.List<Query, Result>((qf) =>
-            {
-                var statement = qf.Query(Tables.CollaboratorPayments)
-                .Select(Tables.CollaboratorPayments.AllFields)
-                .Select(Tables.Collaborators.Field(nameof(Collaborator.Name), nameof(Result.CollaboratorName)))
-                .Join(Tables.Collaborators, Tables.CollaboratorPayments.Field(nameof(CollaboratorPayment.CollaboratorId)), Tables.Collaborators.Field(nameof(Collaborator.CollaboratorId)));
-
-                if (!string.IsNullOrEmpty(query.Status))
-                {
-                    statement = statement.Where(Tables.CollaboratorPayments.Field(nameof(CollaboratorPayment.Status)), query.Status);
-                }
-                return statement;
-            }, query);
-        }
-    }
-
     public static async Task<Ok<ListResults<Result>>> Handle(
-    [FromServices] Runner runner,
+    [FromServices] SqlKataQueryRunner runner,
     [AsParameters] Query query)
     {
-        return TypedResults.Ok(await runner.Run(query));
+        var result = await runner.List<Query, Result>((qf) =>
+        {
+            var statement = qf.Query(Tables.CollaboratorPayments)
+            .Select(Tables.CollaboratorPayments.AllFields)
+            .Select(Tables.Collaborators.Field(nameof(Collaborator.Name), nameof(Result.CollaboratorName)))
+            .Join(Tables.Collaborators, Tables.CollaboratorPayments.Field(nameof(CollaboratorPayment.CollaboratorId)), Tables.Collaborators.Field(nameof(Collaborator.CollaboratorId)));
+
+            if (!string.IsNullOrEmpty(query.Status))
+            {
+                statement = statement.Where(Tables.CollaboratorPayments.Field(nameof(CollaboratorPayment.Status)), query.Status);
+            }
+            return statement;
+        }, query);
+
+        return TypedResults.Ok(result);
     }
 
     public static async Task<RazorComponentResult> HandlePage(
     [AsParameters] Query query,
-    [FromServices] Runner runner)
+    [FromServices] SqlKataQueryRunner runner)
     {
-        var result = await runner.Run(query);
-        return new RazorComponentResult<ListCollaboratorPaymentsPage>(new { Result = result, Query = query });
+        var result = await Handle(runner, query);
+        return new RazorComponentResult<ListCollaboratorPaymentsPage>(new { Result = result.Value, Query = query });
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
+using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Infrastructure.Ui;
 
 namespace WebAPI.Projects;
@@ -63,7 +64,7 @@ public static class EditProject
     public static async Task<RazorComponentResult> HandleAction(
         [FromServices] TransactionBehavior behavior,
         [FromServices] ApplicationDbContext dbContext,
-        [FromServices] ListProjects.Runner runner,
+        [FromServices] SqlKataQueryRunner runner,
         [FromBody] Command command,
         Guid clientId,
         Guid projectId,

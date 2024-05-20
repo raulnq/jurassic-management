@@ -3,8 +3,8 @@ using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Infrastructure.EntityFramework;
+using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Infrastructure.Ui;
-using WebAPI.ProformaToCollaboratorPaymentProcesses;
 
 
 namespace WebAPI.CollaboratorPayments;
@@ -26,26 +26,9 @@ public static class UploadDocument
         }
     }
 
-    public class Handler
-    {
-        private readonly ApplicationDbContext _context;
-
-        public Handler(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
-        public async Task Handle(Command command)
-        {
-            var payment = await _context.Get<CollaboratorPayment>(command.CollaboratorPaymentId);
-
-            payment.Upload(command.DocumentUrl!);
-        }
-    }
-
     public static async Task<Ok> Handle(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
+    [FromServices] ApplicationDbContext dbContext,
     [FromServices] CollaboratorPaymentStorage storage,
     [FromRoute] Guid collaboratorPaymentId,
     IFormFile file)
@@ -64,7 +47,12 @@ public static class UploadDocument
 
             new Validator().ValidateAndThrow(command);
 
-            await behavior.Handle(() => handler.Handle(command));
+            await behavior.Handle(async () =>
+            {
+                var payment = await dbContext.Get<CollaboratorPayment>(command.CollaboratorPaymentId);
+
+                payment.Upload(command.DocumentUrl!);
+            });
 
             return TypedResults.Ok();
         }
@@ -84,18 +72,17 @@ public static class UploadDocument
 
     public static async Task<RazorComponentResult> HandleAction(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
-    [FromServices] GetCollaboratorPayment.Runner getCollaboratorPaymentRunner,
-    [FromServices] ListProformaToCollaboratorPaymentProcessItems.Runner listProformaToCollaboratorPaymentProcessItemsRunner,
+    [FromServices] ApplicationDbContext dbContext,
+    [FromServices] SqlKataQueryRunner runner,
     [FromServices] CollaboratorPaymentStorage storage,
     IFormFile file,
     Guid collaboratorPaymentId,
     HttpContext context)
     {
-        await Handle(behavior, handler, storage, collaboratorPaymentId, file);
+        await Handle(behavior, dbContext, storage, collaboratorPaymentId, file);
 
         context.Response.Headers.TriggerShowSuccessMessageAndCloseModal("document for the collaborator payment", "uploaded", collaboratorPaymentId);
 
-        return await EditCollaboratorPayment.HandlePage(getCollaboratorPaymentRunner, listProformaToCollaboratorPaymentProcessItemsRunner, collaboratorPaymentId);
+        return await EditCollaboratorPayment.HandlePage(runner, collaboratorPaymentId);
     }
 }

@@ -2,6 +2,7 @@
 using QuestPDF.Fluent;
 using Rebus.Handlers;
 using WebAPI.Infrastructure.EntityFramework;
+using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Proformas;
 using static WebAPI.Proformas.IssueProforma;
 
@@ -24,57 +25,34 @@ public static class RegisterProformaDocument
         }
     }
 
-    public class Handler
-    {
-        private readonly ApplicationDbContext _context;
-
-        public Handler(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
-        public Task Handle(Command command)
-        {
-            var proformaDocument = new ProformaDocument(command.ProformaId, command.Url);
-
-            _context.Set<ProformaDocument>().Add(proformaDocument);
-
-            return Task.CompletedTask;
-        }
-    }
-
     public class ProformaIssuedEventDispatcher : IHandleMessages<ProformaIssued>
     {
-        private readonly Handler _handler;
+        private readonly ApplicationDbContext _dbContext;
 
         private readonly TransactionBehavior _behavior;
 
         private readonly ProformaDocumentStorage _storage;
 
-        private readonly GetProforma.Runner _getProformaRunner;
+        private readonly SqlKataQueryRunner _runner;
 
-        private readonly ListProformaWeekWorkItems.Runner _listProformaWeekWorkItemsRunner;
-
-        public ProformaIssuedEventDispatcher(Handler handler,
+        public ProformaIssuedEventDispatcher(ApplicationDbContext dbContext,
             TransactionBehavior behavior,
             ProformaDocumentStorage storage,
-            GetProforma.Runner getProformaRunner,
-            ListProformaWeekWorkItems.Runner listProformaWeekWorkItemsRunner)
+            SqlKataQueryRunner runner)
         {
-            _handler = handler;
+            _dbContext = dbContext;
             _behavior = behavior;
             _storage = storage;
-            _getProformaRunner = getProformaRunner;
-            _listProformaWeekWorkItemsRunner = listProformaWeekWorkItemsRunner;
+            _runner = runner;
         }
 
         public async Task Handle(ProformaIssued message)
         {
             var url = string.Empty;
 
-            var getProformaResult = await _getProformaRunner.Run(new GetProforma.Query() { ProformaId = message.ProformaId });
+            var getProformaResult = await new GetProforma.Runner(_runner).Run(new GetProforma.Query() { ProformaId = message.ProformaId });
 
-            var listProformaWeekWorkItemsResult = await _listProformaWeekWorkItemsRunner.Run(new ListProformaWeekWorkItems.Query() { ProformaId = message.ProformaId, PageSize = 500 });
+            var listProformaWeekWorkItemsResult = await new ListProformaWeekWorkItems.Runner(_runner).Run(new ListProformaWeekWorkItems.Query() { ProformaId = message.ProformaId, PageSize = 500 });
 
             using (var stream = new MemoryStream())
             {
@@ -91,7 +69,14 @@ public static class RegisterProformaDocument
 
             new Validator().ValidateAndThrow(command);
 
-            await _behavior.Handle(() => _handler.Handle(command));
+            await _behavior.Handle(() =>
+            {
+                var proformaDocument = new ProformaDocument(command.ProformaId, command.Url);
+
+                _dbContext.Set<ProformaDocument>().Add(proformaDocument);
+
+                return Task.CompletedTask;
+            });
         }
     }
 }

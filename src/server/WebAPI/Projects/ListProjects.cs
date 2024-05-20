@@ -46,19 +46,19 @@ public static class ListProjects
     }
 
     public static async Task<Ok<ListResults<Result>>> Handle(
-        [FromServices] Runner runner,
+        [FromServices] SqlKataQueryRunner runner,
         [FromRoute] Guid clientId,
         [AsParameters] Query query)
     {
         query.ClientId = clientId;
 
-        return TypedResults.Ok(await runner.Run(query));
+        return TypedResults.Ok(await new Runner(runner).Run(query));
     }
 
     public static async Task<RazorComponentResult> HandlePage(
         [AsParameters] Query query,
         [FromRoute] Guid clientId,
-        [FromServices] Runner runner)
+        [FromServices] SqlKataQueryRunner runner)
     {
         var result = await Handle(runner, clientId, query);
 

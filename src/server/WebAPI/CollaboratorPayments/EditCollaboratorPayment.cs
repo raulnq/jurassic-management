@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using WebAPI.Collaborators;
 using WebAPI.Infrastructure.EntityFramework;
+using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Infrastructure.Ui;
 using WebAPI.Proformas;
 using WebAPI.ProformaToCollaboratorPaymentProcesses;
@@ -19,8 +20,6 @@ public static class EditCollaboratorPayment
         public Guid CollaboratorPaymentId { get; set; }
         public decimal GrossSalary { get; set; }
         public Currency Currency { get; set; }
-        [JsonIgnore]
-        public decimal WithholdingPercentage { get; set; }
     }
 
     public class Validator : AbstractValidator<Command>
@@ -32,74 +31,52 @@ public static class EditCollaboratorPayment
         }
     }
 
-    public class Handler
-    {
-        private readonly ApplicationDbContext _context;
-
-        public Handler(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
-        public async Task Handle(Command command)
-        {
-            var payment = await _context.Get<CollaboratorPayment>(command.CollaboratorPaymentId);
-
-            payment.Edit(command.GrossSalary, command.Currency, command.WithholdingPercentage);
-        }
-    }
-
     public static async Task<Ok> Handle(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
     [FromRoute] Guid collaboratorPaymentId,
-    [FromServices] GetCollaboratorPayment.Runner runner,
     [FromServices] ApplicationDbContext dbContext,
     [FromBody] Command command)
     {
         command.CollaboratorPaymentId = collaboratorPaymentId;
 
-        var collaboratorPaymentResult = await runner.Run(new GetCollaboratorPayment.Query() { CollaboratorPaymentId = collaboratorPaymentId });
-
-        var collaborator = await dbContext.Set<Collaborator>().AsNoTracking().FirstAsync(cr => cr.CollaboratorId == collaboratorPaymentResult.CollaboratorId);
-
-        command.WithholdingPercentage = collaborator.WithholdingPercentage;
-
         new Validator().ValidateAndThrow(command);
 
-        await behavior.Handle(() => handler.Handle(command));
+        await behavior.Handle(async () =>
+        {
+            var payment = await dbContext.Get<CollaboratorPayment>(command.CollaboratorPaymentId);
+
+            var collaborator = await dbContext.Set<Collaborator>().AsNoTracking().FirstAsync(cr => cr.CollaboratorId == payment.CollaboratorId);
+
+            payment.Edit(command.GrossSalary, command.Currency, collaborator.WithholdingPercentage);
+        });
 
         return TypedResults.Ok();
     }
 
     public static async Task<RazorComponentResult> HandleAction(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
-    [FromServices] GetCollaboratorPayment.Runner getCollaboratorPaymentRunner,
-    [FromServices] ListProformaToCollaboratorPaymentProcessItems.Runner listProformaToCollaboratorPaymentProcessItemsRunner,
+    [FromServices] SqlKataQueryRunner runner,
     [FromBody] Command command,
-    [FromServices] GetCollaboratorPayment.Runner runner,
     [FromServices] ApplicationDbContext dbContext,
     Guid collaboratorPaymentId,
     HttpContext context)
     {
-        await Handle(behavior, handler, collaboratorPaymentId, runner, dbContext, command);
+        await Handle(behavior, collaboratorPaymentId, dbContext, command);
 
         context.Response.Headers.TriggerShowEditSuccessMessage("collaborator payment", collaboratorPaymentId);
 
-        return await EditCollaboratorPayment.HandlePage(getCollaboratorPaymentRunner, listProformaToCollaboratorPaymentProcessItemsRunner, collaboratorPaymentId);
+        return await EditCollaboratorPayment.HandlePage(runner, collaboratorPaymentId);
     }
 
     public static async Task<RazorComponentResult> HandlePage(
-    [FromServices] GetCollaboratorPayment.Runner runner,
-    [FromServices] ListProformaToCollaboratorPaymentProcessItems.Runner listProformaToCollaboratorPaymentProcessItemsRunner,
+    [FromServices] SqlKataQueryRunner runner,
     [FromRoute] Guid collaboratorPaymentId)
     {
-        var result = await runner.Run(new GetCollaboratorPayment.Query() { CollaboratorPaymentId = collaboratorPaymentId });
+        var result = await new GetCollaboratorPayment.Runner(runner).Run(new GetCollaboratorPayment.Query() { CollaboratorPaymentId = collaboratorPaymentId });
 
         var listProformaToCollaboratorPaymentProcessItemsQuery = new ListProformaToCollaboratorPaymentProcessItems.Query() { CollaboratorPaymentId = collaboratorPaymentId, PageSize = 5 };
 
-        var listProformaToCollaboratorPaymentProcessItemsResult = await listProformaToCollaboratorPaymentProcessItemsRunner.Run(listProformaToCollaboratorPaymentProcessItemsQuery);
+        var listProformaToCollaboratorPaymentProcessItemsResult = await new ListProformaToCollaboratorPaymentProcessItems.Runner(runner).Run(listProformaToCollaboratorPaymentProcessItemsQuery);
 
         return new RazorComponentResult<EditCollaboratorPaymentPage>(new
         {

@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using WebAPI.Collaborators;
 using WebAPI.Infrastructure.EntityFramework;
+using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Infrastructure.Ui;
 using WebAPI.Proformas;
 
@@ -18,8 +19,6 @@ public static class RegisterCollaboratorPayment
     public class Command
     {
         public decimal GrossSalary { get; set; }
-        [JsonIgnore]
-        public decimal WithholdingPercentage { get; set; }
         [JsonIgnore]
         public Guid CollaboratorPaymentId { get; set; }
         public Guid CollaboratorId { get; set; }
@@ -38,7 +37,6 @@ public static class RegisterCollaboratorPayment
         public Validator()
         {
             RuleFor(command => command.GrossSalary).GreaterThan(0);
-            RuleFor(command => command.WithholdingPercentage).GreaterThanOrEqualTo(0).LessThanOrEqualTo(100);
             RuleFor(command => command.CollaboratorPaymentId).NotEmpty();
             RuleFor(command => command.CollaboratorId).NotEmpty();
         }
@@ -53,22 +51,23 @@ public static class RegisterCollaboratorPayment
             _context = context;
         }
 
-        public Task<Result> Handle(Command command)
+        public async Task<Result> Handle(Command command)
         {
-            var payment = new CollaboratorPayment(command.CollaboratorPaymentId, command.CollaboratorId, command.GrossSalary, command.WithholdingPercentage, command.Currency, command.CreatedAt);
+            var collaborator = await _context.Set<Collaborator>().AsNoTracking().FirstAsync(cr => cr.CollaboratorId == command.CollaboratorId);
+
+            var payment = new CollaboratorPayment(command.CollaboratorPaymentId, command.CollaboratorId, command.GrossSalary, collaborator.WithholdingPercentage, command.Currency, command.CreatedAt);
 
             _context.Set<CollaboratorPayment>().Add(payment);
 
-            return Task.FromResult(new Result()
+            return new Result()
             {
                 CollaboratorPaymentId = payment.CollaboratorPaymentId
-            });
+            };
         }
     }
 
     public static async Task<Ok<Result>> Handle(
         [FromServices] TransactionBehavior behavior,
-        [FromServices] Handler handler,
         [FromServices] ApplicationDbContext dbContext,
         [FromServices] IClock clock,
         [FromBody] Command command)
@@ -77,13 +76,9 @@ public static class RegisterCollaboratorPayment
 
         command.CollaboratorPaymentId = NewId.Next().ToSequentialGuid();
 
-        var collaborator = await dbContext.Set<Collaborator>().AsNoTracking().FirstAsync(cr => cr.CollaboratorId == command.CollaboratorId);
-
-        command.WithholdingPercentage = collaborator.WithholdingPercentage;
-
         new Validator().ValidateAndThrow(command);
 
-        var result = await behavior.Handle(() => handler.Handle(command));
+        var result = await behavior.Handle(() => new Handler(dbContext).Handle(command));
 
         return TypedResults.Ok(result);
     }
@@ -101,17 +96,16 @@ public static class RegisterCollaboratorPayment
 
     public static async Task<RazorComponentResult> HandleAction(
         [FromServices] TransactionBehavior behavior,
-        [FromServices] Handler handler,
         [FromServices] ApplicationDbContext dbContext,
-        [FromServices] ListCollaboratorPayments.Runner listCollaboratorPaymentsRunner,
+        [FromServices] SqlKataQueryRunner runner,
         [FromServices] IClock clock,
         [FromBody] Command command,
         HttpContext context)
     {
-        var result = await Handle(behavior, handler, dbContext, clock, command);
+        var result = await Handle(behavior, dbContext, clock, command);
 
         context.Response.Headers.TriggerShowRegisterSuccessMessage("collaborator payment", result.Value!.CollaboratorPaymentId);
 
-        return await ListCollaboratorPayments.HandlePage(new ListCollaboratorPayments.Query(), listCollaboratorPaymentsRunner);
+        return await ListCollaboratorPayments.HandlePage(new ListCollaboratorPayments.Query(), runner);
     }
 }

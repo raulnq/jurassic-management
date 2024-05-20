@@ -40,7 +40,6 @@ public static class StartProformaToInvoiceProcess
 
     public static async Task<Ok<Result>> Handle(
         [FromServices] TransactionBehavior behavior,
-        [FromServices] RegisterInvoice.Handler registerInvoiceHandler,
         [FromServices] ApplicationDbContext dbContext,
         [FromServices] IClock clock,
         [FromBody] Command command)
@@ -57,7 +56,7 @@ public static class StartProformaToInvoiceProcess
 
             dbContext.Set<ProformaToInvoiceProcess>().Add(process);
 
-            await registerInvoiceHandler.Handle(new RegisterInvoice.Command()
+            await new RegisterInvoice.Handler(dbContext).Handle(new RegisterInvoice.Command()
             {
                 InvoiceId = process.InvoiceId,
                 CreatedAt = command.CreatedAt,
@@ -89,14 +88,13 @@ public static class StartProformaToInvoiceProcess
 
     public static async Task<RazorComponentResult> HandleAction(
         [FromServices] TransactionBehavior behavior,
-        [FromServices] RegisterInvoice.Handler registerInvoiceHandler,
         [FromServices] SqlKataQueryRunner runner,
         [FromServices] ApplicationDbContext dbContext,
         [FromBody] Command command,
         [FromServices] IClock clock,
         HttpContext httpContext)
     {
-        var register = await Handle(behavior, registerInvoiceHandler, dbContext, clock, command);
+        var register = await Handle(behavior, dbContext, clock, command);
 
         httpContext.Response.Headers.TriggerShowRegisterSuccessMessage($"invoice", register.Value!.InvoiceId);
 

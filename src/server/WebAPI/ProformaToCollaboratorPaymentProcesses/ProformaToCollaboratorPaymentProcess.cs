@@ -1,5 +1,9 @@
-﻿using WebAPI.Infrastructure.ExceptionHandling;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore;
+using WebAPI.Infrastructure.EntityFramework;
+using WebAPI.Infrastructure.ExceptionHandling;
 using WebAPI.Proformas;
+using Infrastructure;
 
 namespace WebAPI.ProformaToCollaboratorPaymentProcesses;
 
@@ -34,5 +38,58 @@ public class ProformaToCollaboratorPaymentProcess
                 }
             }
         }
+    }
+}
+
+public class ProformaToCollaboratorPaymentProcessItem
+{
+    public Guid CollaboratorPaymentId { get; private set; }
+    public Guid ProformaId { get; private set; }
+    public int Week { get; private set; }
+    public Guid CollaboratorId { get; private set; }
+    private ProformaToCollaboratorPaymentProcessItem()
+    {
+
+    }
+
+    public ProformaToCollaboratorPaymentProcessItem(Guid collaboratorPaymentId, Guid proformaId, int week, Guid collaboratorId)
+    {
+        CollaboratorPaymentId = collaboratorPaymentId;
+        ProformaId = proformaId;
+        Week = week;
+        CollaboratorId = collaboratorId;
+    }
+}
+
+public class EntityTypeConfiguration : IEntityTypeConfiguration<ProformaToCollaboratorPaymentProcess>
+{
+    public void Configure(EntityTypeBuilder<ProformaToCollaboratorPaymentProcess> builder)
+    {
+        builder
+            .ToTable(Tables.ProformaToCollaboratorPaymentProcesses);
+
+        builder
+            .HasKey(field => field.CollaboratorPaymentId);
+
+        builder
+            .Property(c => c.Currency)
+            .HasConversion(s => s.ToString(), value => value.ToEnum<Currency>());
+
+        builder
+            .HasMany(p => p.Items)
+            .WithOne()
+            .HasForeignKey(p => p.CollaboratorPaymentId);
+    }
+}
+
+public class ItemEntityTypeConfiguration : IEntityTypeConfiguration<ProformaToCollaboratorPaymentProcessItem>
+{
+    public void Configure(EntityTypeBuilder<ProformaToCollaboratorPaymentProcessItem> builder)
+    {
+        builder
+            .ToTable(Tables.ProformaToCollaboratorPaymentProcessItems);
+
+        builder
+            .HasKey(i => new { i.CollaboratorPaymentId, i.ProformaId, i.Week, i.CollaboratorId });
     }
 }

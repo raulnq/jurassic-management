@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WebAPI.Clients;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.SqlKata;
@@ -70,32 +71,31 @@ public static class GetProforma
     }
 
     public static async Task<Ok<Result>> Handle(
-    [FromServices] Runner runner,
+    [FromServices] SqlKataQueryRunner runner,
     [FromRoute] Guid proformaId)
     {
-        return TypedResults.Ok(await runner.Run(new Query() { ProformaId = proformaId }));
+        return TypedResults.Ok(await new Runner(runner).Run(new Query() { ProformaId = proformaId }));
     }
 
     public static async Task<RazorComponentResult> HandlePage(
-        [FromServices] Runner runner,
-        [FromServices] ListProformaWeeks.Runner listProformasWeeksRunner,
-        [FromServices] GetProformaDocument.Runner getProformaDocumentRunner,
+        [FromServices] SqlKataQueryRunner runner,
+        [FromServices] ApplicationDbContext dbContext,
         [FromRoute] Guid proformaId)
     {
-        var result = await runner.Run(new Query() { ProformaId = proformaId });
+        var getProformaResult = await new Runner(runner).Run(new Query() { ProformaId = proformaId });
 
         var listProformaWeeksQuery = new ListProformaWeeks.Query() { ProformaId = proformaId, PageSize = 5 };
 
-        var listProformaWeeksResult = await listProformasWeeksRunner.Run(listProformaWeeksQuery);
+        var listProformaWeeksResult = await new ListProformaWeeks.Runner(runner).Run(listProformaWeeksQuery);
 
-        var getProformaDocumentResult = await getProformaDocumentRunner.Run(new GetProformaDocument.Query() { ProformaId = proformaId });
+        var proformaDocument = await dbContext.Set<ProformaDocument>().AsNoTracking().FirstOrDefaultAsync(d => d.ProformaId == proformaId);
 
         return new RazorComponentResult<GetProformaPage>(new
         {
-            Result = result,
+            GetProformaResult = getProformaResult,
             ListProformaWeeksResult = listProformaWeeksResult,
             ListProformaWeeksQuery = listProformaWeeksQuery,
-            GetProformaDocumentResult = getProformaDocumentResult,
+            ProformaDocument = proformaDocument,
         });
     }
 }

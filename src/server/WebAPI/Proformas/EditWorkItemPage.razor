@@ -4,7 +4,7 @@
 @using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
 
-<ModalForm HtmxProps=@(new HtmxProps(WebAPI.Proformas.Endpoints.EditWorkItem,$"#{ListProformaWeekWorkItemsPage.List}",Swap.OuterHTML,$"#{ListProformaWeekWorkItemsPage.List}"){Vals=$$"""{"proformaId":"{{Result.ProformaId}}", "week":"{{Result.Week}}", "collaboratorId":"{{Result.CollaboratorId}}"}"""})
+<ModalForm HtmxProps=@(new HtmxProps(WebAPI.Proformas.Endpoints.EditWorkItem,$"#{ListProformaWeekWorkItemsPage.List}",Swap.OuterHTML,$"#{ListProformaWeekWorkItemsPage.List}"){Vals=$$"""{"proformaId":"{{ProformaWeekWorkItem.ProformaId}}", "week":"{{ProformaWeekWorkItem.Week}}", "collaboratorId":"{{ProformaWeekWorkItem.CollaboratorId}}"}"""})
            Title=@Endpoints.EditWorkItemTitle>
     <Content>
         <FormRow>
@@ -16,7 +16,7 @@
                                  Sufix="hr"
                                  Min=0
                                  Step=0.01m
-                                 Value=@Result.Hours
+                                 Value=@ProformaWeekWorkItem.Hours
                                  Required=true />
                 </div>
                 <div class="col-6">
@@ -26,7 +26,7 @@
                                  Sufix="hr"
                                  Min=0
                                  Step=0.01m
-                                 Value=@Result.FreeHours
+                                 Value=@ProformaWeekWorkItem.FreeHours
                                  Required=true />
                 </div>
             </Content>
@@ -36,5 +36,5 @@
 
 @code {
     [Parameter, EditorRequired]
-    public GetProformaWeekWorkItem.Result Result { get; set; } = default!;
+    public ProformaWeekWorkItem ProformaWeekWorkItem { get; set; } = default!;
 }

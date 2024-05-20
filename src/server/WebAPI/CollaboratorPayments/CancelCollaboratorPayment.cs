@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.ExceptionHandling;
+using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Infrastructure.Ui;
-using WebAPI.ProformaToCollaboratorPaymentProcesses;
 
 namespace WebAPI.CollaboratorPayments;
 
@@ -28,31 +28,9 @@ public static class CancelCollaboratorPayment
         }
     }
 
-    public class Handler
-    {
-        private readonly ApplicationDbContext _context;
-
-        public Handler(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
-        public async Task Handle(Command command)
-        {
-            var collaboratorPayment = await _context.Get<CollaboratorPayment>(command.CollaboratorPaymentId);
-
-            if (collaboratorPayment == null)
-            {
-                throw new NotFoundException<CollaboratorPayment>();
-            }
-
-            collaboratorPayment.Cancel(command.CanceledAt);
-        }
-    }
-
     public static async Task<Ok> Handle(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
+    [FromServices] ApplicationDbContext dbContext,
     [FromRoute] Guid collaboratorPaymentId,
     [FromServices] IClock clock,
     [FromBody] Command command)
@@ -63,16 +41,25 @@ public static class CancelCollaboratorPayment
 
         new Validator().ValidateAndThrow(command);
 
-        await behavior.Handle(() => handler.Handle(command));
+        await behavior.Handle(async () =>
+        {
+            var collaboratorPayment = await dbContext.Get<CollaboratorPayment>(command.CollaboratorPaymentId);
+
+            if (collaboratorPayment == null)
+            {
+                throw new NotFoundException<CollaboratorPayment>();
+            }
+
+            collaboratorPayment.Cancel(command.CanceledAt);
+        });
 
         return TypedResults.Ok();
     }
 
     public static async Task<RazorComponentResult> HandleAction(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
-    [FromServices] GetCollaboratorPayment.Runner getCollaboratorPaymentRunner,
-    [FromServices] ListProformaToCollaboratorPaymentProcessItems.Runner listProformaToCollaboratorPaymentProcessItemsRunner,
+    [FromServices] ApplicationDbContext dbContext,
+    [FromServices] SqlKataQueryRunner runner,
     Guid collaboratorPaymentId,
     [FromServices] IClock clock,
     HttpContext context)
@@ -83,10 +70,10 @@ public static class CancelCollaboratorPayment
             CanceledAt = clock.Now
         };
 
-        await Handle(behavior, handler, collaboratorPaymentId, clock, command);
+        await Handle(behavior, dbContext, collaboratorPaymentId, clock, command);
 
         context.Response.Headers.TriggerShowSuccessMessage("collaborator payment", "canceled", collaboratorPaymentId);
 
-        return await EditCollaboratorPayment.HandlePage(getCollaboratorPaymentRunner, listProformaToCollaboratorPaymentProcessItemsRunner, collaboratorPaymentId);
+        return await EditCollaboratorPayment.HandlePage(runner, collaboratorPaymentId);
     }
 }

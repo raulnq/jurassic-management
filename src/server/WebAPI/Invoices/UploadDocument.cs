@@ -2,11 +2,9 @@
 using Invoices;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Infrastructure.Ui;
-using WebAPI.ProformaToInvoiceProcesses;
 
 
 namespace WebAPI.Invoices;
@@ -76,7 +74,6 @@ public static class UploadDocument
     [FromServices] TransactionBehavior behavior,
     [FromServices] ApplicationDbContext dbContext,
     [FromServices] SqlKataQueryRunner runner,
-    [FromServices] ListProformaToInvoiceProcessItems.Runner listProformaToInvoiceProcessItemsRunner,
     [FromServices] InvoiceStorage storage,
     IFormFile file,
     Guid invoiceId,
@@ -86,6 +83,6 @@ public static class UploadDocument
 
         context.Response.Headers.TriggerShowSuccessMessageAndCloseModal("document for the invoice", "uploaded", invoiceId);
 
-        return await GetInvoice.HandlePage(runner, listProformaToInvoiceProcessItemsRunner, invoiceId);
+        return await GetInvoice.HandlePage(runner, invoiceId);
     }
 }

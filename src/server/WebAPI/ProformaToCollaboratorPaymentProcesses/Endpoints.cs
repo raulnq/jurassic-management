@@ -6,12 +6,7 @@ public static class Endpoints
 
     public const string Register = "/ui/proforma-to-collaborator-payment-processes/register";
 
-    public const string ListItems = "/ui/proforma-to-collaborator-payment-processes/{collaboratoPaymentId}/items/list";
-
-    public static string GetListItems(Guid collaboratoPaymentId)
-    {
-        return ListItems.Replace("{collaboratoPaymentId}", collaboratoPaymentId.ToString());
-    }
+    public const string ListItems = "/ui/proforma-to-collaborator-payment-processes/{collaboratorPaymentId}/items/list";
 
     public static void RegisterProformaToColaboratorPaymentProcessEndpoints(this WebApplication app)
     {

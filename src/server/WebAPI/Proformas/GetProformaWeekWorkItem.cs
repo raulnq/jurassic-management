@@ -28,26 +28,18 @@ public static class GetProformaWeekWorkItem
         public decimal ProfitPercentage { get; set; }
     }
 
-    public class Runner : BaseRunner
-    {
-        public Runner(SqlKataQueryRunner queryRunner) : base(queryRunner) { }
-
-        public Task<Result> Run(Query query)
-        {
-            return _queryRunner.Get<Result>((qf) => qf
-                .Query(Tables.ProformaWeekWorkItems)
-                .Where(Tables.ProformaWeekWorkItems.Field(nameof(ProformaWeekWorkItem.CollaboratorId)), query.CollaboratorId)
-                .Where(Tables.ProformaWeekWorkItems.Field(nameof(ProformaWeekWorkItem.Week)), query.Week)
-                .Where(Tables.ProformaWeekWorkItems.Field(nameof(ProformaWeekWorkItem.ProformaId)), query.ProformaId));
-        }
-    }
-
     public static async Task<Ok<Result>> Handle(
-    [FromServices] Runner runner,
-    [FromRoute] Guid proformaId,
-    [FromRoute] int week,
-    [FromRoute] Guid collaboratorId)
+        [FromServices] SqlKataQueryRunner runner,
+        [FromRoute] Guid proformaId,
+        [FromRoute] int week,
+        [FromRoute] Guid collaboratorId)
     {
-        return TypedResults.Ok(await runner.Run(new Query() { CollaboratorId = collaboratorId, Week = week, ProformaId = proformaId }));
+        var result = await runner.Get<Result>((qf) => qf
+                .Query(Tables.ProformaWeekWorkItems)
+                .Where(Tables.ProformaWeekWorkItems.Field(nameof(ProformaWeekWorkItem.CollaboratorId)), collaboratorId)
+                .Where(Tables.ProformaWeekWorkItems.Field(nameof(ProformaWeekWorkItem.Week)), week)
+                .Where(Tables.ProformaWeekWorkItems.Field(nameof(ProformaWeekWorkItem.ProformaId)), proformaId));
+
+        return TypedResults.Ok(result);
     }
 }

@@ -19,22 +19,14 @@ public static class GetProformaDocument
         public string Url { get; set; } = default!;
     }
 
-    public class Runner : BaseRunner
-    {
-        public Runner(SqlKataQueryRunner queryRunner) : base(queryRunner) { }
-
-        public Task<Result> Run(Query query)
-        {
-            return _queryRunner.GetOrDefault<Result>((qf) => qf
-                .Query(Tables.ProformaDocuments)
-                .Where(Tables.ProformaDocuments.Field(nameof(Proforma.ProformaId)), query.ProformaId));
-        }
-    }
-
     public static async Task<Ok<Result>> Handle(
-    [FromServices] Runner runner,
-    [FromRoute] Guid proformaId)
+        [FromServices] SqlKataQueryRunner runner,
+        [FromRoute] Guid proformaId)
     {
-        return TypedResults.Ok(await runner.Run(new Query() { ProformaId = proformaId }));
+        var result = await runner.GetOrDefault<Result>((qf) => qf
+                .Query(Tables.ProformaDocuments)
+                .Where(Tables.ProformaDocuments.Field(nameof(Proforma.ProformaId)), proformaId));
+
+        return TypedResults.Ok(result);
     }
 }

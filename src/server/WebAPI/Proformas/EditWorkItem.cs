@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.ExceptionHandling;
+using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Infrastructure.Ui;
 
 namespace WebAPI.Proformas;
@@ -73,20 +74,20 @@ public static class EditWorkItem
         Guid proformaId,
         int week,
         Guid collaboratorId,
-        GetProformaWeekWorkItem.Runner runner,
+        ApplicationDbContext dbContext,
         HttpContext context)
     {
-        var result = await runner.Run(new GetProformaWeekWorkItem.Query() { ProformaId = proformaId, Week = week, CollaboratorId = collaboratorId });
+        var proformaWeekWorkItem = await dbContext.Set<ProformaWeekWorkItem>().AsNoTracking().FirstAsync(i => i.ProformaId == proformaId && i.Week == week && i.CollaboratorId == collaboratorId);
 
         context.Response.Headers.TriggerOpenModal();
 
-        return new RazorComponentResult<EditWorkItemPage>(new { Result = result });
+        return new RazorComponentResult<EditWorkItemPage>(new { ProformaWeekWorkItem = proformaWeekWorkItem });
     }
 
     public static async Task<RazorComponentResult> HandleAction(
         [FromServices] TransactionBehavior behavior,
         [FromServices] ApplicationDbContext dbContext,
-        [FromServices] ListProformaWeekWorkItems.Runner runner,
+        [FromServices] SqlKataQueryRunner runner,
         [FromBody] Command command,
         Guid proformaId,
         int week,
@@ -98,11 +99,10 @@ public static class EditWorkItem
         httpContext.Response.Headers.TriggerShowSuccessMessageAndCloseModal("collaborator", "edited", collaboratorId);
 
         return await ListProformaWeekWorkItems.HandlePage(
-            new ListProformaWeekWorkItems.Query() { ProformaId = command.ProformaId, Week = command.Week },
-            runner,
-            dbContext,
-            proformaId,
-            week);
-
+            new ListProformaWeekWorkItems.Query()
+            {
+                ProformaId = command.ProformaId,
+                Week = command.Week
+            }, runner, dbContext, proformaId, week);
     }
 }

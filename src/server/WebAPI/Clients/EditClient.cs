@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
+using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Infrastructure.Ui;
 using WebAPI.Projects;
 
@@ -71,14 +72,14 @@ public static class EditClient
 
     public static async Task<RazorComponentResult> HandlePage(
         [FromServices] ApplicationDbContext dbContext,
-        [FromServices] ListProjects.Runner listProjectsRunner,
+        [FromServices] SqlKataQueryRunner runner,
         [FromRoute] Guid clientId)
     {
         var client = await dbContext.Set<Client>().AsNoTracking().FirstAsync(c => c.ClientId == clientId);
 
         var listProjectQuery = new ListProjects.Query() { ClientId = clientId };
 
-        var listProjectResult = await listProjectsRunner.Run(new ListProjects.Query() { ClientId = clientId });
+        var listProjectResult = await new ListProjects.Runner(runner).Run(new ListProjects.Query() { ClientId = clientId });
 
         return new RazorComponentResult<EditClientPage>(new
         {
@@ -91,7 +92,7 @@ public static class EditClient
     public static async Task<RazorComponentResult> HandleAction(
         [FromServices] TransactionBehavior behavior,
         [FromServices] ApplicationDbContext dbContext,
-        [FromServices] ListProjects.Runner listProjectsRunner,
+        [FromServices] SqlKataQueryRunner runner,
         [FromRoute] Guid clientId,
         [FromBody] Command command,
         HttpContext context)
@@ -100,6 +101,6 @@ public static class EditClient
 
         context.Response.Headers.TriggerShowEditSuccessMessage("client", command.ClientId);
 
-        return await HandlePage(dbContext, listProjectsRunner, command.ClientId);
+        return await HandlePage(dbContext, runner, command.ClientId);
     }
 }

@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
+using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Infrastructure.Ui;
-using WebAPI.ProformaToCollaboratorPaymentProcesses;
 
 
 namespace WebAPI.CollaboratorPayments;
@@ -26,26 +26,9 @@ public static class PayCollaboratorPayment
         }
     }
 
-    public class Handler
-    {
-        private readonly ApplicationDbContext _context;
-
-        public Handler(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
-        public async Task Handle(Command command)
-        {
-            var payment = await _context.Get<CollaboratorPayment>(command.CollaboratorPaymentId);
-
-            payment.Paid(command.PaidAt);
-        }
-    }
-
     public static async Task<Ok> Handle(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
+    [FromServices] ApplicationDbContext dbContext,
     [FromRoute] Guid collaboratorPaymentId,
     [FromBody] Command command)
     {
@@ -53,7 +36,12 @@ public static class PayCollaboratorPayment
 
         new Validator().ValidateAndThrow(command);
 
-        await behavior.Handle(() => handler.Handle(command));
+        await behavior.Handle(async () =>
+        {
+            var payment = await dbContext.Get<CollaboratorPayment>(command.CollaboratorPaymentId);
+
+            payment.Paid(command.PaidAt);
+        });
 
         return TypedResults.Ok();
     }
@@ -72,17 +60,16 @@ public static class PayCollaboratorPayment
 
     public static async Task<RazorComponentResult> HandleAction(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
-    [FromServices] GetCollaboratorPayment.Runner getCollaboratorPaymentRunner,
-    [FromServices] ListProformaToCollaboratorPaymentProcessItems.Runner listProformaToCollaboratorPaymentProcessItemsRunner,
+    [FromServices] ApplicationDbContext dbContext,
+    [FromServices] SqlKataQueryRunner runner,
     [FromBody] Command command,
     Guid collaboratorPaymentId,
     HttpContext context)
     {
-        await Handle(behavior, handler, collaboratorPaymentId, command);
+        await Handle(behavior, dbContext, collaboratorPaymentId, command);
 
         context.Response.Headers.TriggerShowSuccessMessageAndCloseModal("collaborator payment", "paid", collaboratorPaymentId);
 
-        return await EditCollaboratorPayment.HandlePage(getCollaboratorPaymentRunner, listProformaToCollaboratorPaymentProcessItemsRunner, collaboratorPaymentId);
+        return await EditCollaboratorPayment.HandlePage(runner, collaboratorPaymentId);
     }
 }
