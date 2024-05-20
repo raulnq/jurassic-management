@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.ExceptionHandling;
 using WebAPI.Proformas;
@@ -20,17 +21,16 @@ public static class LoadJiraWorklogs
     [FromRoute] int week,
     [FromServices] GetJiraProfileProject.Runner getJiraProfileProjectRunner,
     [FromServices] ListJiraProfileAccounts.Runner listJiraProfileAccountsRunner,
-    [FromServices] GetProforma.Runner getProformaRunner,
     [FromServices] TempoService tempoService,
     [FromServices] AddWorkItem.Handler addWorkItemHandler,
     [FromServices] TransactionBehavior behavior,
-    [FromServices] ListProformaWeekWorkItems.Runner listProformaWeekWorkItemsRunner,
     [FromServices] RemoveWorkItem.Handler removeWorkItemHandler,
+    [FromServices] ApplicationDbContext dbContext,
     [FromBody] Command command)
     {
-        var getProformaResult = await getProformaRunner.Run(new GetProforma.Query { ProformaId = proformaId });
+        var proform = await dbContext.Set<Proforma>().AsNoTracking().FirstAsync(p => p.ProformaId == proformaId);
 
-        var getJiraProfileProjectResult = await getJiraProfileProjectRunner.Run(new GetJiraProfileProject.Query() { ProjectId = getProformaResult.ProjectId });
+        var getJiraProfileProjectResult = await getJiraProfileProjectRunner.Run(new GetJiraProfileProject.Query() { ProjectId = proform.ProjectId });
 
         if (getJiraProfileProjectResult != null)
         {
@@ -44,11 +44,11 @@ public static class LoadJiraWorklogs
 
             var listJiraProfileAccountsResult = await listJiraProfileAccountsRunner.Run(new ListJiraProfileAccounts.Query() { ClientId = getJiraProfileProjectResult.ClientId });
 
-            var listProformaWeekWorkItemsResult = await listProformaWeekWorkItemsRunner.Run(new ListProformaWeekWorkItems.Query() { ProformaId = proformaId, Week = week, PageSize = 50 });
+            var proformaWeelWorkItems = await dbContext.Set<ProformaWeekWorkItem>().AsNoTracking().Where(i => i.ProformaId == proformaId && i.Week == week).ToListAsync();
 
             await behavior.Handle(async () =>
             {
-                foreach (var item in listProformaWeekWorkItemsResult.Items)
+                foreach (var item in proformaWeelWorkItems)
                 {
                     await removeWorkItemHandler.Handle(new RemoveWorkItem.Command() { CollaboratorId = item.CollaboratorId, ProformaId = item.ProformaId, Week = item.Week });
                 }
@@ -84,28 +84,24 @@ public static class LoadJiraWorklogs
 
     public static async Task<RazorComponentResult> HandleAction(
     [FromServices] ListProformaWeekWorkItems.Runner runner,
-    [FromServices] GetProforma.Runner getProformaRunner,
-    [FromServices] GetProformaWeek.Runner getProformaWeekRunner,
+    [FromServices] ApplicationDbContext dbContext,
     [FromServices] GetJiraProfileProject.Runner getJiraProfileProjectRunner,
     [FromServices] ListJiraProfileAccounts.Runner listJiraProfileAccountsRunner,
     [FromServices] TempoService tempoService,
     [FromServices] AddWorkItem.Handler addWorkItemHandler,
     [FromServices] TransactionBehavior behavior,
-    [FromServices] ListProformaWeekWorkItems.Runner listProformaWeekWorkItemsRunner,
     [FromServices] RemoveWorkItem.Handler removeWorkItemHandler,
     Guid proformaId,
     int week,
     [FromBody] Command command)
     {
         await Handle(proformaId, week, getJiraProfileProjectRunner,
-            listJiraProfileAccountsRunner, getProformaRunner, tempoService, addWorkItemHandler, behavior, listProformaWeekWorkItemsRunner, removeWorkItemHandler, command);
+            listJiraProfileAccountsRunner, tempoService, addWorkItemHandler, behavior, removeWorkItemHandler, dbContext, command);
 
         return await ListProformaWeekWorkItems.HandlePage(
             new ListProformaWeekWorkItems.Query() { ProformaId = proformaId, Week = week },
             runner,
-            getProformaRunner,
-            getProformaWeekRunner,
-            getJiraProfileProjectRunner,
+            dbContext,
             proformaId, week);
 
     }

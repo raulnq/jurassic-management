@@ -6,36 +6,42 @@
 <FormRow>
     <Content>
         <div class="col-3">
-            <NumberInput Property=@nameof(GetProforma.Result.SubTotal)
+            <NumberInput Property=@nameof(SubTotal)
                          Label="SubTotal"
                          Prefix="$"
-                         Value=@Result.SubTotal
+                         Value=@SubTotal
                          Readonly=true />
         </div>
         <div class="col-3">
-            <NumberInput Property=@nameof(GetProforma.Result.Commission)
+            <NumberInput Property=@nameof(Commission)
                          Label="Commission"
                          Prefix="+$"
-                         Value=@Result.Commission
+                         Value=@Commission
                          Readonly=true />
         </div>
         <div class="col-3">
-            <NumberInput Property=@nameof(GetProforma.Result.Discount)
+            <NumberInput Property=@nameof(Discount)
                          Label="Discount"
                          Prefix="-$"
-                         Value=@Result.Discount
+                         Value=@Discount
                          Readonly=true />
         </div>
         <div class="col-3">
-            <NumberInput Property=@nameof(GetProforma.Result.Total)
+            <NumberInput Property=@nameof(Total)
                          Label="Total"
                          Prefix="=$"
-                         Value=@Result.Total
+                         Value=@Total
                          Readonly=true />
         </div>
     </Content>
 </FormRow>
 @code {
     [Parameter, EditorRequired]
-    public GetProforma.Result Result { get; set; } = default!;
+    public decimal SubTotal { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public decimal Commission { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public decimal Discount { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public decimal Total { get; set; } = default!;
 }

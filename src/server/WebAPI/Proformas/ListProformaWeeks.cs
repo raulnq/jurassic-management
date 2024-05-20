@@ -34,17 +34,17 @@ public static class ListProformaWeeks
     }
 
     public static async Task<Ok<ListResults<Result>>> Handle(
-    [FromServices] Runner runner,
-    [FromRoute] Guid proformaId,
-    [AsParameters] Query query)
+        [FromServices] Runner runner,
+        [FromRoute] Guid proformaId,
+        [AsParameters] Query query)
     {
         query.ProformaId = proformaId;
         return TypedResults.Ok(await runner.Run(query));
     }
 
     public static async Task<RazorComponentResult> HandlePage(
-    [AsParameters] Query query,
-    [FromServices] Runner runner)
+        [AsParameters] Query query,
+        [FromServices] Runner runner)
     {
         var result = await runner.Run(query);
         return new RazorComponentResult<ListProformaWeeksPage>(new { Result = result, Query = query });

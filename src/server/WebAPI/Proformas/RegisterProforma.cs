@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using WebAPI.Clients;
 using WebAPI.Infrastructure.EntityFramework;
+using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Infrastructure.Ui;
 using WebAPI.Projects;
 
@@ -41,47 +42,33 @@ public static class RegisterProforma
         }
     }
 
-    public class Handler
+    public static async Task<Ok<Result>> Handle(
+        [FromServices] TransactionBehavior behavior,
+        [FromServices] ApplicationDbContext dbContext,
+        [FromServices] IClock clock,
+        [FromBody] Command command)
     {
-        private readonly ApplicationDbContext _context;
+        new Validator().ValidateAndThrow(command);
 
-        public Handler(ApplicationDbContext context)
+        command.Count = await dbContext.Set<Proforma>().AsNoTracking().CountAsync(p => p.End == command.End);
+
+        command.CreatedAt = clock.Now;
+
+        var result = await behavior.Handle(async () =>
         {
-            _context = context;
-        }
+            var project = await dbContext.Get<Project>(command.ProjectId);
 
-        public async Task<Result> Handle(Command command)
-        {
-            var project = await _context.Get<Project>(command.ProjectId);
-
-            var client = await _context.Get<Client>(project.ClientId);
+            var client = await dbContext.Get<Client>(project.ClientId);
 
             var proforma = new Proforma(NewId.Next().ToSequentialGuid(), command.Start, command.End, command.ProjectId, client, command.CreatedAt, command.Discount, command.Currency, command.Count);
 
-            _context.Set<Proforma>().Add(proforma);
+            dbContext.Set<Proforma>().Add(proforma);
 
             return new Result()
             {
                 ProformaId = proforma.ProformaId
             };
-        }
-    }
-
-
-    public static async Task<Ok<Result>> Handle(
-    [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
-    [FromServices] IClock clock,
-    [FromServices] CountProformas.Runner runner,
-    [FromBody] Command command)
-    {
-        new Validator().ValidateAndThrow(command);
-
-        command.Count = await runner.Run(new CountProformas.Query() { End = command.End });
-
-        command.CreatedAt = clock.Now;
-
-        var result = await behavior.Handle(() => handler.Handle(command));
+        });
 
         return TypedResults.Ok(result);
     }
@@ -98,18 +85,17 @@ public static class RegisterProforma
     }
 
     public static async Task<RazorComponentResult> HandleAction(
-    [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
-    [FromServices] ListProformas.Runner listProformasRunner,
-    [FromServices] CountProformas.Runner countProformaRunner,
-    [FromBody] Command command,
-    [FromServices] IClock clock,
-    HttpContext context)
+        [FromServices] TransactionBehavior behavior,
+        [FromServices] ApplicationDbContext dbContext,
+        [FromServices] SqlKataQueryRunner runner,
+        [FromBody] Command command,
+        [FromServices] IClock clock,
+        HttpContext context)
     {
-        var register = await Handle(behavior, handler, clock, countProformaRunner, command);
+        var register = await Handle(behavior, dbContext, clock, command);
 
         context.Response.Headers.TriggerShowRegisterSuccessMessage($"proforma", register.Value!.ProformaId);
 
-        return await ListProformas.HandlePage(new ListProformas.Query() { }, listProformasRunner);
+        return await ListProformas.HandlePage(new ListProformas.Query() { }, runner);
     }
 }

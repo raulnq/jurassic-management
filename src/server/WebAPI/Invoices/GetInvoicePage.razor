@@ -7,15 +7,15 @@
 
 <Heading Text=@Endpoints.Title />
 <Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new(Endpoints.ListTitle, Endpoints.List.AddListParameters()), new(Endpoints.ViewTitle) })
-             Target=@(Infrastructure.Ui.Targets.Workspace)>
+             Target=@($"#{WebAPI.Users.MainPage.Workspace}")>
     <MenuItems>
         <MenuItem Text=@Endpoints.UploadTitle
                   IsDisabled=@(Result.Status==InvoiceStatus.Canceled.ToString())
-                  HtmxProps=@(new HtmxProps(Endpoints.GetUpload(Result.InvoiceId), Infrastructure.Ui.Targets.Dialog)) />
+                  HtmxProps=@(new HtmxProps(Endpoints.GetUpload(Result.InvoiceId), $"#{WebAPI.Users.MainPage.Dialog}")) />
         <MenuItem Text=@Endpoints.IssueTitle
                   IsDisabled=@(Result.Status!=InvoiceStatus.Pending.ToString())
-                  HtmxProps=@(new HtmxProps(Endpoints.GetIssue(Result.InvoiceId), Infrastructure.Ui.Targets.Dialog)) />
-        <MenuItem HtmxProps=@(new HtmxProps(Endpoints.GetCancel(Result.InvoiceId), Infrastructure.Ui.Targets.Workspace){ Confirm = "Are you sure?", HttpMethod="POST"})
+                  HtmxProps=@(new HtmxProps(Endpoints.GetIssue(Result.InvoiceId), $"#{WebAPI.Users.MainPage.Dialog}")) />
+        <MenuItem HtmxProps=@(new HtmxProps(Endpoints.GetCancel(Result.InvoiceId), $"#{WebAPI.Users.MainPage.Workspace}"){ Confirm = "Are you sure?", HttpMethod="POST"})
                   IsDisabled=@(Result.Status !=InvoiceStatus.Pending.ToString())
                   Text=@Endpoints.CancelTitle />
     </MenuItems>

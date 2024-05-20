@@ -28,18 +28,26 @@ public static class IssueProforma
         }
     }
 
-    public class Handler
+    public class ProformaIssued
     {
-        private readonly ApplicationDbContext _context;
+        public Guid ProformaId { get; set; }
+    }
 
-        public Handler(ApplicationDbContext context)
-        {
-            _context = context;
-        }
 
-        public async Task Handle(Command command)
+    public static async Task<Ok> Handle(
+    [FromServices] TransactionBehavior behavior,
+    [FromServices] ApplicationDbContext dbContext,
+    [FromRoute] Guid proformaId,
+    [FromServices] IBus bus,
+    [FromBody] Command command)
+    {
+        command.ProformaId = proformaId;
+
+        new Validator().ValidateAndThrow(command);
+
+        await behavior.Handle(async () =>
         {
-            var proforma = await _context.Set<Proforma>()
+            var proforma = await dbContext.Set<Proforma>()
                 .Include(p => p.Weeks)
                 .ThenInclude(w => w.WorkItems)
                 .SingleOrDefaultAsync(p => p.ProformaId == command.ProformaId);
@@ -50,27 +58,7 @@ public static class IssueProforma
             }
 
             proforma.Issue(command.IssuedAt);
-        }
-    }
-
-    public class ProformaIssued
-    {
-        public Guid ProformaId { get; set; }
-    }
-
-
-    public static async Task<Ok> Handle(
-    [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
-    [FromRoute] Guid proformaId,
-    [FromServices] IBus bus,
-    [FromBody] Command command)
-    {
-        command.ProformaId = proformaId;
-
-        new Validator().ValidateAndThrow(command);
-
-        await behavior.Handle(() => handler.Handle(command));
+        });
 
         await bus.Publish(new ProformaIssued() { ProformaId = command.ProformaId });
 
@@ -91,7 +79,7 @@ public static class IssueProforma
 
     public static async Task<RazorComponentResult> HandleAction(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
+    [FromServices] ApplicationDbContext dbContext,
     [FromServices] GetProforma.Runner getProformaRunner,
     [FromServices] ListProformaWeeks.Runner listProformasWeeksRunner,
     [FromServices] GetProformaDocument.Runner getProformaDocumentRunner,
@@ -100,7 +88,7 @@ public static class IssueProforma
     Guid proformaId,
     HttpContext context)
     {
-        await Handle(behavior, handler, proformaId, bus, command);
+        await Handle(behavior, dbContext, proformaId, bus, command);
 
         context.Response.Headers.TriggerShowSuccessMessageAndCloseModal("proforma", "issued", proformaId);
 

@@ -5,12 +5,12 @@
 
 <Heading Text=@Endpoints.Title />
 <Breadcrumbs Links=@(new []{new Breadcrumbs.Link(Endpoints.ListTitle)})
-             Target=@(Infrastructure.Ui.Targets.Workspace) />
+             Target=@($"#{WebAPI.Users.MainPage.Workspace}") />
 <Toolbar>
     <Actions>
         <ActionButton Text=@Endpoints.RegisterTitle
                       Icon=@Icons.Add
-                      HtmxProps=@(new HtmxProps(Endpoints.Register, Infrastructure.Ui.Targets.Workspace)) />
+                      HtmxProps=@(new HtmxProps(Endpoints.Register, $"#{WebAPI.Users.MainPage.Workspace}")) />
     </Actions>
 </Toolbar>
 <Section>
@@ -18,7 +18,7 @@
         <FormRow>
             <Content>
                 <div class="col-6">
-                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}",Swap.OuterHTML,$"#{Targets.List}"){Include=$"#{nameof(ListProformas.Query.Number)}"})
+                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{List}",Swap.OuterHTML,$"#{List}"){Include=$"#{nameof(ListProformas.Query.Number)}"})
                                   Label="Status"
                                   Property=@(nameof(ListProformas.Query.Status))
                                   Query=@Query
@@ -30,11 +30,11 @@
                     <SearchFilter Label="Number"
                                   Property=@nameof(ListProformas.Query.Number)
                                   Query=@Query
-                                  HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}", Swap.OuterHTML, $"#{Targets.List}"){Include=$"#{nameof(ListProformas.Query.Status)}"}) />
+                                  HtmxProps=@(new HtmxProps(Endpoints.List, $"#{List}", Swap.OuterHTML, $"#{List}"){Include=$"#{nameof(ListProformas.Query.Status)}"}) />
                 </div>
             </Content>
         </FormRow>
-        <div id=@Targets.List>
+        <div id=@List>
             <DataTable TResult=ListProformas.Result
                        Result=@Result.Items
                        Context="item">
@@ -53,7 +53,7 @@
                 <RowTemplate>
                     <RowToolbar>
                         <Actions>
-                            <ActionLink HtmxProps=@(new HtmxProps(Endpoints.GetView(item.ProformaId), Infrastructure.Ui.Targets.Workspace))
+                            <ActionLink HtmxProps=@(new HtmxProps(Endpoints.View, $"#{WebAPI.Users.MainPage.Workspace}"){Vals=$$"""{"proformaId":"{{item.ProformaId}}"}"""})
                                         Icon=@Icons.View />
                         </Actions>
                     </RowToolbar>
@@ -70,7 +70,7 @@
             </DataTable>
             <Pagination Query=@Query
                         Result=@Result
-                        HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}", Swap.OuterHTML, $"#{Targets.List}"))
+                        HtmxProps=@(new HtmxProps(Endpoints.List, $"#{List}", Swap.OuterHTML, $"#{List}"))
                         Parameters=@(new KeyValuePair<string, object?>[]{ new (nameof(Query.Status), Query.Status), new (nameof(Query.Number), Query.Number)}) />
         </div>
     </Content>
@@ -80,4 +80,6 @@
     public ListResults<ListProformas.Result> Result { get; set; } = default!;
     [Parameter, EditorRequired]
     public ListProformas.Query Query { get; set; } = default!;
+
+    public const string List = "proforma-list-target";
 }

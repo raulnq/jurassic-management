@@ -4,7 +4,7 @@
 @using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
 
-<ModalForm HtmxProps=@(new HtmxProps(Endpoints.GetUpload(InvoiceId), Infrastructure.Ui.Targets.Workspace)
+<ModalForm HtmxProps=@(new HtmxProps(Endpoints.GetUpload(InvoiceId), $"#{WebAPI.Users.MainPage.Workspace}")
            { Encoding="multipart/form-data"})
            Title=@Endpoints.UploadTitle>
     <Content>

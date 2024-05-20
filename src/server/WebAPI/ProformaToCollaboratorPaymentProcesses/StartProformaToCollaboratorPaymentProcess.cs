@@ -39,53 +39,30 @@ public static class StartProformaToCollaboratorPaymentProcess
         }
     }
 
-    public class Handler
-    {
-        private readonly ApplicationDbContext _context;
-
-        public Handler(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
-        public Task<Result> Handle(Command command)
-        {
-            var process = new ProformaToCollaboratorPaymentProcess(NewId.Next().ToSequentialGuid(), command.CollaboratorId, command.Currency, command.ProformaWeekWorkItems!.Select(p => (p.ProformaId, p.Week, p.CollaboratorId, p.Status!.ToEnum<ProformaStatus>())), command.CreatedAt);
-
-            _context.Set<ProformaToCollaboratorPaymentProcess>().Add(process);
-
-            return Task.FromResult(new Result()
-            {
-                CollaboratorPaymentId = process.CollaboratorPaymentId
-            });
-        }
-    }
-
     public static async Task<Ok<Result>> Handle(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
     [FromServices] RegisterCollaboratorPayment.Handler registerCollaboratorPaymentHandler,
-    [FromServices] ListProformaWeekWorkItems.Runner listProformaWeekWorkItemsHandler,
     [FromServices] IClock clock,
+    [FromServices] ApplicationDbContext dbContext,
     [FromBody] Command command)
     {
         new Validator().ValidateAndThrow(command);
 
         command.CreatedAt = clock.Now;
 
-        var proformaWeekWorkItems = await listProformaWeekWorkItemsHandler.Run(new ListProformaWeekWorkItems.Query() { ListOfProformaId = command.ProformaId, PageSize = 100 });
-
-        command.ProformaWeekWorkItems = proformaWeekWorkItems.Items;
+        var proformas = await dbContext.Set<Proforma>().AsNoTracking().Include(p => p.Weeks).ThenInclude(w => w.WorkItems).AsNoTracking().Where(i => command.ProformaId!.Contains(i.ProformaId)).ToListAsync();
 
         var result = await behavior.Handle(async () =>
         {
-            var result = await handler.Handle(command);
+            var process = new ProformaToCollaboratorPaymentProcess(NewId.Next().ToSequentialGuid(), command.CollaboratorId, command.Currency, proformas, command.CreatedAt);
 
-            foreach (var collaborator in proformaWeekWorkItems.Items.GroupBy(i => new { i.CollaboratorId }))
+            dbContext.Set<ProformaToCollaboratorPaymentProcess>().Add(process);
+
+            foreach (var collaborator in proformas.SelectMany(p => p.Weeks).SelectMany(w => w.WorkItems).GroupBy(i => new { i.CollaboratorId }))
             {
                 await registerCollaboratorPaymentHandler.Handle(new RegisterCollaboratorPayment.Command()
                 {
-                    CollaboratorPaymentId = result.CollaboratorPaymentId,
+                    CollaboratorPaymentId = process.CollaboratorPaymentId,
                     CollaboratorId = collaborator.Key.CollaboratorId,
                     CreatedAt = command.CreatedAt,
                     GrossSalary = collaborator.Sum(i => i.GrossSalary),
@@ -94,7 +71,10 @@ public static class StartProformaToCollaboratorPaymentProcess
                 });
             }
 
-            return result;
+            return new Result()
+            {
+                CollaboratorPaymentId = process.CollaboratorPaymentId
+            };
         });
 
         return TypedResults.Ok(result);
@@ -113,15 +93,14 @@ public static class StartProformaToCollaboratorPaymentProcess
 
     public static async Task<RazorComponentResult> HandleAction(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
     [FromServices] RegisterCollaboratorPayment.Handler registerCollaboratorPaymentHandler,
-    [FromServices] ListProformaWeekWorkItems.Runner listProformaWeekWorkItemsHandler,
     [FromServices] ListCollaboratorPayments.Runner listCollaboratorPaymentsRunner,
+    [FromServices] ApplicationDbContext dbContext,
     [FromBody] Command command,
     [FromServices] IClock clock,
     HttpContext context)
     {
-        var register = await Handle(behavior, handler, registerCollaboratorPaymentHandler, listProformaWeekWorkItemsHandler, clock, command);
+        var register = await Handle(behavior, registerCollaboratorPaymentHandler, clock, dbContext, command);
 
         context.Response.Headers.TriggerShowRegisterSuccessMessage($"collaborator payment", register.Value!.CollaboratorPaymentId);
 

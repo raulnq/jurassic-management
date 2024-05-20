@@ -6,12 +6,12 @@
 
 <Heading Text=@Endpoints.Title />
 <Breadcrumbs Links=@(new []{new Breadcrumbs.Link(Endpoints.ListTitle)})
-             Target=@(Infrastructure.Ui.Targets.Workspace) />
+             Target=@($"#{WebAPI.Users.MainPage.Workspace}") />
 <Toolbar>
     <Actions>
         <ActionButton Text=@InvoiceToCollectionProcesses.Endpoints.RegisterTitle
                       Icon=@Icons.Add
-                      HtmxProps=@(new HtmxProps(InvoiceToCollectionProcesses.Endpoints.Register, Infrastructure.Ui.Targets.Workspace)) />
+                      HtmxProps=@(new HtmxProps(InvoiceToCollectionProcesses.Endpoints.Register, $"#{WebAPI.Users.MainPage.Workspace}")) />
     </Actions>
 </Toolbar>
 <Section>
@@ -56,7 +56,7 @@
                 <RowTemplate>
                     <RowToolbar>
                         <Actions>
-                            <ActionLink HtmxProps=@(new HtmxProps(Endpoints.GetView(@item.CollectionId), Infrastructure.Ui.Targets.Workspace))
+                            <ActionLink HtmxProps=@(new HtmxProps(Endpoints.GetView(@item.CollectionId), $"#{WebAPI.Users.MainPage.Workspace}"))
                                         Icon=@Icons.View />
                         </Actions>
                     </RowToolbar>

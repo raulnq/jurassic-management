@@ -18,34 +18,34 @@
         <div class="row h-100">
             <Sidebar>
                 <Items>
-                    <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.Collaborators.Endpoints.List.AddListParameters(), Targets.Workspace) { OnClick = "highlight_sidebarlink(this);" })
+                    <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.Collaborators.Endpoints.List.AddListParameters(), $"#{Workspace}") { OnClick = "highlight_sidebarlink(this);" })
                                  Icon="bi bi-people-fill"
                                  Text=@WebAPI.Collaborators.Endpoints.Title />
-                    <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.CollaboratorRoles.Endpoints.List.AddListParameters(), Targets.Workspace) { OnClick = "highlight_sidebarlink(this);" })
+                    <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.CollaboratorRoles.Endpoints.List.AddListParameters(), $"#{Workspace}") { OnClick = "highlight_sidebarlink(this);" })
                                  Icon="bi bi-person-vcard-fill"
                                  Text=@WebAPI.CollaboratorRoles.Endpoints.Title />
-                    <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.Clients.Endpoints.List.AddListParameters(), Targets.Workspace) { OnClick = "highlight_sidebarlink(this);" })
+                    <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.Clients.Endpoints.List.AddListParameters(), $"#{Workspace}") { OnClick = "highlight_sidebarlink(this);" })
                                  Icon="bi bi bi-wallet-fill"
                                  Text=@WebAPI.Clients.Endpoints.Title />
-                    <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.Proformas.Endpoints.List.AddListParameters(), Targets.Workspace) { OnClick = "highlight_sidebarlink(this);" })
+                    <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.Proformas.Endpoints.List.AddListParameters(), $"#{Workspace}") { OnClick = "highlight_sidebarlink(this);" })
                                  Icon="bi bi bi-file-text-fill"
                                  Text=@WebAPI.Proformas.Endpoints.Title />
-                    <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.Invoices.Endpoints.List.AddListParameters(), Targets.Workspace) { OnClick = "highlight_sidebarlink(this);" })
+                    <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.Invoices.Endpoints.List.AddListParameters(), $"#{Workspace}") { OnClick = "highlight_sidebarlink(this);" })
                                  Icon="bi bi-receipt"
                                  Text=@WebAPI.Invoices.Endpoints.Title />
-                    <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.CollaboratorPayments.Endpoints.List.AddListParameters(), Targets.Workspace) { OnClick = "highlight_sidebarlink(this);" })
+                    <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.CollaboratorPayments.Endpoints.List.AddListParameters(), $"#{Workspace}") { OnClick = "highlight_sidebarlink(this);" })
                                  Icon="bi bi-credit-card-2-back-fill"
                                  Text=@WebAPI.CollaboratorPayments.Endpoints.Title />
-                    <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.Collections.Endpoints.List.AddListParameters(), Targets.Workspace) { OnClick = "highlight_sidebarlink(this);" })
+                    <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.Collections.Endpoints.List.AddListParameters(), $"#{Workspace}") { OnClick = "highlight_sidebarlink(this);" })
                                  Icon="bi bi-coin"
                                  Text=@WebAPI.Collections.Endpoints.Title />
-                    <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.Transactions.Endpoints.List.AddListParameters(), Targets.Workspace) { OnClick = "highlight_sidebarlink(this);" })
+                    <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.Transactions.Endpoints.List.AddListParameters(), $"#{Workspace}") { OnClick = "highlight_sidebarlink(this);" })
                                  Icon="bi bi-journals"
                                  Text=@WebAPI.Transactions.Endpoints.Title />
-                    <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.BankBalance.Endpoints.List.AddListParameters(), Targets.Workspace) { OnClick = "highlight_sidebarlink(this);" })
+                    <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.BankBalance.Endpoints.List.AddListParameters(), $"#{Workspace}") { OnClick = "highlight_sidebarlink(this);" })
                                  Icon="bi bi-bank"
                                  Text=@WebAPI.BankBalance.Endpoints.Title />
-                    <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.CollaboratorBalance.Endpoints.List.AddListParameters(), Targets.Workspace) { OnClick = "highlight_sidebarlink(this);" })
+                    <SidebarLink HtmxProps=@(new HtmxProps(WebAPI.CollaboratorBalance.Endpoints.List.AddListParameters(), $"#{Workspace}") { OnClick = "highlight_sidebarlink(this);" })
                                  Icon="bi bi-file-earmark-person"
                                  Text=@WebAPI.CollaboratorBalance.Endpoints.Title />
 

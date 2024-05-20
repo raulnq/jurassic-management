@@ -25,36 +25,26 @@ public static class SearchProformasNotAddedToInvoice
         public decimal Total { get; set; }
     }
 
-    public class Runner : BaseRunner
-    {
-        public Runner(SqlKataQueryRunner queryRunner) : base(queryRunner) { }
-
-        public Task<List<Result>> Run(Query query)
-        {
-            return _queryRunner.List<Result>((qf) =>
-            {
-                var statement = qf.Query(Tables.VwNotAddedToInvoiceProformas)
-                .Join(Tables.Projects, Tables.Projects.Field(nameof(Proforma.ProjectId)), Tables.VwNotAddedToInvoiceProformas.Field(nameof(Proforma.ProjectId)))
-                .Where(Tables.VwNotAddedToInvoiceProformas.Field(nameof(Proforma.Status)), ProformaStatus.Issued.ToString())
-                ;
-                if (query.ClientId.HasValue)
-                {
-                    statement = statement.Where(Tables.Projects.Field(nameof(Project.ClientId)), query.ClientId);
-                }
-                if (!string.IsNullOrEmpty(query.Currency))
-                {
-                    statement = statement.Where(Tables.VwNotAddedToInvoiceProformas.Field(nameof(Proforma.Currency)), query.Currency);
-                }
-                return statement;
-            });
-        }
-    }
-
     public static async Task<RazorComponentResult> HandlePage(
     [AsParameters] Query query,
-    [FromServices] Runner runner)
+    [FromServices] SqlKataQueryRunner runner)
     {
-        var result = await runner.Run(query);
+        var result = await runner.List<Result>((qf) =>
+        {
+            var statement = qf.Query(Tables.VwNotAddedToInvoiceProformas)
+            .Join(Tables.Projects, Tables.Projects.Field(nameof(Proforma.ProjectId)), Tables.VwNotAddedToInvoiceProformas.Field(nameof(Proforma.ProjectId)))
+            .Where(Tables.VwNotAddedToInvoiceProformas.Field(nameof(Proforma.Status)), ProformaStatus.Issued.ToString())
+            ;
+            if (query.ClientId.HasValue)
+            {
+                statement = statement.Where(Tables.Projects.Field(nameof(Project.ClientId)), query.ClientId);
+            }
+            if (!string.IsNullOrEmpty(query.Currency))
+            {
+                statement = statement.Where(Tables.VwNotAddedToInvoiceProformas.Field(nameof(Proforma.Currency)), query.Currency);
+            }
+            return statement;
+        });
 
         return new RazorComponentResult<SearchProformasNotAddedToInvoicePage>(new { Result = result });
     }

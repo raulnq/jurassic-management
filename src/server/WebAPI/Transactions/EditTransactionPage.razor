@@ -5,10 +5,10 @@
 
 <Heading Text=@Endpoints.Title />
 <Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new(Endpoints.ListTitle, Endpoints.List.AddListParameters()), new(Endpoints.EditTitle) })
-             Target=@(Infrastructure.Ui.Targets.Workspace)>
+             Target=@($"#{WebAPI.Users.MainPage.Workspace}")>
     <MenuItems>
         <MenuItem Text="Upload document"
-                  HtmxProps=@(new HtmxProps(Endpoints.GetUpload(Result.TransactionId), Infrastructure.Ui.Targets.Dialog)) />
+                  HtmxProps=@(new HtmxProps(Endpoints.GetUpload(Result.TransactionId), $"#{WebAPI.Users.MainPage.Dialog}")) />
     </MenuItems>
 </Breadcrumbs>
 <Toolbar>
@@ -24,7 +24,7 @@
 </Toolbar>
 <Section>
     <Content>
-        <Form HtmxProps=@(new HtmxProps(Endpoints.GetEdit(@Result.TransactionId),Infrastructure.Ui.Targets.Workspace))>
+        <Form HtmxProps=@(new HtmxProps(Endpoints.GetEdit(@Result.TransactionId),$"#{WebAPI.Users.MainPage.Workspace}"))>
             <Content>
                 <FormRow>
                     <Content>

@@ -107,23 +107,21 @@ public static class AddWorkItem
     }
 
     public static async Task<RazorComponentResult> HandleAction(
-    [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
-    [FromServices] ListProformaWeekWorkItems.Runner runner,
-    [FromServices] GetProforma.Runner getProformaRunner,
-    [FromServices] GetProformaWeek.Runner getProformaWeekRunner,
-    [FromServices] GetJiraProfileProject.Runner getJiraProfileProjectRunner,
-    [FromBody] Command command,
-    [FromRoute] Guid proformaId,
-    [FromRoute] int week,
-    HttpContext context)
+        [FromServices] TransactionBehavior behavior,
+        [FromServices] Handler handler,
+        [FromServices] ListProformaWeekWorkItems.Runner runner,
+        [FromServices] ApplicationDbContext dbContext,
+        [FromBody] Command command,
+        [FromRoute] Guid proformaId,
+        [FromRoute] int week,
+        HttpContext context)
     {
         await Handle(behavior, handler, proformaId, week, command);
 
         context.Response.Headers.TriggerShowSuccessMessageAndCloseModal($"collaborator", "added", command.CollaboratorId);
 
         return await ListProformaWeekWorkItems.HandlePage(new ListProformaWeekWorkItems.Query() { ProformaId = command.ProformaId, Week = command.Week },
-            runner, getProformaRunner, getProformaWeekRunner, getJiraProfileProjectRunner, proformaId, week);
+            runner, dbContext, proformaId, week);
     }
 
 }

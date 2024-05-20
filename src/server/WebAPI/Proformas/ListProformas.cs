@@ -45,51 +45,44 @@ public static class ListProformas
         public DateTimeOffset? CanceledAt { get; set; }
     }
 
-    public class Runner : BaseRunner
-    {
-        public Runner(SqlKataQueryRunner queryRunner) : base(queryRunner) { }
-
-        public Task<ListResults<Result>> Run(Query query)
-        {
-            return _queryRunner.List<Query, Result>((qf) =>
-            {
-                var statement = qf.Query(Tables.Proformas)
-                .Select(Tables.Proformas.AllFields)
-                .Select(Tables.Projects.Field(nameof(Project.Name), nameof(Result.ProjectName)))
-                .Select(Tables.Clients.Field(nameof(Client.Name), nameof(Result.ClientName)))
-                .Join(Tables.Projects, Tables.Projects.Field(nameof(Project.ProjectId)), Tables.Proformas.Field(nameof(Proforma.ProjectId)))
-                .Join(Tables.Clients, Tables.Clients.Field(nameof(Client.ClientId)), Tables.Projects.Field(nameof(Project.ClientId)))
-                ;
-
-                if (!string.IsNullOrEmpty(query.Status))
-                {
-                    statement = statement.Where(Tables.Proformas.Field(nameof(Proforma.Status)), query.Status);
-                }
-                if (!string.IsNullOrEmpty(query.Number))
-                {
-                    statement = statement.WhereLike(Tables.Proformas.Field(nameof(Proforma.Number)), $"%{query.Number}%");
-                }
-                if (query.ProformaId != null && query.ProformaId.Any())
-                {
-                    statement = statement.WhereIn(Tables.Proformas.Field(nameof(Proforma.ProformaId)), query.ProformaId);
-                }
-                return statement;
-            }, query);
-        }
-    }
-
     public static async Task<Ok<ListResults<Result>>> Handle(
-    [FromServices] Runner runner,
-    [AsParameters] Query query)
+        [FromServices] SqlKataQueryRunner runner,
+        [AsParameters] Query query)
     {
-        return TypedResults.Ok(await runner.Run(query));
+        var result = await runner.List<Query, Result>((qf) =>
+        {
+            var statement = qf.Query(Tables.Proformas)
+            .Select(Tables.Proformas.AllFields)
+            .Select(Tables.Projects.Field(nameof(Project.Name), nameof(Result.ProjectName)))
+            .Select(Tables.Clients.Field(nameof(Client.Name), nameof(Result.ClientName)))
+            .Join(Tables.Projects, Tables.Projects.Field(nameof(Project.ProjectId)), Tables.Proformas.Field(nameof(Proforma.ProjectId)))
+            .Join(Tables.Clients, Tables.Clients.Field(nameof(Client.ClientId)), Tables.Projects.Field(nameof(Project.ClientId)))
+            ;
+
+            if (!string.IsNullOrEmpty(query.Status))
+            {
+                statement = statement.Where(Tables.Proformas.Field(nameof(Proforma.Status)), query.Status);
+            }
+            if (!string.IsNullOrEmpty(query.Number))
+            {
+                statement = statement.WhereLike(Tables.Proformas.Field(nameof(Proforma.Number)), $"%{query.Number}%");
+            }
+            if (query.ProformaId != null && query.ProformaId.Any())
+            {
+                statement = statement.WhereIn(Tables.Proformas.Field(nameof(Proforma.ProformaId)), query.ProformaId);
+            }
+            return statement;
+        }, query);
+
+        return TypedResults.Ok(result);
     }
 
     public static async Task<RazorComponentResult> HandlePage(
-    [AsParameters] Query query,
-    [FromServices] Runner runner)
+        [AsParameters] Query query,
+        [FromServices] SqlKataQueryRunner runner)
     {
-        var result = await runner.Run(query);
-        return new RazorComponentResult<ListProformasPage>(new { Result = result, Query = query });
+        var result = await Handle(runner, query);
+
+        return new RazorComponentResult<ListProformasPage>(new { Result = result.Value, Query = query });
     }
 }

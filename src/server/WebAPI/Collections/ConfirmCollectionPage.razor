@@ -4,7 +4,7 @@
 @using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
 
-<ModalForm HtmxProps=@(new HtmxProps(Endpoints.GetConfirm(CollectionId), Infrastructure.Ui.Targets.Workspace))
+<ModalForm HtmxProps=@(new HtmxProps(Endpoints.GetConfirm(CollectionId), $"#{WebAPI.Users.MainPage.Workspace}"))
            Title=@Endpoints.ConfirmTitle>
     <Content>
         <FormRow>

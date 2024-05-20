@@ -4,7 +4,7 @@
 @using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
 
-<ModalForm HtmxProps=@(new HtmxProps(WebAPI.Proformas.Endpoints.GetEditWorkItem(Result.ProformaId, Result.Week, Result.CollaboratorId),$"#{Targets.CollaboratorList}",Swap.OuterHTML,$"#{Targets.CollaboratorList}"))
+<ModalForm HtmxProps=@(new HtmxProps(WebAPI.Proformas.Endpoints.EditWorkItem,$"#{ListProformaWeekWorkItemsPage.List}",Swap.OuterHTML,$"#{ListProformaWeekWorkItemsPage.List}"){Vals=$$"""{"proformaId":"{{Result.ProformaId}}", "week":"{{Result.Week}}", "collaboratorId":"{{Result.CollaboratorId}}"}"""})
            Title=@Endpoints.EditWorkItemTitle>
     <Content>
         <FormRow>

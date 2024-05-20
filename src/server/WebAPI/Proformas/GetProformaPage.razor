@@ -7,12 +7,12 @@
 
 <Heading Text=@Endpoints.Title />
 <Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new(Endpoints.ListTitle, Endpoints.List.AddListParameters()), new(Endpoints.ViewTitle) })
-             Target=@(Infrastructure.Ui.Targets.Workspace)>
+             Target=@($"#{WebAPI.Users.MainPage.Workspace}")>
     <MenuItems>
         <MenuItem Text="Issue"
                   IsDisabled=@(Result.Status!=ProformaStatus.Pending.ToString())
-                  HtmxProps=@(new HtmxProps(Endpoints.GetIssue(Result.ProformaId), Infrastructure.Ui.Targets.Dialog)) />
-        <MenuItem HtmxProps=@(new HtmxProps(Endpoints.GetCancel(Result.ProformaId), Infrastructure.Ui.Targets.Workspace){ Confirm = "Are you sure?", HttpMethod="POST"})
+                  HtmxProps=@(new HtmxProps(Endpoints.Issue, $"#{WebAPI.Users.MainPage.Dialog}"){Vals=$$"""{"proformaId":"{{Result.ProformaId}}"}"""}) />
+        <MenuItem HtmxProps=@(new HtmxProps(Endpoints.Cancel, $"#{WebAPI.Users.MainPage.Workspace}"){ Confirm = "Are you sure?", HttpMethod="POST", Vals=$$"""{"proformaId":"{{Result.ProformaId}}"}"""})
                   IsDisabled=@(Result.Status !=ProformaStatus.Pending.ToString())
                   Text="Cancel" />
     </MenuItems>
@@ -82,8 +82,11 @@
                 </div>
             </Content>
         </FormRow>
-        <div id=@Targets.ProformaTotals>
-            <TotalsSectionPage Result=@Result />
+        <div id=@Totals>
+            <TotalsSectionPage Total=@Result.Total
+                               Commission=@Result.Commission
+                               Discount=@Result.Discount
+                               SubTotal=@Result.SubTotal />
         </div>
     </Content>
 </Section>
@@ -93,7 +96,7 @@
                                Result=@ListProformaWeeksResult />
     </Content>
 </Section>
-<div id=@Targets.Collaborator>
+<div id=@Collaborator>
 </div>
 
 @code {
@@ -105,4 +108,8 @@
     public ListProformaWeeks.Query ListProformaWeeksQuery { get; set; } = default!;
     [Parameter, EditorRequired]
     public GetProformaDocument.Result? GetProformaDocumentResult { get; set; }
+
+    public const string Totals = "proforma-totals-target";
+
+    public const string Collaborator = "collaborator-target";
 }

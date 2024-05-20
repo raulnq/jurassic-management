@@ -147,7 +147,7 @@ public static class ListCollaboratorBalance
             Query = query,
             StartBalance = startBalance,
             EndBalance = endBalance,
-            SearchCollaboratorsResult = collaborators
+            Collaborators = collaborators
         });
     }
 }

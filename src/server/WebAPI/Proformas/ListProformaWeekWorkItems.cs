@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WebAPI.CollaboratorRoles;
 using WebAPI.Collaborators;
 using WebAPI.Infrastructure.EntityFramework;
@@ -100,25 +101,29 @@ public static class ListProformaWeekWorkItems
     public static async Task<RazorComponentResult> HandlePage(
     [AsParameters] Query query,
     [FromServices] Runner runner,
-    [FromServices] GetProforma.Runner getProformaRunner,
-    [FromServices] GetProformaWeek.Runner getProformaWeekRunner,
-    [FromServices] GetJiraProfileProject.Runner getJiraProfileProjectRunner,
+    [FromServices] ApplicationDbContext dbContext,
     [FromRoute] Guid proformaId,
     [FromRoute] int week)
     {
         query.ProformaId = proformaId;
+
         query.Week = week;
+
         var result = await runner.Run(query);
-        var getProformaResult = await getProformaRunner.Run(new GetProforma.Query() { ProformaId = proformaId });
-        var getProformaWeekResult = await getProformaWeekRunner.Run(new GetProformaWeek.Query() { ProformaId = proformaId, Week = week });
-        var getJiraProfileProjectResult = await getJiraProfileProjectRunner.Run(new GetJiraProfileProject.Query() { ProjectId = getProformaResult.ProjectId });
+
+        var proforma = await dbContext.Set<Proforma>().AsNoTracking().FirstAsync(p => p.ProformaId == proformaId);
+
+        var proformaWeek = await dbContext.Set<ProformaWeek>().AsNoTracking().FirstAsync(pw => pw.ProformaId == proformaId && pw.Week == week);
+
+        var anyJiraProfileProject = await dbContext.Set<JiraProfileProject>().AsNoTracking().AnyAsync(j => j.ProjectId == proforma.ProjectId);
+
         return new RazorComponentResult<ListProformaWeekWorkItemsPage>(new
         {
             Result = result,
             Query = query,
-            GetProformaResult = getProformaResult,
-            GetProformaWeekResult = getProformaWeekResult,
-            GetJiraProfileProjectResult = getJiraProfileProjectResult
+            Proforma = proforma,
+            ProformaWeek = proformaWeek,
+            AnyJiraProfileProject = anyJiraProfileProject
         });
     }
 }

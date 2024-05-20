@@ -36,39 +36,13 @@ public static class EditWorkItem
         }
     }
 
-    public class Handler
-    {
-        private readonly ApplicationDbContext _context;
-
-        public Handler(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
-        public async Task Handle(Command command)
-        {
-            var proforma = await _context.Set<Proforma>()
-                .Include(p => p.Weeks)
-                .ThenInclude(w => w.WorkItems)
-                .SingleOrDefaultAsync(p => p.ProformaId == command.ProformaId);
-
-            if (proforma == null)
-            {
-                throw new NotFoundException<Proforma>();
-            }
-
-            proforma.EditWorkItem(command.Week, command.CollaboratorId, command.Hours, command.FreeHours);
-        }
-    }
-
-
     public static async Task<Ok> Handle(
-    [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
-    [FromRoute] Guid proformaId,
-    [FromRoute] int week,
-    [FromRoute] Guid collaboratorId,
-    [FromBody] Command command)
+        [FromServices] TransactionBehavior behavior,
+        [FromServices] ApplicationDbContext dbContext,
+        [FromRoute] Guid proformaId,
+        [FromRoute] int week,
+        [FromRoute] Guid collaboratorId,
+        [FromBody] Command command)
     {
         command.ProformaId = proformaId;
 
@@ -78,7 +52,20 @@ public static class EditWorkItem
 
         new Validator().ValidateAndThrow(command);
 
-        await behavior.Handle(() => handler.Handle(command));
+        await behavior.Handle(async () =>
+        {
+            var proforma = await dbContext.Set<Proforma>()
+            .Include(p => p.Weeks)
+            .ThenInclude(w => w.WorkItems)
+            .SingleOrDefaultAsync(p => p.ProformaId == command.ProformaId);
+
+            if (proforma == null)
+            {
+                throw new NotFoundException<Proforma>();
+            }
+
+            proforma.EditWorkItem(command.Week, command.CollaboratorId, command.Hours, command.FreeHours);
+        });
 
         return TypedResults.Ok();
     }
@@ -99,27 +86,22 @@ public static class EditWorkItem
 
     public static async Task<RazorComponentResult> HandleAction(
         [FromServices] TransactionBehavior behavior,
-        [FromServices] Handler handler,
+        [FromServices] ApplicationDbContext dbContext,
         [FromServices] ListProformaWeekWorkItems.Runner runner,
-        [FromServices] GetProforma.Runner getProformaRunner,
-        [FromServices] GetProformaWeek.Runner getProformaWeekRunner,
-        [FromServices] GetJiraProfileProject.Runner getJiraProfileProjectRunner,
         [FromBody] Command command,
         Guid proformaId,
         int week,
         Guid collaboratorId,
-        HttpContext context)
+        HttpContext httpContext)
     {
-        await Handle(behavior, handler, proformaId, week, collaboratorId, command);
+        await Handle(behavior, dbContext, proformaId, week, collaboratorId, command);
 
-        context.Response.Headers.TriggerShowSuccessMessageAndCloseModal("collaborator", "edited", collaboratorId);
+        httpContext.Response.Headers.TriggerShowSuccessMessageAndCloseModal("collaborator", "edited", collaboratorId);
 
         return await ListProformaWeekWorkItems.HandlePage(
             new ListProformaWeekWorkItems.Query() { ProformaId = command.ProformaId, Week = command.Week },
             runner,
-            getProformaRunner,
-            getProformaWeekRunner,
-            getJiraProfileProjectRunner,
+            dbContext,
             proformaId,
             week);
 

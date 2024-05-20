@@ -4,7 +4,7 @@
 @using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
 
-<ModalForm HtmxProps=@(new HtmxProps(WebAPI.Proformas.Endpoints.GetAddWorkItem(ProformaId, Week),$"#{Targets.CollaboratorList}",Swap.OuterHTML,$"#{Targets.CollaboratorList}"))
+<ModalForm HtmxProps=@(new HtmxProps(WebAPI.Proformas.Endpoints.AddWorkItem,$"#{ListProformaWeekWorkItemsPage.List}",Swap.OuterHTML,$"#{ListProformaWeekWorkItemsPage.List}"){Vals=$$"""{"proformaId":"{{ProformaId}}", "week":"{{Week}}"}"""})
            Title=@Endpoints.AddWorkItemTitle>
     <Content>
         <FormRow>

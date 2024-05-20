@@ -29,36 +29,26 @@ public static class SearchProformasNotAddedToCollaboratorPayment
         public decimal SubTotal { get; set; }
     }
 
-    public class Runner : BaseRunner
-    {
-        public Runner(SqlKataQueryRunner queryRunner) : base(queryRunner) { }
-
-        public Task<List<Result>> Run(Query query)
-        {
-            return _queryRunner.List<Result>((qf) =>
-            {
-                var statement = qf.Query(Tables.VwNotAddedToCollaboratorPaymentProformas)
-                .Join(Tables.Collaborators, Tables.Collaborators.Field(nameof(Collaborator.CollaboratorId)), Tables.VwNotAddedToCollaboratorPaymentProformas.Field(nameof(ProformaWeekWorkItem.CollaboratorId)))
-                .Where(Tables.VwNotAddedToCollaboratorPaymentProformas.Field(nameof(Proforma.Status)), ProformaStatus.Issued.ToString())
-                ;
-                if (query.CollaboratorId.HasValue)
-                {
-                    statement = statement.Where(Tables.Collaborators.Field(nameof(Collaborator.CollaboratorId)), query.CollaboratorId);
-                }
-                if (!string.IsNullOrEmpty(query.Currency))
-                {
-                    statement = statement.Where(Tables.VwNotAddedToCollaboratorPaymentProformas.Field(nameof(Proforma.Currency)), query.Currency);
-                }
-                return statement;
-            });
-        }
-    }
-
     public static async Task<RazorComponentResult> HandlePage(
     [AsParameters] Query query,
-    [FromServices] Runner runner)
+    [FromServices] SqlKataQueryRunner runner)
     {
-        var result = await runner.Run(query);
+        var result = await runner.List<Result>((qf) =>
+        {
+            var statement = qf.Query(Tables.VwNotAddedToCollaboratorPaymentProformas)
+            .Join(Tables.Collaborators, Tables.Collaborators.Field(nameof(Collaborator.CollaboratorId)), Tables.VwNotAddedToCollaboratorPaymentProformas.Field(nameof(ProformaWeekWorkItem.CollaboratorId)))
+            .Where(Tables.VwNotAddedToCollaboratorPaymentProformas.Field(nameof(Proforma.Status)), ProformaStatus.Issued.ToString())
+            ;
+            if (query.CollaboratorId.HasValue)
+            {
+                statement = statement.Where(Tables.Collaborators.Field(nameof(Collaborator.CollaboratorId)), query.CollaboratorId);
+            }
+            if (!string.IsNullOrEmpty(query.Currency))
+            {
+                statement = statement.Where(Tables.VwNotAddedToCollaboratorPaymentProformas.Field(nameof(Proforma.Currency)), query.Currency);
+            }
+            return statement;
+        });
 
         return new RazorComponentResult<SearchProformasNotAddedToCollaboratorPaymentPage>(new { Result = result });
     }

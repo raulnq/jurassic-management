@@ -1,5 +1,6 @@
 ﻿using WebAPI.Infrastructure.ExceptionHandling;
 using WebAPI.Proformas;
+using WebAPI.Projects;
 
 namespace WebAPI.ProformaToInvoiceProcesses;
 
@@ -13,7 +14,7 @@ public class ProformaToInvoiceProcess
 
     private ProformaToInvoiceProcess() { Items = []; }
 
-    public ProformaToInvoiceProcess(Guid invoiceId, Guid clientId, Currency currency, IEnumerable<(Guid ProformaId, ProformaStatus Status)> proformas, DateTimeOffset createdAt)
+    public ProformaToInvoiceProcess(Guid invoiceId, Guid clientId, Currency currency, IEnumerable<Proforma> proformas, DateTimeOffset createdAt)
     {
         InvoiceId = invoiceId;
         CreatedAt = createdAt;

@@ -29,37 +29,12 @@ public static class CancelProforma
         }
     }
 
-    public class Handler
-    {
-        private readonly ApplicationDbContext _context;
-
-        public Handler(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
-        public async Task Handle(Command command)
-        {
-            var proforma = await _context.Set<Proforma>()
-                .Include(p => p.Weeks)
-                .ThenInclude(w => w.WorkItems)
-                .SingleOrDefaultAsync(p => p.ProformaId == command.ProformaId);
-
-            if (proforma == null)
-            {
-                throw new NotFoundException<Proforma>();
-            }
-
-            proforma.Cancel(command.CanceledAt);
-        }
-    }
-
     public static async Task<Ok> Handle(
-    [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
-    [FromRoute] Guid proformaId,
-    [FromServices] IClock clock,
-    [FromBody] Command command)
+        [FromServices] TransactionBehavior behavior,
+        [FromServices] ApplicationDbContext dbContext,
+        [FromRoute] Guid proformaId,
+        [FromServices] IClock clock,
+        [FromBody] Command command)
     {
         command.ProformaId = proformaId;
 
@@ -67,20 +42,33 @@ public static class CancelProforma
 
         new Validator().ValidateAndThrow(command);
 
-        await behavior.Handle(() => handler.Handle(command));
+        await behavior.Handle(async () =>
+        {
+            var proforma = await dbContext.Set<Proforma>()
+            .Include(p => p.Weeks)
+            .ThenInclude(w => w.WorkItems)
+            .SingleOrDefaultAsync(p => p.ProformaId == command.ProformaId);
+
+            if (proforma == null)
+            {
+                throw new NotFoundException<Proforma>();
+            }
+
+            proforma.Cancel(command.CanceledAt);
+        });
 
         return TypedResults.Ok();
     }
 
     public static async Task<RazorComponentResult> HandleAction(
-    [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
-    [FromServices] GetProforma.Runner getProformaRunner,
-    [FromServices] ListProformaWeeks.Runner listProformasWeeksRunner,
-    [FromServices] GetProformaDocument.Runner getProformaDocumentRunner,
-    [FromServices] IClock clock,
-    HttpContext context,
-    Guid proformaId)
+        [FromServices] TransactionBehavior behavior,
+        [FromServices] ApplicationDbContext dbContext,
+        [FromServices] GetProforma.Runner getProformaRunner,
+        [FromServices] ListProformaWeeks.Runner listProformasWeeksRunner,
+        [FromServices] GetProformaDocument.Runner getProformaDocumentRunner,
+        [FromServices] IClock clock,
+        HttpContext httpContext,
+        Guid proformaId)
     {
         var command = new Command()
         {
@@ -88,9 +76,9 @@ public static class CancelProforma
             CanceledAt = clock.Now
         };
 
-        await Handle(behavior, handler, proformaId, clock, command);
+        await Handle(behavior, dbContext, proformaId, clock, command);
 
-        context.Response.Headers.TriggerShowSuccessMessage($"proforma", "canceled", command.ProformaId);
+        httpContext.Response.Headers.TriggerShowSuccessMessage($"proforma", "canceled", command.ProformaId);
 
         return await GetProforma.HandlePage(getProformaRunner, listProformasWeeksRunner, getProformaDocumentRunner, command.ProformaId);
     }

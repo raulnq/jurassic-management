@@ -82,9 +82,7 @@ public static class RemoveWorkItem
         [FromServices] TransactionBehavior behavior,
         [FromServices] Handler handler,
         [FromServices] ListProformaWeekWorkItems.Runner runner,
-        [FromServices] GetProforma.Runner getProformaRunner,
-        [FromServices] GetProformaWeek.Runner getProformaWeekRunner,
-        [FromServices] GetJiraProfileProject.Runner getJiraProfileProjectRunner,
+        [FromServices] ApplicationDbContext dbContext,
         Guid proformaId,
         int week,
         Guid collaboratorId)
@@ -103,9 +101,7 @@ public static class RemoveWorkItem
         return await ListProformaWeekWorkItems.HandlePage(
             new ListProformaWeekWorkItems.Query() { ProformaId = command.ProformaId, Week = command.Week },
             runner,
-            getProformaRunner,
-            getProformaWeekRunner,
-            getJiraProfileProjectRunner,
+            dbContext,
             proformaId,
             week);
 

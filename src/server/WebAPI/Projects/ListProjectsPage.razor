@@ -13,7 +13,7 @@
         <RowTemplate>
             <RowToolbar>
                 <Actions>
-                    <ActionLink HtmxProps=@(new HtmxProps(Endpoints.Edit, Infrastructure.Ui.Targets.Dialog){Vals=$$"""{"clientId":"{{item.ClientId}}", "projectId":"{{item.ProjectId}}"}"""})
+                    <ActionLink HtmxProps=@(new HtmxProps(Endpoints.Edit, $"#{WebAPI.Users.MainPage.Dialog}"){Vals=$$"""{"clientId":"{{item.ClientId}}", "projectId":"{{item.ProjectId}}"}"""})
                                 Icon=@Icons.Edit />
                 </Actions>
             </RowToolbar>

@@ -8,12 +8,12 @@
 
 <Heading Text=@Endpoints.Title />
 <Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new(Endpoints.ListTitle, Endpoints.List.AddListParameters()), new(Endpoints.ViewTitle) })
-             Target=@(Infrastructure.Ui.Targets.Workspace)>
+             Target=@($"#{WebAPI.Users.MainPage.Workspace}")>
     <MenuItems>
         <MenuItem Text=@Endpoints.ConfirmTitle
                   IsDisabled=@(Result.Status!=CollectionStatus.Pending.ToString())
-                  HtmxProps=@(new HtmxProps(Endpoints.GetConfirm(Result.CollectionId), Infrastructure.Ui.Targets.Dialog)) />
-        <MenuItem HtmxProps=@(new HtmxProps(Endpoints.GetCancel(Result.CollectionId), Infrastructure.Ui.Targets.Workspace){ Confirm = "Are you sure?", HttpMethod="POST"})
+                  HtmxProps=@(new HtmxProps(Endpoints.GetConfirm(Result.CollectionId), $"#{WebAPI.Users.MainPage.Dialog}")) />
+        <MenuItem HtmxProps=@(new HtmxProps(Endpoints.GetCancel(Result.CollectionId), $"#{WebAPI.Users.MainPage.Workspace}"){ Confirm = "Are you sure?", HttpMethod="POST"})
                   IsDisabled=@(Result.Status !=CollectionStatus.Pending.ToString())
                   Text=@Endpoints.CancelTitle />
     </MenuItems>

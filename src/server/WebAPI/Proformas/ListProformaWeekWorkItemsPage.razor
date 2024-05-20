@@ -10,16 +10,16 @@
             <Actions>
                 <ActionButton Text=@Endpoints.AddWorkItemTitle
                               Icon=@Icons.Add
-                              IsDisabled=@(GetProformaResult.Status !=ProformaStatus.Pending.ToString())
-                              HtmxProps=@(new HtmxProps(Endpoints.GetAddWorkItem(Query.ProformaId!.Value, Query.Week!.Value), Infrastructure.Ui.Targets.Dialog)) />
+                              IsDisabled=@(!Proforma.CanAddWorkItems())
+                              HtmxProps=@(new HtmxProps(Endpoints.AddWorkItem, $"#{WebAPI.Users.MainPage.Dialog}"){Vals=$$"""{"proformaId":"{{Query.ProformaId}}", "week":"{{Query.Week}}"}"""}) />
                 <ActionButton Text=@Endpoints.LoadWorkItemsTitle
                               Icon=@Icons.Add
                               Id="load"
-                              IsDisabled=@(GetProformaResult.Status !=ProformaStatus.Pending.ToString() || GetJiraProfileProjectResult!=null)
-                              HtmxProps=@(new HtmxProps(Endpoints.GetLoadWorkItems(Query.ProformaId!.Value, Query.Week!.Value), $"#{Targets.CollaboratorList}",Swap.OuterHTML,$"#{Targets.CollaboratorList}"){ Confirm = "Are you sure?", HttpMethod="POST", Vals=$"{{\"Start\": \"{GetProformaWeekResult.Start:yyy-MM-dd}\", \"End\": \"{GetProformaWeekResult.End:yyyy-MM-dd}\"}}"}) />
+                              IsDisabled=@(!Proforma.CanAddWorkItems() || AnyJiraProfileProject)
+                              HtmxProps=@(new HtmxProps(Endpoints.GetLoadWorkItems(Query.ProformaId!.Value, Query.Week!.Value), $"#{List}",Swap.OuterHTML,$"#{List}"){ Confirm = "Are you sure?", HttpMethod="POST", Vals=$"{{\"Start\": \"{ProformaWeek.Start:yyy-MM-dd}\", \"End\": \"{ProformaWeek.End:yyyy-MM-dd}\"}}"}) />
             </Actions>
         </Toolbar>
-        <div id=@Targets.CollaboratorList>
+        <div id=@List>
             <DataTable TResult=ListProformaWeekWorkItems.Result
                        Result=@Result.Items
                        Context="item">
@@ -35,11 +35,11 @@
                 <RowTemplate>
                     <RowToolbar>
                         <Actions>
-                            <ActionLink HtmxProps=@(new HtmxProps(Endpoints.GetEditWorkItem(item.ProformaId, item.Week, item.CollaboratorId), Infrastructure.Ui.Targets.Dialog))
-                                        IsDisabled=@(GetProformaResult.Status !=ProformaStatus.Pending.ToString())
+                            <ActionLink HtmxProps=@(new HtmxProps(Endpoints.EditWorkItem, $"#{WebAPI.Users.MainPage.Dialog}") {Vals=$$"""{"proformaId":"{{item.ProformaId}}", "week":"{{item.Week}}", "collaboratorId":"{{item.CollaboratorId}}"}"""})
+                                        IsDisabled=@(!Proforma.CanEditWorkItems())
                                         Icon=@Icons.Edit />
-                            <ActionLink HtmxProps=@(new HtmxProps(Endpoints.GetRemoveWorkItem(item.ProformaId, item.Week, item.CollaboratorId), $"#{Targets.CollaboratorList}",Swap.OuterHTML, $"#{Targets.CollaboratorList}"){ Confirm = "Are you sure?", HttpMethod="DELETE"})
-                                        IsDisabled=@(GetProformaResult.Status !=ProformaStatus.Pending.ToString())
+                            <ActionLink HtmxProps=@(new HtmxProps(Endpoints.RemoveWorkItem, $"#{List}",Swap.OuterHTML, $"#{List}"){ Confirm = "Are you sure?", HttpMethod="DELETE", Vals=$$"""{"proformaId":"{{item.ProformaId}}", "week":"{{item.Week}}", "collaboratorId":"{{item.CollaboratorId}}"}"""})
+                                        IsDisabled=@(!Proforma.CanRemoveWorkItems())
                                         Icon=@Icons.Delete />
                         </Actions>
                     </RowToolbar>
@@ -53,24 +53,29 @@
             </DataTable>
             <Pagination Query=@Query
                         Result=@Result
-                        HtmxProps=@(new HtmxProps(Endpoints.GetListWorkItems(Query.ProformaId!.Value, Query.Week!.Value), $"#{Targets.CollaboratorList}", Swap.OuterHTML, $"#{Targets.CollaboratorList}")) />
+                        HtmxProps=@(new HtmxProps(Endpoints.ListWorkItems, $"#{List}", Swap.OuterHTML, $"#{List}"){Vals=$$"""{"proformaId":"{{Query.ProformaId}}", "week":"{{Query.Week}}"}"""}) />
         </div>
     </Content>
 </Section>
-<div id=@Targets.ProformaTotals hx-swap-oob="true">
-    <TotalsSectionPage Result=@GetProformaResult />
+<div id=@GetProformaPage.Totals hx-swap-oob="true">
+    <TotalsSectionPage Total=@Proforma.Total
+                       Commission=@Proforma.Commission
+                       Discount=@Proforma.Discount
+                       SubTotal=@Proforma.SubTotal />
 </div>
-<div id="@Targets.WeekColumnPenalty-@GetProformaWeekResult.Week" hx-swap-oob="true">@GetProformaWeekResult.Penalty</div>
-<div id="@Targets.WeekColumnSubTotal-@GetProformaWeekResult.Week" hx-swap-oob="true">@GetProformaWeekResult.SubTotal</div>
+<div id="@ListProformaWeeksPage.WeekColumnPenalty-@ProformaWeek.Week" hx-swap-oob="true">@ProformaWeek.Penalty</div>
+<div id="@ListProformaWeeksPage.WeekColumnSubTotal-@ProformaWeek.Week" hx-swap-oob="true">@ProformaWeek.SubTotal</div>
 @code {
     [Parameter, EditorRequired]
     public ListResults<ListProformaWeekWorkItems.Result> Result { get; set; } = default!;
     [Parameter, EditorRequired]
     public ListProformaWeekWorkItems.Query Query { get; set; } = default!;
     [Parameter, EditorRequired]
-    public GetProforma.Result GetProformaResult { get; set; } = default!;
+    public Proforma Proforma { get; set; } = default!;
     [Parameter, EditorRequired]
-    public GetProformaWeek.Result GetProformaWeekResult { get; set; } = default!;
+    public ProformaWeek ProformaWeek { get; set; } = default!;
     [Parameter, EditorRequired]
-    public GetJiraProfileProject.Result? GetJiraProfileProjectResult { get; set; }
+    public bool AnyJiraProfileProject { get; set; }
+
+    public const string List = "collaborator-list-target";
 }

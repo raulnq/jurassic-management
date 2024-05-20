@@ -1,4 +1,9 @@
-﻿namespace WebAPI.JiraProfiles;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore;
+using WebAPI.Infrastructure.EntityFramework;
+using WebAPI.Invoices;
+
+namespace WebAPI.JiraProfiles;
 
 public class JiraProfile
 {
@@ -29,4 +34,17 @@ public class JiraProfileAccount
     public string JiraAccountId { get; private set; } = default!;
 
     private JiraProfileAccount() { }
+}
+
+public class ProjectEntityTypeConfiguration : IEntityTypeConfiguration<JiraProfileProject>
+{
+    public void Configure(EntityTypeBuilder<JiraProfileProject> builder)
+    {
+        builder
+            .ToTable(Tables.JiraProfileProjects);
+
+        builder
+            .HasKey(j => new { j.ClientId, j.ProjectId });
+
+    }
 }

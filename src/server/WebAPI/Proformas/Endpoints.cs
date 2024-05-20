@@ -50,53 +50,9 @@ public static class Endpoints
 
     public const string SearchNotAddedToCollaboratorPayment = "/ui/proformas/search-not-added-to-collaborator-payment";
 
-    public static string GetView(Guid proformaId)
-    {
-        return View.Replace("{proformaId}", proformaId.ToString());
-    }
-
-    public static string GetIssue(Guid proformaId)
-    {
-        return Issue.Replace("{proformaId}", proformaId.ToString());
-    }
-
-    public static string GetCancel(Guid proformaId)
-    {
-        return Cancel.Replace("{proformaId}", proformaId.ToString());
-    }
-
-    public static string GetListWeeks(Guid proformaId)
-    {
-        return ListWeeks.Replace("{proformaId}", proformaId.ToString());
-    }
-
-    public static string GetAddWorkItem(Guid proformaId, int week)
-    {
-        return AddWorkItem.Replace("{proformaId}", proformaId.ToString()).Replace("{week}", week.ToString());
-    }
-
     public static string GetLoadWorkItems(Guid proformaId, int week)
     {
         return LoadWorkItems.Replace("{proformaId}", proformaId.ToString()).Replace("{week}", week.ToString());
-    }
-
-    public static string GetListWorkItems(Guid proformaId, int week)
-    {
-        return ListWorkItems.Replace("{proformaId}", proformaId.ToString()).Replace("{week}", week.ToString());
-    }
-
-    public static string GetEditWorkItem(Guid proformaId, int week, Guid collaboratorId)
-    {
-        return EditWorkItem.Replace("{proformaId}", proformaId.ToString())
-            .Replace("{week}", week.ToString())
-            .Replace("{collaboratorId}", collaboratorId.ToString());
-    }
-
-    public static string GetRemoveWorkItem(Guid proformaId, int week, Guid collaboratorId)
-    {
-        return RemoveWorkItem.Replace("{proformaId}", proformaId.ToString())
-            .Replace("{week}", week.ToString())
-            .Replace("{collaboratorId}", collaboratorId.ToString());
     }
 
     public static void RegisterProformaEndpoints(this WebApplication app)

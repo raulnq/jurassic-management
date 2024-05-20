@@ -5,17 +5,17 @@
 
 <Heading Text=@Endpoints.Title />
 <Breadcrumbs Links=@(new []{new Breadcrumbs.Link(Endpoints.ListTitle)})
-             Target=@(Infrastructure.Ui.Targets.Workspace) />
+             Target=@($"#{WebAPI.Users.MainPage.Workspace}") />
 <Toolbar>
     <Actions>
         <ActionButton Text=@Endpoints.RegisterTitle
                       Icon=@Icons.Add
                       HtmxProps=@(new HtmxProps(
-                      Endpoints.Register, Infrastructure.Ui.Targets.Workspace)) />
+                      Endpoints.Register, $"#{WebAPI.Users.MainPage.Workspace}")) />
         <ActionButton Text=@ProformaToCollaboratorPaymentProcesses.Endpoints.RegisterTitle
                       Icon=@Icons.Add
                       HtmxProps=@(new HtmxProps(
-                      ProformaToCollaboratorPaymentProcesses.Endpoints.Register, Infrastructure.Ui.Targets.Workspace)) />
+                      ProformaToCollaboratorPaymentProcesses.Endpoints.Register, $"#{WebAPI.Users.MainPage.Workspace}")) />
     </Actions>
 </Toolbar>
 <Section>
@@ -50,7 +50,7 @@
                 <RowTemplate>
                     <RowToolbar>
                         <Actions>
-                            <ActionLink HtmxProps=@(new HtmxProps(Endpoints.GetEdit(@item.CollaboratorPaymentId), Infrastructure.Ui.Targets.Workspace))
+                            <ActionLink HtmxProps=@(new HtmxProps(Endpoints.GetEdit(@item.CollaboratorPaymentId), $"#{WebAPI.Users.MainPage.Workspace}"))
                                         Icon=@Icons.Edit />
                         </Actions>
                     </RowToolbar>

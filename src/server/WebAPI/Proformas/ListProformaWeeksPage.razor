@@ -4,7 +4,7 @@
 @using WebAPI.Proformas;
 @using global::Infrastructure
 
-<div id=@Targets.WeekList>
+<div id=@List>
     <DataTable TResult=ListProformaWeeks.Result
                Result=@Result.Items
                PreRenderRow="false"
@@ -21,21 +21,21 @@
             <tr>
                 <RowToolbar>
                     <Actions>
-                        <ActionLink HtmxProps=@(new HtmxProps(Endpoints.GetListWorkItems(item.ProformaId, item.Week).AddListParameters(1, Query.PageSize), $"#{Targets.Collaborator}"){ OnClick="highlight_row(this);"})
+                        <ActionLink HtmxProps=@(new HtmxProps(Endpoints.ListWorkItems.AddListParameters(1, Query.PageSize), $"#{GetProformaPage.Collaborator}"){ OnClick="highlight_row(this);", Vals=$$"""{"proformaId":"{{item.ProformaId}}", "week":"{{item.Week}}"}"""})
                                     Icon=@Icons.View />
                     </Actions>
                 </RowToolbar>
                 <td>@item.Week</td>
                 <td>@item.Start.ToListFormat()</td>
                 <td>@item.End.ToListFormat()</td>
-                <td class="text-end"><div id="@Targets.WeekColumnPenalty-@item.Week">@item.Penalty.ToMoneyFormat()</div></td>
-                <td class="text-end"><div id="@Targets.WeekColumnSubTotal-@item.Week">@item.SubTotal.ToMoneyFormat()</div></td>
+                <td class="text-end"><div id="@WeekColumnPenalty-@item.Week">@item.Penalty.ToMoneyFormat()</div></td>
+                <td class="text-end"><div id="@WeekColumnSubTotal-@item.Week">@item.SubTotal.ToMoneyFormat()</div></td>
             </tr>
         </RowTemplate>
     </DataTable>
     <Pagination Query=@Query
                 Result=@Result
-                HtmxProps=@(new HtmxProps(Endpoints.GetListWeeks(Query.ProformaId!.Value), $"#{Targets.WeekList}", Swap.OuterHTML)) />
+                HtmxProps=@(new HtmxProps(Endpoints.ListWeeks, $"#{List}", Swap.OuterHTML){Vals=$$"""{"proformaId":"{{Query.ProformaId}}"}"""}) />
 </div>
 
 @code {
@@ -43,4 +43,10 @@
     public ListResults<ListProformaWeeks.Result> Result { get; set; } = default!;
     [Parameter, EditorRequired]
     public ListProformaWeeks.Query Query { get; set; } = default!;
+
+    public const string WeekColumnPenalty = "week-column-penalty-target";
+
+    public const string WeekColumnSubTotal = "week-column-subtotal-target";
+
+    public const string List = "week-list-target";
 }

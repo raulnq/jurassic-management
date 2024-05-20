@@ -1,7 +1,11 @@
-﻿using WebAPI.Clients;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore;
+using WebAPI.Clients;
 using WebAPI.CollaboratorRoles;
 using WebAPI.Collaborators;
+using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.ExceptionHandling;
+using Infrastructure;
 
 namespace WebAPI.Proformas;
 
@@ -24,7 +28,7 @@ public class Proforma
     public Guid ProjectId { get; private set; }
     public DateTime Start { get; private set; }
     public DateTime End { get; private set; }
-    public string Number { get; private set; }
+    public string Number { get; private set; } = default!;
     public List<ProformaWeek> Weeks { get; private set; }
     public decimal Total { get; private set; }
     public decimal SubTotal { get; private set; }
@@ -68,6 +72,21 @@ public class Proforma
         Discount = discount;
         FillWeeks();
         Refresh();
+    }
+
+    public bool CanAddWorkItems()
+    {
+        return Status == ProformaStatus.Pending;
+    }
+
+    public bool CanEditWorkItems()
+    {
+        return Status == ProformaStatus.Pending;
+    }
+
+    public bool CanRemoveWorkItems()
+    {
+        return Status == ProformaStatus.Pending;
     }
 
     private void EnsureValidPeriod()
@@ -213,5 +232,307 @@ public class Proforma
         Commission = Math.Round(Commission, 2, MidpointRounding.AwayFromZero);
 
         Total = SubTotal + Commission - Discount;
+    }
+}
+
+public class ProformaWeek
+{
+    public Guid ProformaId { get; private set; }
+    public int Week { get; private set; }
+    public DateTime Start { get; private set; }
+    public DateTime End { get; private set; }
+    public decimal Penalty { get; private set; }
+    public decimal SubTotal { get; private set; }
+    public List<ProformaWeekWorkItem> WorkItems { get; private set; }
+
+    private ProformaWeek()
+    {
+        WorkItems = [];
+    }
+
+    public ProformaWeek(Guid platformId, int week, DateTime start, DateTime end, decimal minimumHours, decimal penaltyMinimumHours)
+    {
+        ProformaId = platformId;
+        Week = week;
+        Start = start;
+        End = end;
+        WorkItems = new List<ProformaWeekWorkItem>();
+        Refresh(minimumHours, penaltyMinimumHours);
+    }
+
+    public void Add(Collaborator collaborator, CollaboratorRole collaboratorRole, decimal hours, decimal freeHours, decimal minimumHours, decimal penaltyMinimumHours)
+    {
+        if (WorkItems.Any(i => i.CollaboratorId == collaborator.CollaboratorId))
+        {
+            throw new DomainException(ExceptionCodes.Duplicated);
+        }
+
+        WorkItems.Add(new ProformaWeekWorkItem(ProformaId, Week, hours, freeHours, collaboratorRole, collaborator));
+
+
+        Refresh(minimumHours, penaltyMinimumHours);
+    }
+
+    public void Edit(Guid collaboratorId, decimal hours, decimal freeHours, decimal minimumHours, decimal penaltyMinimumHours)
+    {
+        var item = WorkItems.FirstOrDefault(i => i.CollaboratorId == collaboratorId);
+
+        if (item == null)
+        {
+            throw new NotFoundException<ProformaWeekWorkItem>();
+        }
+
+        item.Edit(hours, freeHours);
+
+        Refresh(minimumHours, penaltyMinimumHours);
+    }
+
+    public void Remove(Guid collaboratorId, decimal minimumHours, decimal penaltyMinimumHours)
+    {
+        var item = WorkItems.FirstOrDefault(i => i.CollaboratorId == collaboratorId);
+
+        if (item == null)
+        {
+            throw new NotFoundException<ProformaWeekWorkItem>();
+        }
+
+        WorkItems.Remove(item);
+
+        Refresh(minimumHours, penaltyMinimumHours);
+    }
+
+    private void Refresh(decimal minimumHours, decimal penaltyMinimumHours)
+    {
+        var hours = WorkItems.Sum(i => i.Hours);
+
+        if (IsCompleteWeek())
+        {
+            if (minimumHours > hours)
+            {
+                Penalty = (minimumHours - hours) * penaltyMinimumHours;
+            }
+            else
+            {
+                Penalty = 0;
+            }
+        }
+        else
+        {
+            Penalty = 0;
+        }
+
+        SubTotal = WorkItems.Sum(i => i.SubTotal) + Penalty;
+    }
+
+    private bool IsCompleteWeek()
+    {
+        return (End - Start).TotalDays == 6;
+    }
+}
+
+public class ProformaWeekWorkItem
+{
+    public Guid ProformaId { get; private set; }
+    public int Week { get; private set; }
+    public Guid CollaboratorId { get; private set; }
+    public Guid CollaboratorRoleId { get; private set; }
+    public decimal Hours { get; private set; }
+    public decimal FreeHours { get; private set; }
+    public decimal FeeAmount { get; private set; }
+    public decimal SubTotal { get; private set; }
+    public decimal ProfitAmount { get; private set; }
+    public decimal ProfitPercentage { get; private set; }
+    public decimal Withholding { get; private set; }
+    public decimal WithholdingPercentage { get; private set; }
+    public decimal GrossSalary { get; private set; }
+    public decimal NetSalary { get; private set; }
+
+    private ProformaWeekWorkItem()
+    {
+
+    }
+    public ProformaWeekWorkItem(Guid proformId, int week, decimal hours, decimal freeHours, CollaboratorRole collaboratorRole, Collaborator collaborator)
+    {
+        ProformaId = proformId;
+        Week = week;
+        CollaboratorId = collaborator.CollaboratorId;
+        CollaboratorRoleId = collaboratorRole.CollaboratorRoleId;
+        Hours = hours;
+        FreeHours = freeHours;
+        FeeAmount = collaboratorRole.FeeAmount;
+        ProfitPercentage = collaboratorRole.ProfitPercentage;
+        WithholdingPercentage = collaborator.WithholdingPercentage;
+        Refresh();
+    }
+
+    private void Refresh()
+    {
+        SubTotal = (Hours - FreeHours) * FeeAmount;
+        ProfitAmount = (SubTotal * ProfitPercentage) / 100;
+        GrossSalary = SubTotal - ProfitAmount;
+        Withholding = Math.Round((GrossSalary * WithholdingPercentage) / 100, 2, MidpointRounding.AwayFromZero);
+        NetSalary = Math.Round(GrossSalary - Withholding, 2, MidpointRounding.AwayFromZero);
+    }
+
+    public void Edit(decimal hours, decimal freeHours)
+    {
+        Hours = hours;
+        FreeHours = freeHours;
+        Refresh();
+    }
+}
+
+public class ProformaEntityTypeConfiguration : IEntityTypeConfiguration<Proforma>
+{
+    public void Configure(EntityTypeBuilder<Proforma> builder)
+    {
+        builder
+            .ToTable(Tables.Proformas);
+
+        builder
+            .HasKey(p => p.ProformaId);
+
+        builder
+            .Property(c => c.Total)
+            .HasColumnType("decimal(19, 4)");
+
+        builder
+            .Property(c => c.SubTotal)
+            .HasColumnType("decimal(19, 4)");
+
+        builder
+            .Property(c => c.Commission)
+            .HasColumnType("decimal(19, 4)");
+
+        builder
+            .Property(c => c.Discount)
+            .HasColumnType("decimal(19, 4)");
+
+        builder
+            .Property(c => c.MinimumHours)
+            .HasColumnType("decimal(19, 4)");
+
+        builder
+            .Property(c => c.PenaltyMinimumHours)
+            .HasColumnType("decimal(19, 4)");
+
+        builder
+            .Property(c => c.TaxesExpensesPercentage)
+            .HasColumnType("decimal(19, 4)");
+
+        builder
+            .Property(c => c.AdministrativeExpensesPercentage)
+            .HasColumnType("decimal(19, 4)");
+
+        builder
+            .Property(c => c.BankingExpensesPercentage)
+            .HasColumnType("decimal(19, 4)");
+
+        builder
+            .Property(c => c.MinimumBankingExpenses)
+            .HasColumnType("decimal(19, 4)");
+
+        builder
+            .Property(c => c.TaxesExpensesAmount)
+            .HasColumnType("decimal(19, 4)");
+
+        builder
+            .Property(c => c.AdministrativeExpensesAmount)
+            .HasColumnType("decimal(19, 4)");
+
+        builder
+            .Property(c => c.BankingExpensesAmount)
+            .HasColumnType("decimal(19, 4)");
+
+        builder
+            .Property(c => c.Status)
+            .HasConversion(s => s.ToString(), value => value.ToEnum<ProformaStatus>());
+
+        builder
+            .Property(c => c.Currency)
+            .HasConversion(s => s.ToString(), value => value.ToEnum<Currency>());
+
+        builder
+            .HasMany(p => p.Weeks)
+            .WithOne()
+            .HasForeignKey(pw => pw.ProformaId);
+    }
+}
+
+public class WeekEntityTypeConfiguration : IEntityTypeConfiguration<ProformaWeek>
+{
+    public void Configure(EntityTypeBuilder<ProformaWeek> builder)
+    {
+        builder
+            .ToTable(Tables.ProformaWeeks);
+
+        builder
+            .HasKey(field => new { field.ProformaId, field.Week });
+
+        builder
+            .Property(c => c.Penalty)
+            .HasColumnType("decimal(19, 4)");
+
+        builder
+            .Property(c => c.SubTotal)
+            .HasColumnType("decimal(19, 4)");
+
+
+        builder
+            .HasMany(p => p.WorkItems)
+            .WithOne()
+            .HasForeignKey(wi => new { wi.ProformaId, wi.Week });
+    }
+}
+
+public class WorkItemEntityTypeConfiguration : IEntityTypeConfiguration<ProformaWeekWorkItem>
+{
+    public void Configure(EntityTypeBuilder<ProformaWeekWorkItem> builder)
+    {
+        builder
+            .ToTable(Tables.ProformaWeekWorkItems);
+
+        builder
+            .HasKey(field => new { field.ProformaId, field.Week, field.CollaboratorId });
+
+        builder
+            .Property(c => c.Hours)
+            .HasColumnType("decimal(19, 4)");
+
+        builder
+            .Property(c => c.FreeHours)
+            .HasColumnType("decimal(19, 4)");
+
+        builder
+            .Property(c => c.FeeAmount)
+            .HasColumnType("decimal(19, 4)");
+
+        builder
+            .Property(c => c.SubTotal)
+            .HasColumnType("decimal(19, 4)");
+
+        builder
+            .Property(c => c.ProfitAmount)
+            .HasColumnType("decimal(19, 4)");
+
+        builder
+            .Property(c => c.ProfitPercentage)
+            .HasColumnType("decimal(19, 4)");
+
+        builder
+            .Property(c => c.WithholdingPercentage)
+            .HasColumnType("decimal(19, 4)");
+
+        builder
+            .Property(c => c.Withholding)
+            .HasColumnType("decimal(19, 4)");
+
+        builder
+            .Property(c => c.GrossSalary)
+            .HasColumnType("decimal(19, 4)");
+
+        builder
+            .Property(c => c.NetSalary)
+            .HasColumnType("decimal(19, 4)");
     }
 }

@@ -39,59 +39,39 @@ public static class StartProformaToInvoiceProcess
         }
     }
 
-    public class Handler
-    {
-        private readonly ApplicationDbContext _context;
-
-        public Handler(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
-        public Task<Result> Handle(Command command)
-        {
-            var process = new ProformaToInvoiceProcess(NewId.Next().ToSequentialGuid(), command.ClientId, command.Currency, command.Proformas!.Select(p => (p.ProformaId, p.Status!.ToEnum<ProformaStatus>())), command.CreatedAt);
-
-            _context.Set<ProformaToInvoiceProcess>().Add(process);
-
-            return Task.FromResult(new Result()
-            {
-                InvoiceId = process.InvoiceId
-            });
-        }
-    }
-
     public static async Task<Ok<Result>> Handle(
-    [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
-    [FromServices] RegisterInvoice.Handler registerInvoiceHandler,
-    [FromServices] ListProformas.Runner listProformasHandler,
-    [FromServices] IClock clock,
-    [FromBody] Command command)
+        [FromServices] TransactionBehavior behavior,
+        [FromServices] RegisterInvoice.Handler registerInvoiceHandler,
+        [FromServices] ApplicationDbContext dbContext,
+        [FromServices] IClock clock,
+        [FromBody] Command command)
     {
         new Validator().ValidateAndThrow(command);
 
         command.CreatedAt = clock.Now;
 
-        var proformas = await listProformasHandler.Run(new ListProformas.Query() { ProformaId = command.ProformaId, PageSize = 50 });
-
-        command.Proformas = proformas.Items;
+        var proformas = await dbContext.Set<Proforma>().AsNoTracking().Where(p => command.ProformaId!.Contains(p.ProformaId)).ToListAsync();
 
         var result = await behavior.Handle(async () =>
         {
-            var result = await handler.Handle(command);
+            var process = new ProformaToInvoiceProcess(NewId.Next().ToSequentialGuid(), command.ClientId, command.Currency, proformas, command.CreatedAt);
+
+            dbContext.Set<ProformaToInvoiceProcess>().Add(process);
 
             await registerInvoiceHandler.Handle(new RegisterInvoice.Command()
             {
-                InvoiceId = result.InvoiceId,
+                InvoiceId = process.InvoiceId,
                 CreatedAt = command.CreatedAt,
-                SubTotal = proformas.Items.Sum(p => p.Total),
+                SubTotal = proformas.Sum(p => p.Total),
                 Taxes = 0,
                 Currency = command.Currency,
                 ClientId = command.ClientId,
             });
 
-            return result;
+            return new Result()
+            {
+                InvoiceId = process.InvoiceId
+            };
         });
 
         return TypedResults.Ok(result);
@@ -110,8 +90,6 @@ public static class StartProformaToInvoiceProcess
 
     public static async Task<RazorComponentResult> HandleAction(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
-    [FromServices] ListProformas.Runner listProformasRunner,
     [FromServices] RegisterInvoice.Handler registerInvoiceHandler,
     [FromServices] ListInvoices.Runner listInvoicesRunner,
     [FromServices] ApplicationDbContext dbContext,
@@ -119,7 +97,7 @@ public static class StartProformaToInvoiceProcess
     [FromServices] IClock clock,
     HttpContext context)
     {
-        var register = await Handle(behavior, handler, registerInvoiceHandler, listProformasRunner, clock, command);
+        var register = await Handle(behavior, registerInvoiceHandler, dbContext, clock, command);
 
         context.Response.Headers.TriggerShowRegisterSuccessMessage($"invoice", register.Value!.InvoiceId);
 

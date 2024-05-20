@@ -9,11 +9,11 @@
 
 <Heading Text=@Endpoints.Title />
 <Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new(Endpoints.ListTitle, Endpoints.List.AddListParameters()), new(Endpoints.RegisterTitle) })
-             Target=@(Infrastructure.Ui.Targets.Workspace)>
+             Target=@($"#{WebAPI.Users.MainPage.Workspace}")>
 </Breadcrumbs>
 <Section>
     <Content>
-        <Form HtmxProps=@(new HtmxProps(Endpoints.Register, Infrastructure.Ui.Targets.Workspace))>
+        <Form HtmxProps=@(new HtmxProps(Endpoints.Register, $"#{WebAPI.Users.MainPage.Workspace}"))>
             <Content>
                 <FormRow>
                     <Content>
