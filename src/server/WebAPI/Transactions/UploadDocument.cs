@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Transactions;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.Ui;
@@ -25,26 +26,9 @@ public static class UploadDocument
         }
     }
 
-    public class Handler
-    {
-        private readonly ApplicationDbContext _context;
-
-        public Handler(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
-        public async Task Handle(Command command)
-        {
-            var transaction = await _context.Get<Transaction>(command.TransactionId);
-
-            transaction.UploadDocument(command.DocumentUrl!);
-        }
-    }
-
     public static async Task<Ok> Handle(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
+    [FromServices] ApplicationDbContext dbContext,
     [FromServices] TransactionStorage storage,
     [FromRoute] Guid transactionId,
     IFormFile file)
@@ -63,7 +47,12 @@ public static class UploadDocument
 
             new Validator().ValidateAndThrow(command);
 
-            await behavior.Handle(() => handler.Handle(command));
+            await behavior.Handle(async () =>
+            {
+                var transaction = await dbContext.Get<Transaction>(command.TransactionId);
+
+                transaction.UploadDocument(command.DocumentUrl!);
+            });
 
             return TypedResults.Ok();
         }
@@ -83,17 +72,16 @@ public static class UploadDocument
 
     public static async Task<RazorComponentResult> HandleAction(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
-    [FromServices] GetTransaction.Runner runner,
+    [FromServices] ApplicationDbContext dbContext,
     [FromServices] TransactionStorage storage,
     IFormFile file,
     Guid transactionId,
     HttpContext context)
     {
-        await Handle(behavior, handler, storage, transactionId, file);
+        await Handle(behavior, dbContext, storage, transactionId, file);
 
         context.Response.Headers.TriggerShowSuccessMessageAndCloseModal("document for the transaction", "uploaded", transactionId);
 
-        return await EditTransaction.HandlePage(runner, transactionId);
+        return await EditTransaction.HandlePage(dbContext, transactionId);
     }
 }

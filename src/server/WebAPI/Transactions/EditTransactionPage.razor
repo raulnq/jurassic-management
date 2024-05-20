@@ -8,7 +8,7 @@
              Target=@($"#{WebAPI.Users.MainPage.Workspace}")>
     <MenuItems>
         <MenuItem Text="Upload document"
-                  HtmxProps=@(new HtmxProps(Endpoints.GetUpload(Result.TransactionId), $"#{WebAPI.Users.MainPage.Dialog}")) />
+                  HtmxProps=@(new HtmxProps(Endpoints.Upload, $"#{WebAPI.Users.MainPage.Dialog}"){Vals=$$"""{"transactionId":"{{Transaction.TransactionId}}"}"""}) />
     </MenuItems>
 </Breadcrumbs>
 <Toolbar>
@@ -16,15 +16,15 @@
         <Divider />
         <Link Property=@nameof(GetTransaction.Result.DocumentUrl)
               Value="View"
-              Href=@Result.DocumentUrl
-              IsDisabled=@(string.IsNullOrEmpty(Result.DocumentUrl))
+              Href=@Transaction.DocumentUrl
+              IsDisabled=@(string.IsNullOrEmpty(Transaction.DocumentUrl))
               Label="PDF" />
         <Divider />
     </Actions>
 </Toolbar>
 <Section>
     <Content>
-        <Form HtmxProps=@(new HtmxProps(Endpoints.GetEdit(@Result.TransactionId),$"#{WebAPI.Users.MainPage.Workspace}"))>
+        <Form HtmxProps=@(new HtmxProps(Endpoints.Edit,$"#{WebAPI.Users.MainPage.Workspace}"){Vals=$$"""{"transactionId":"{{Transaction.TransactionId}}"}"""})>
             <Content>
                 <FormRow>
                     <Content>
@@ -33,7 +33,7 @@
                                        Label="Description"
                                        Placeholder="Enter description"
                                        MaxLenght=1000
-                                       Value=@Result.Description
+                                       Value=@Transaction.Description
                                        Required=true />
                         </div>
                     </Content>
@@ -44,7 +44,7 @@
                             <SelectInput Property=@nameof(RegisterTransaction.Command.Type)
                                          Label="Type"
                                          Source=@(Enum.GetValues<TransactionType>().ToDictionary(i=>i.ToString(), i=>i.ToString()))
-                                         Value=@Result.Type
+                                         Value=@Transaction.Type.ToString()
                                          Required=true>
                             </SelectInput>
                         </div>
@@ -53,12 +53,12 @@
                                        Label="Number"
                                        Placeholder="Enter number"
                                        MaxLenght=50
-                                       Value=@Result.Number />
+                                       Value=@Transaction.Number />
                         </div>
                         <div class="col-4">
                             <DateInput Property=@nameof(RegisterTransaction.Command.IssuedAt)
                                        Label="Issued at"
-                                       Value=@Result.IssuedAt.ToString("yyyy-MM-dd")
+                                       Value=@Transaction.IssuedAt?.ToString("yyyy-MM-dd")
                                        Required=true />
                         </div>
                     </Content>
@@ -69,7 +69,7 @@
                             <SelectInput Property=@nameof(RegisterTransaction.Command.Currency)
                                          Label="Currency"
                                          Source=@(Enum.GetValues<Currency>().ToDictionary(i=>i.ToString(), i=>i.ToString()))
-                                         Value=@Result.Currency
+                                         Value=@Transaction.Currency.ToString()
                                          Required=true />
                         </div>
                         <div class="col-3">
@@ -79,7 +79,7 @@
                                          Prefix="$"
                                          Min=0.01m
                                          Step=0.01m
-                                         Value=@Result.SubTotal
+                                         Value=@Transaction.SubTotal
                                          Required=true />
                         </div>
                         <div class="col-3">
@@ -89,7 +89,7 @@
                                          Prefix="$"
                                          Min=0
                                          Step=0.01m
-                                         Value=@Result.Taxes
+                                         Value=@Transaction.Taxes
                                          Required=true />
                         </div>
                         <div class="col-3">
@@ -99,7 +99,7 @@
                                          Prefix="$"
                                          Min=0.01m
                                          Step=0.01m
-                                         Value=@Result.Total
+                                         Value=@Transaction.Total
                                          Readonly=true />
                         </div>
                     </Content>
@@ -111,5 +111,5 @@
 
 @code {
     [Parameter, EditorRequired]
-    public GetTransaction.Result Result { get; set; } = default!;
+    public Transaction Transaction { get; set; } = default!;
 }

@@ -3,8 +3,10 @@ using Infrastructure;
 using MassTransit;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
+using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Infrastructure.Ui;
 using WebAPI.Proformas;
 
@@ -41,33 +43,9 @@ public static class RegisterTransaction
         }
     }
 
-    public class Handler
-    {
-        private readonly ApplicationDbContext _context;
-
-        public Handler(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
-        public Task<Result> Handle(Command command)
-        {
-            var transaction = new Transaction(NewId.Next().ToSequentialGuid(), command.Type,
-                command.Description, command.SubTotal, command.Taxes, command.Currency, command.Number, command.IssuedAt, command.CreatedAt);
-
-            _context.Set<Transaction>().Add(transaction);
-
-            return Task.FromResult(new Result()
-            {
-                TransactionId = transaction.TransactionId
-            });
-        }
-    }
-
-
     public static async Task<Ok<Result>> Handle(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
+    [FromServices] ApplicationDbContext dbContext,
     [FromServices] IClock clock,
     [FromBody] Command command)
     {
@@ -75,7 +53,18 @@ public static class RegisterTransaction
 
         new Validator().ValidateAndThrow(command);
 
-        var result = await behavior.Handle(() => handler.Handle(command));
+        var result = await behavior.Handle(() =>
+        {
+            var transaction = new Transaction(NewId.Next().ToSequentialGuid(), command.Type,
+    command.Description, command.SubTotal, command.Taxes, command.Currency, command.Number, command.IssuedAt, command.CreatedAt);
+
+            dbContext.Set<Transaction>().Add(transaction);
+
+            return Task.FromResult(new Result()
+            {
+                TransactionId = transaction.TransactionId
+            });
+        });
 
         return TypedResults.Ok(result);
     }
@@ -87,13 +76,13 @@ public static class RegisterTransaction
 
     public static async Task<RazorComponentResult> HandleAction(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
-    [FromServices] ListTransactions.Runner runner,
+    [FromServices] ApplicationDbContext dbContext,
+    [FromServices] SqlKataQueryRunner runner,
     [FromBody] Command command,
     [FromServices] IClock clock,
     HttpContext context)
     {
-        var result = await Handle(behavior, handler, clock, command);
+        var result = await Handle(behavior, dbContext, clock, command);
 
         context.Response.Headers.TriggerShowRegisterSuccessMessage($"transaction", result.Value!.TransactionId);
 

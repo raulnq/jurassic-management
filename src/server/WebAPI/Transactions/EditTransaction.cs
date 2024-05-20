@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.Ui;
@@ -34,18 +35,19 @@ public static class EditTransaction
         }
     }
 
-    public class Handler
+    public static async Task<Ok> Handle(
+    [FromServices] TransactionBehavior behavior,
+    [FromServices] ApplicationDbContext dbContext,
+    [FromRoute] Guid transactionId,
+    [FromBody] Command command)
     {
-        private readonly ApplicationDbContext _context;
+        command.TransactionId = transactionId;
 
-        public Handler(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        new Validator().ValidateAndThrow(command);
 
-        public async Task Handle(Command command)
+        await behavior.Handle(async () =>
         {
-            var transaction = await _context.Get<Transaction>(command.TransactionId);
+            var transaction = await dbContext.Get<Transaction>(command.TransactionId);
 
             transaction.Edit(command.Type,
                 command.Description,
@@ -54,45 +56,31 @@ public static class EditTransaction
                 command.Currency,
                 command.Number,
                 command.IssuedAt);
-        }
-    }
-
-    public static async Task<Ok> Handle(
-    [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
-    [FromRoute] Guid transactionId,
-    [FromBody] Command command)
-    {
-        command.TransactionId = transactionId;
-
-        new Validator().ValidateAndThrow(command);
-
-        await behavior.Handle(() => handler.Handle(command));
+        });
 
         return TypedResults.Ok();
     }
 
     public static async Task<RazorComponentResult> HandlePage(
-    [FromServices] GetTransaction.Runner runner,
+    [FromServices] ApplicationDbContext dbContext,
     [FromRoute] Guid transactionId)
     {
-        var result = await runner.Run(new GetTransaction.Query() { TransactionId = transactionId });
+        var transaction = await dbContext.Set<Transaction>().AsNoTracking().FirstAsync(t => t.TransactionId == transactionId);
 
-        return new RazorComponentResult<EditTransactionPage>(new { Result = result });
+        return new RazorComponentResult<EditTransactionPage>(new { Transaction = transaction });
     }
 
     public static async Task<RazorComponentResult> HandleAction(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
-    [FromServices] GetTransaction.Runner runner,
+    [FromServices] ApplicationDbContext dbContext,
     [FromRoute] Guid transactionId,
     [FromBody] Command command,
     HttpContext context)
     {
-        await Handle(behavior, handler, transactionId, command);
+        await Handle(behavior, dbContext, transactionId, command);
 
         context.Response.Headers.TriggerShowEditSuccessMessage($"transaction", command.TransactionId);
 
-        return await HandlePage(runner, command.TransactionId);
+        return await HandlePage(dbContext, command.TransactionId);
     }
 }

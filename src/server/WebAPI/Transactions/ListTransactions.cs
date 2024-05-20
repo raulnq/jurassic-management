@@ -28,38 +28,30 @@ public static class ListTransactions
         public string Type { get; set; } = default!;
     }
 
-    public class Runner : BaseRunner
-    {
-        public Runner(SqlKataQueryRunner queryRunner) : base(queryRunner) { }
-
-        public Task<ListResults<Result>> Run(Query query)
-        {
-            return _queryRunner.List<Query, Result>((qf) =>
-            {
-                var statement = qf.Query(Tables.Transactions);
-
-                if (!string.IsNullOrEmpty(query.Type))
-                {
-                    statement = statement.WhereLike(Tables.Transactions.Field(nameof(Transaction.Type)), query.Type);
-                }
-                return statement;
-            }, query);
-        }
-    }
-
     public static async Task<Ok<ListResults<Result>>> Handle(
-    [FromServices] Runner runner,
+    [FromServices] SqlKataQueryRunner runner,
     [AsParameters] Query query)
     {
-        return TypedResults.Ok(await runner.Run(query));
+        var result = await runner.List<Query, Result>((qf) =>
+        {
+            var statement = qf.Query(Tables.Transactions);
+
+            if (!string.IsNullOrEmpty(query.Type))
+            {
+                statement = statement.WhereLike(Tables.Transactions.Field(nameof(Transaction.Type)), query.Type);
+            }
+            return statement;
+        }, query);
+
+        return TypedResults.Ok(result);
     }
 
     public static async Task<RazorComponentResult> HandlePage(
     [AsParameters] Query query,
-    [FromServices] Runner runner)
+    [FromServices] SqlKataQueryRunner runner)
     {
-        var result = await runner.Run(query);
+        var result = await Handle(runner, query);
 
-        return new RazorComponentResult<ListTransactionsPage>(new { Result = result, Query = query });
+        return new RazorComponentResult<ListTransactionsPage>(new { Result = result.Value, Query = query });
     }
 }

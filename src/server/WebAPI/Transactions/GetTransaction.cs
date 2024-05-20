@@ -28,22 +28,14 @@ public static class GetTransaction
         public string Type { get; set; } = default!;
     }
 
-    public class Runner : BaseRunner
-    {
-        public Runner(SqlKataQueryRunner queryRunner) : base(queryRunner) { }
-
-        public Task<Result> Run(Query query)
-        {
-            return _queryRunner.Get<Result>((qf) => qf
-                .Query(Tables.Transactions)
-                .Where(Tables.Transactions.Field(nameof(Transaction.TransactionId)), query.TransactionId));
-        }
-    }
-
     public static async Task<Ok<Result>> Handle(
-    [FromServices] Runner runner,
+    [FromServices] SqlKataQueryRunner runner,
     [FromRoute] Guid transactionId)
     {
-        return TypedResults.Ok(await runner.Run(new Query() { TransactionId = transactionId }));
+        var result = await runner.Get<Result>((qf) => qf
+                .Query(Tables.Transactions)
+                .Where(Tables.Transactions.Field(nameof(Transaction.TransactionId)), transactionId));
+
+        return TypedResults.Ok(result);
     }
 }

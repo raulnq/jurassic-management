@@ -20,14 +20,6 @@ public static class Endpoints
 
     public const string UploadTitle = "Upload";
 
-    public static string GetEdit(Guid transactionId)
-    {
-        return Edit.Replace("{transactionId}", transactionId.ToString());
-    }
-    public static string GetUpload(Guid transactionId)
-    {
-        return Upload.Replace("{transactionId}", transactionId.ToString());
-    }
     public static void RegisterTransactionEndpoints(this WebApplication app)
     {
         var group = app.MapGroup("/transactions")

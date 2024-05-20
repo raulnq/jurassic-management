@@ -45,7 +45,7 @@
                 <RowTemplate>
                     <RowToolbar>
                         <Actions>
-                            <ActionLink HtmxProps=@(new HtmxProps(Endpoints.GetEdit(@item.TransactionId), $"#{WebAPI.Users.MainPage.Workspace}"))
+                            <ActionLink HtmxProps=@(new HtmxProps(Endpoints.Edit, $"#{WebAPI.Users.MainPage.Workspace}"){Vals=$$"""{"transactionId":"{{item.TransactionId}}"}"""})
                                         Icon=@Icons.Edit />
                         </Actions>
                     </RowToolbar>
