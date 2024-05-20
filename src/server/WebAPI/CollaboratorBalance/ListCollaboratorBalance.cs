@@ -60,13 +60,32 @@ public static class ListCollaboratorBalance
         }
     }
 
-    public class Runner : BaseRunner
+    public static async Task<RazorComponentResult> HandlePage(
+    [AsParameters] Query query,
+    [FromServices] ApplicationDbContext dbContext,
+    [FromServices] SqlKataQueryRunner runner)
     {
-        public Runner(SqlKataQueryRunner queryRunner) : base(queryRunner) { }
+        var result = new List<Result>();
 
-        public Task<List<Result>> Run(Query query)
+        if (!string.IsNullOrEmpty(query.StringStart))
         {
-            return _queryRunner.List<Result>(qf =>
+            if (DateTime.TryParse(query.StringStart, out DateTime dts))
+            {
+                query.Start = dts;
+            }
+        }
+
+        if (!string.IsNullOrEmpty(query.StringEnd))
+        {
+            if (DateTime.TryParse(query.StringEnd, out DateTime dts))
+            {
+                query.End = dts;
+            }
+        }
+
+        if (!string.IsNullOrEmpty(query.Currency) && query.CollaboratorId != Guid.Empty)
+        {
+            result = await runner.List<Result>(qf =>
             {
                 var statement = qf
                 .Query(Tables.VwCollaboratorBalance)
@@ -93,42 +112,12 @@ public static class ListCollaboratorBalance
                 return statement;
             });
         }
-    }
-
-    public static async Task<RazorComponentResult> HandlePage(
-    [AsParameters] Query query,
-    [FromServices] GetCollaboratorBalance.Runner getBalanceRunner,
-    [FromServices] ApplicationDbContext dbContext,
-    [FromServices] Runner runner)
-    {
-        var result = new List<Result>();
-
-        if (!string.IsNullOrEmpty(query.StringStart))
-        {
-            if (DateTime.TryParse(query.StringStart, out DateTime dts))
-            {
-                query.Start = dts;
-            }
-        }
-
-        if (!string.IsNullOrEmpty(query.StringEnd))
-        {
-            if (DateTime.TryParse(query.StringEnd, out DateTime dts))
-            {
-                query.End = dts;
-            }
-        }
-
-        if (!string.IsNullOrEmpty(query.Currency) && query.CollaboratorId != Guid.Empty)
-        {
-            result = await runner.Run(query);
-        }
 
         var startBalance = 0m;
 
         if (query.Start.HasValue && !string.IsNullOrEmpty(query.Currency))
         {
-            startBalance = (await getBalanceRunner.Run(new GetCollaboratorBalance.Query() { Currency = query.Currency, End = query.Start.Value.AddDays(-1) })).Total;
+            startBalance = (await new GetCollaboratorBalance.Runner(runner).Run(new GetCollaboratorBalance.Query() { Currency = query.Currency, End = query.Start.Value.AddDays(-1) })).Total;
         }
 
         var endBalance = startBalance;

@@ -69,7 +69,6 @@ builder.Services.AddProformaDocuments(builder.Configuration);
 builder.Services.AddTransactions(builder.Configuration);
 builder.Services.AddUsers();
 builder.Services.AddJiraProfiles(builder.Configuration);
-builder.Services.AddCollaboratorBalance();
 builder.Services.AddSingleton<IClock>(new SystemClock());
 builder.Services.AddExceptionHandler<DefaultExceptionHandler>();
 builder.Services.AddRazorComponents();

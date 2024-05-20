@@ -13,7 +13,7 @@
         <FormRow>
             <Content>
                 <div class="col-3">
-                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}",Swap.OuterHTML,$"#{Targets.List}"){ Include=$"#{nameof(ListCollaboratorBalance.Query.CollaboratorId)}, #{nameof(ListCollaboratorBalance.Query.StringEnd)}, #{nameof(ListCollaboratorBalance.Query.StringStart)}"})
+                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{List}",Swap.OuterHTML,$"#{List}"){ Include=$"#{nameof(ListCollaboratorBalance.Query.CollaboratorId)}, #{nameof(ListCollaboratorBalance.Query.StringEnd)}, #{nameof(ListCollaboratorBalance.Query.StringStart)}"})
                                   Label="Status"
                                   Property=@(nameof(ListCollaboratorBalance.Query.Currency))
                                   Query=@Query
@@ -21,7 +21,7 @@
                                   Source=@(Enum.GetValues<Currency>().ToDictionary(i=>i.ToString(), i=>i.ToString())) />
                 </div>
                 <div class="col-3">
-                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}",Swap.OuterHTML,$"#{Targets.List}"){ Include=$"#{nameof(ListCollaboratorBalance.Query.Currency)}, #{nameof(ListCollaboratorBalance.Query.StringEnd)}, #{nameof(ListCollaboratorBalance.Query.StringStart)}"})
+                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{List}",Swap.OuterHTML,$"#{List}"){ Include=$"#{nameof(ListCollaboratorBalance.Query.Currency)}, #{nameof(ListCollaboratorBalance.Query.StringEnd)}, #{nameof(ListCollaboratorBalance.Query.StringStart)}"})
                                   Property=@(nameof(ListCollaboratorBalance.Query.CollaboratorId))
                                   Query=@Query
                                   Label="Collaborator"
@@ -30,19 +30,19 @@
                                   Source=@(Collaborators.ToDictionary(c=>c.CollaboratorId, c=>c.Name)) />
                 </div>
                 <div class="col-3">
-                    <DateFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}",Swap.OuterHTML,$"#{Targets.List}"){ Include=$"#{nameof(ListCollaboratorBalance.Query.Currency)}, #{nameof(ListCollaboratorBalance.Query.StringEnd)}, #{nameof(ListCollaboratorBalance.Query.CollaboratorId)}"})
+                    <DateFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{List}",Swap.OuterHTML,$"#{List}"){ Include=$"#{nameof(ListCollaboratorBalance.Query.Currency)}, #{nameof(ListCollaboratorBalance.Query.StringEnd)}, #{nameof(ListCollaboratorBalance.Query.CollaboratorId)}"})
                                 Property=@(nameof(ListCollaboratorBalance.Query.StringStart))
                                 Query=@Query />
                 </div>
                 <div class="col-3">
-                    <DateFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}",Swap.OuterHTML,$"#{Targets.List}"){ Include=$"#{nameof(ListCollaboratorBalance.Query.Currency)}, #{nameof(ListCollaboratorBalance.Query.StringStart)}, #{nameof(ListCollaboratorBalance.Query.CollaboratorId)}"})
+                    <DateFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{List}",Swap.OuterHTML,$"#{List}"){ Include=$"#{nameof(ListCollaboratorBalance.Query.Currency)}, #{nameof(ListCollaboratorBalance.Query.StringStart)}, #{nameof(ListCollaboratorBalance.Query.CollaboratorId)}"})
                                 Property=@(nameof(ListCollaboratorBalance.Query.StringEnd))
                                 Query=@Query />
                 </div>
 
             </Content>
         </FormRow>
-        <div id=@Targets.List>
+        <div id=@List>
             <DataTable TResult=ListCollaboratorBalance.Result
                        Result=@Result
                        Context="item">
@@ -94,4 +94,6 @@
     public decimal EndBalance { get; set; } = default!;
     [Parameter, EditorRequired]
     public IEnumerable<Collaborator> Collaborators { get; set; } = default!;
+
+    public const string List = "collaborator-balance-list-target";
 }
