@@ -52,9 +52,9 @@ public static class EditCollaborator
         [FromServices] ApplicationDbContext dbContext,
         [FromRoute] Guid collaboratorId)
     {
-        var result = await dbContext.Set<Collaborator>().AsNoTracking().FirstAsync(cr => cr.CollaboratorId == collaboratorId);
+        var collaborator = await dbContext.Set<Collaborator>().AsNoTracking().FirstAsync(cr => cr.CollaboratorId == collaboratorId);
 
-        return new RazorComponentResult<EditCollaboratorPage>(new { Result = result });
+        return new RazorComponentResult<EditCollaboratorPage>(new { Collaborator = collaborator });
     }
 
     public static async Task<RazorComponentResult> HandleAction(

@@ -1,7 +1,7 @@
 ﻿@using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
 
-<ModalForm HtmxProps=@(new HtmxProps(Endpoints.GetEdit(Result.ClientId, Result.ProjectId), $"#{Targets.List}", Swap.OuterHTML))
+<ModalForm HtmxProps=@(new HtmxProps(Endpoints.Edit, $"#{ListProjectsPage.List}", Swap.OuterHTML){Vals=$$"""{"clientId":"{{Project.ClientId}}", "projectId":"{{Project.ProjectId}}"}"""})
            Title=@Endpoints.EditTitle>
     <Content>
         <TextInput Property=@nameof(EditProject.Command.Name)
@@ -9,11 +9,11 @@
                    Placeholder="Enter name"
                    MaxLenght=100
                    Required=true
-                   Value=@Result.Name />
+                   Value=@Project.Name />
     </Content>
 </ModalForm>
 
 @code {
     [Parameter, EditorRequired]
-    public GetProject.Result Result { get; set; } = default!;
+    public Project Project { get; set; } = default!;
 }

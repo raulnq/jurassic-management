@@ -60,7 +60,7 @@
     <Toast Id="success-toast" Type=Toast.ToastType.Success />
     <Toast Id="error-toast" Type=Toast.ToastType.Error />
     <div id="modal" class="modal fade">
-        <div id=@(Targets.Dialog.Replace("#", "")) class="modal-dialog"></div>
+        <div id=@Dialog class="modal-dialog"></div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script>
@@ -95,7 +95,7 @@
             })
 
             htmx.on("hidden.bs.modal", () => {
-                document.getElementById("dialog").innerHTML = ""
+                document.getElementById(@Dialog).innerHTML = ""
             })
         })()
 
@@ -128,4 +128,6 @@
 </html>
 @code {
     public const string Workspace = "workspace";
+
+    public const string Dialog = "dialog";
 }

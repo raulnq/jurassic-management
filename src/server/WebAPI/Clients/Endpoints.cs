@@ -16,11 +16,6 @@ public static class Endpoints
 
     public const string EditTitle = "Edit client";
 
-    public static string GetEdit(Guid clientId)
-    {
-        return Edit.Replace("{clientId}", clientId.ToString());
-    }
-
     public static void RegisterClientEndpoints(this WebApplication app)
     {
         var group = app.MapGroup("/clients")

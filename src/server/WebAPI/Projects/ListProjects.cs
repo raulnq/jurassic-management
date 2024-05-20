@@ -46,10 +46,9 @@ public static class ListProjects
     }
 
     public static async Task<Ok<ListResults<Result>>> Handle(
-    [FromServices] Runner runner,
-    [FromRoute] Guid clientId,
-    [AsParameters] Query query
-        )
+        [FromServices] Runner runner,
+        [FromRoute] Guid clientId,
+        [AsParameters] Query query)
     {
         query.ClientId = clientId;
 
@@ -57,12 +56,12 @@ public static class ListProjects
     }
 
     public static async Task<RazorComponentResult> HandlePage(
-    [AsParameters] Query query,
-    [FromRoute] Guid clientId,
-    [FromServices] Runner runner)
+        [AsParameters] Query query,
+        [FromRoute] Guid clientId,
+        [FromServices] Runner runner)
     {
-        query.ClientId = clientId;
-        var result = await runner.Run(query);
-        return new RazorComponentResult<ListProjectsPage>(new { Result = result, Query = query });
+        var result = await Handle(runner, clientId, query);
+
+        return new RazorComponentResult<ListProjectsPage>(new { Result = result.Value, Query = query });
     }
 }

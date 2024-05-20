@@ -1,7 +1,9 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
+using WebAPI.Collaborators;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.Ui;
 using WebAPI.Projects;
@@ -44,48 +46,36 @@ public static class EditClient
         }
     }
 
-    public class Handler
+    public static async Task<Ok> Handle(
+        [FromServices] TransactionBehavior behavior,
+        [FromServices] ApplicationDbContext dbContext,
+        [FromRoute] Guid clientId,
+        [FromBody] Command command)
     {
-        private readonly ApplicationDbContext _context;
+        command.ClientId = clientId;
 
-        public Handler(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        new Validator().ValidateAndThrow(command);
 
-        public async Task Handle(Command command)
+        await behavior.Handle(async () =>
         {
-            var client = await _context.Get<Client>(command.ClientId);
+            var client = await dbContext.Get<Client>(command.ClientId);
 
             client.Edit(command.Name!, command.PhoneNumber, command.DocumentNumber, command.Address);
 
             client.EditExpenses(command.TaxesExpensesPercentage, command.AdministrativeExpensesPercentage, command.BankingExpensesPercentage, command.MinimumBankingExpenses);
 
             client.EditPenalty(command.PenaltyMinimumHours, command.PenaltyAmount);
-        }
-    }
-
-    public static async Task<Ok> Handle(
-    [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
-    [FromRoute] Guid clientId,
-    [FromBody] Command command)
-    {
-        command.ClientId = clientId;
-
-        new Validator().ValidateAndThrow(command);
-
-        await behavior.Handle(() => handler.Handle(command));
+        });
 
         return TypedResults.Ok();
     }
 
     public static async Task<RazorComponentResult> HandlePage(
-    [FromServices] GetClient.Runner getClientRunner,
-    [FromServices] ListProjects.Runner listProjectsRunner,
-    [FromRoute] Guid clientId)
+        [FromServices] ApplicationDbContext dbContext,
+        [FromServices] ListProjects.Runner listProjectsRunner,
+        [FromRoute] Guid clientId)
     {
-        var getClientResult = await getClientRunner.Run(new GetClient.Query() { ClientId = clientId });
+        var client = await dbContext.Set<Client>().AsNoTracking().FirstAsync(c => c.ClientId == clientId);
 
         var listProjectQuery = new ListProjects.Query() { ClientId = clientId };
 
@@ -93,25 +83,24 @@ public static class EditClient
 
         return new RazorComponentResult<EditClientPage>(new
         {
-            GetClientResult = getClientResult,
+            Client = client,
             ListProjectsResult = listProjectResult,
             ListProjectsQuery = listProjectQuery,
         });
     }
 
     public static async Task<RazorComponentResult> HandleAction(
-    [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
-    [FromServices] GetClient.Runner getClientRunner,
-    [FromServices] ListProjects.Runner listProjectsRunner,
-    [FromRoute] Guid clientId,
-    [FromBody] Command command,
-    HttpContext context)
+        [FromServices] TransactionBehavior behavior,
+        [FromServices] ApplicationDbContext dbContext,
+        [FromServices] ListProjects.Runner listProjectsRunner,
+        [FromRoute] Guid clientId,
+        [FromBody] Command command,
+        HttpContext context)
     {
-        await Handle(behavior, handler, clientId, command);
+        await Handle(behavior, dbContext, clientId, command);
 
         context.Response.Headers.TriggerShowEditSuccessMessage("client", command.ClientId);
 
-        return await HandlePage(getClientRunner, listProjectsRunner, command.ClientId);
+        return await HandlePage(dbContext, listProjectsRunner, command.ClientId);
     }
 }

@@ -79,5 +79,5 @@
     [Parameter, EditorRequired]
     public ListInvoices.Query Query { get; set; } = default!;
     [Parameter, EditorRequired]
-    public List<SearchClients.Result> Clients { get; set; } = default!;
+    public IEnumerable<Client> Clients { get; set; } = default!;
 }

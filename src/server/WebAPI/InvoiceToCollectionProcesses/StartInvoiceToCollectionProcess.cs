@@ -3,6 +3,7 @@ using Infrastructure;
 using MassTransit;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using WebAPI.Clients;
 using WebAPI.Collections;
@@ -97,13 +98,13 @@ public static class StartInvoiceToCollectionProcess
     }
 
     public static async Task<RazorComponentResult> HandlePage(
-    [FromServices] SearchClients.Runner runner)
+    [FromServices] ApplicationDbContext dbContext)
     {
-        var result = await runner.Run(new SearchClients.Query() { });
+        var clients = await dbContext.Set<Client>().AsNoTracking().ToListAsync();
 
         return new RazorComponentResult<StartInvoiceToCollectionProcessPage>(new
         {
-            Clients = result
+            Clients = clients
         });
     }
 
@@ -113,7 +114,7 @@ public static class StartInvoiceToCollectionProcess
     [FromServices] RegisterCollection.Handler registerCollectionHandler,
     [FromServices] ListInvoices.Runner listInvoicesRunner,
     [FromServices] ListCollections.Runner listCollectionsRunner,
-    [FromServices] SearchClients.Runner searchClientsRunner,
+    [FromServices] ApplicationDbContext dbContext,
     [FromBody] Command command,
     [FromServices] IClock clock,
     HttpContext context)
@@ -122,6 +123,6 @@ public static class StartInvoiceToCollectionProcess
 
         context.Response.Headers.TriggerShowRegisterSuccessMessage($"collection", register.Value!.CollectionId);
 
-        return await ListCollections.HandlePage(new ListCollections.Query() { }, searchClientsRunner, listCollectionsRunner);
+        return await ListCollections.HandlePage(new ListCollections.Query() { }, dbContext, listCollectionsRunner);
     }
 }

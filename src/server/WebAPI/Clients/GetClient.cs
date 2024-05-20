@@ -27,22 +27,14 @@ public static class GetClient
         public decimal MinimumBankingExpenses { get; set; }
     }
 
-    public class Runner : BaseRunner
-    {
-        public Runner(SqlKataQueryRunner queryRunner) : base(queryRunner) { }
-
-        public Task<Result> Run(Query query)
-        {
-            return _queryRunner.Get<Result>((qf) => qf
-                .Query(Tables.Clients)
-                .Where(Tables.Clients.Field(nameof(Client.ClientId)), query.ClientId));
-        }
-    }
-
     public static async Task<Ok<Result>> Handle(
-    [FromServices] Runner runner,
+    [FromServices] SqlKataQueryRunner runner,
     [FromRoute] Guid clientId)
     {
-        return TypedResults.Ok(await runner.Run(new Query() { ClientId = clientId }));
+        var result = await runner.Get<Result>((qf) => qf
+                .Query(Tables.Clients)
+                .Where(Tables.Clients.Field(nameof(Client.ClientId)), clientId));
+
+        return TypedResults.Ok(result);
     }
 }

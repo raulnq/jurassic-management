@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.Ui;
@@ -25,26 +26,9 @@ public static class EditProject
         }
     }
 
-    public class Handler
-    {
-        private readonly ApplicationDbContext _context;
-
-        public Handler(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
-        public async Task Handle(Command command)
-        {
-            var project = await _context.Get<Project>(command.ProjectId);
-
-            project.Edit(command.Name!);
-        }
-    }
-
     public static async Task<Ok> Handle(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
+    [FromServices] ApplicationDbContext dbContext,
     [FromRoute] Guid projectId,
     [FromRoute] Guid clientId,
     [FromBody] Command command)
@@ -53,7 +37,12 @@ public static class EditProject
 
         new Validator().ValidateAndThrow(command);
 
-        await behavior.Handle(() => handler.Handle(command));
+        await behavior.Handle(async () =>
+        {
+            var project = await dbContext.Get<Project>(command.ProjectId);
+
+            project.Edit(command.Name!);
+        });
 
         return TypedResults.Ok();
     }
@@ -61,26 +50,26 @@ public static class EditProject
     public static async Task<RazorComponentResult> HandlePage(
         Guid clientId,
         Guid projectId,
-        GetProject.Runner runner,
+        ApplicationDbContext dbContext,
         HttpContext context)
     {
-        var result = await runner.Run(new GetProject.Query() { ProjectId = projectId });
+        var project = await dbContext.Set<Project>().AsNoTracking().FirstAsync(c => c.ProjectId == projectId);
 
         context.Response.Headers.TriggerOpenModal();
 
-        return new RazorComponentResult<EditProjectPage>(new { Result = result });
+        return new RazorComponentResult<EditProjectPage>(new { Project = project });
     }
 
     public static async Task<RazorComponentResult> HandleAction(
         [FromServices] TransactionBehavior behavior,
-        [FromServices] Handler handler,
+        [FromServices] ApplicationDbContext dbContext,
         [FromServices] ListProjects.Runner runner,
         [FromBody] Command command,
         Guid clientId,
         Guid projectId,
         HttpContext context)
     {
-        await Handle(behavior, handler, projectId, clientId, command);
+        await Handle(behavior, dbContext, projectId, clientId, command);
 
         context.Response.Headers.TriggerShowEditSuccessMessageAndCloseModal("project", command.ProjectId);
 

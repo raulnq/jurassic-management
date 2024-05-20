@@ -27,38 +27,30 @@ public static class ListClients
         public decimal MinimumBankingExpenses { get; set; }
     }
 
-    public class Runner : BaseRunner
-    {
-        public Runner(SqlKataQueryRunner queryRunner) : base(queryRunner) { }
-
-        public Task<ListResults<Result>> Run(Query query)
-        {
-            return _queryRunner.List<Query, Result>((qf) =>
-            {
-                var statement = qf.Query(Tables.Clients);
-
-                if (!string.IsNullOrEmpty(query.Name))
-                {
-                    statement = statement.WhereLike(Tables.Clients.Field(nameof(Client.Name)), $"%{query.Name}%");
-                }
-                return statement;
-            }, query);
-        }
-    }
-
     public static async Task<Ok<ListResults<Result>>> Handle(
-    [FromServices] Runner runner,
+    [FromServices] SqlKataQueryRunner runner,
     [AsParameters] Query query)
     {
-        return TypedResults.Ok(await runner.Run(query));
+        var result = await runner.List<Query, Result>((qf) =>
+        {
+            var statement = qf.Query(Tables.Clients);
+
+            if (!string.IsNullOrEmpty(query.Name))
+            {
+                statement = statement.WhereLike(Tables.Clients.Field(nameof(Client.Name)), $"%{query.Name}%");
+            }
+            return statement;
+        }, query);
+
+        return TypedResults.Ok(result);
     }
 
     public static async Task<RazorComponentResult> HandlePage(
     [AsParameters] Query query,
-    [FromServices] Runner runner)
+    [FromServices] SqlKataQueryRunner runner)
     {
-        var result = await runner.Run(query);
+        var result = await Handle(runner, query);
 
-        return new RazorComponentResult<ListClientsPage>(new { Result = result, Query = query });
+        return new RazorComponentResult<ListClientsPage>(new { Result = result.Value, Query = query });
     }
 }

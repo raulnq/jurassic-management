@@ -7,7 +7,7 @@
              Target=@($"#{WebAPI.Users.MainPage.Workspace}") />
 <Section>
     <Content>
-        <Form HtmxProps=@(new HtmxProps(Endpoints.Edit, $"#{WebAPI.Users.MainPage.Workspace}"){Vals=$$"""{"collaboratorId":"{{@Result.CollaboratorId}}"}"""})>
+        <Form HtmxProps=@(new HtmxProps(Endpoints.Edit, $"#{WebAPI.Users.MainPage.Workspace}"){Vals=$$"""{"collaboratorId":"{{Collaborator.CollaboratorId}}"}"""})>
             <Content>
                 <FormRow>
                     <Content>
@@ -15,7 +15,7 @@
                             <TextInput Property=@nameof(EditCollaborator.Command.Name)
                                        Label="Name"
                                        Placeholder="Enter name"
-                                       Value=@Result.Name
+                                       Value=@Collaborator.Name
                                        MaxLenght=100
                                        Required=true />
                         </div>
@@ -31,7 +31,7 @@
                                          Max=100
                                          Min=0
                                          Step=0.01m
-                                         Value=@Result.WithholdingPercentage
+                                         Value=@Collaborator.WithholdingPercentage
                                          Required=true />
                         </div>
                     </Content>
@@ -43,5 +43,5 @@
 
 @code {
     [Parameter, EditorRequired]
-    public Collaborator Result { get; set; } = default!;
+    public Collaborator Collaborator { get; set; } = default!;
 }

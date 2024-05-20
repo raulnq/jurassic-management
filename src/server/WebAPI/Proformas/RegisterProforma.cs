@@ -3,6 +3,7 @@ using Infrastructure;
 using MassTransit;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using WebAPI.Clients;
 using WebAPI.Infrastructure.EntityFramework;
@@ -86,13 +87,13 @@ public static class RegisterProforma
     }
 
     public static async Task<RazorComponentResult> HandlePage(
-        [FromServices] SearchClients.Runner runner)
+        [FromServices] ApplicationDbContext dbContext)
     {
-        var result = await runner.Run(new SearchClients.Query() { });
+        var clients = await dbContext.Set<Client>().AsNoTracking().ToListAsync();
 
         return new RazorComponentResult<RegisterProformaPage>(new
         {
-            Clients = result
+            Clients = clients
         });
     }
 

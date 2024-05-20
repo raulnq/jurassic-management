@@ -3,6 +3,7 @@ using Infrastructure;
 using MassTransit;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using WebAPI.Clients;
 using WebAPI.Infrastructure.EntityFramework;
@@ -97,13 +98,13 @@ public static class StartProformaToInvoiceProcess
     }
 
     public static async Task<RazorComponentResult> HandlePage(
-    [FromServices] SearchClients.Runner runner)
+    [FromServices] ApplicationDbContext dbContext)
     {
-        var result = await runner.Run(new SearchClients.Query() { });
+        var clients = await dbContext.Set<Client>().AsNoTracking().ToListAsync();
 
         return new RazorComponentResult<StartProformaToInvoiceProcessPage>(new
         {
-            Clients = result
+            Clients = clients
         });
     }
 
@@ -113,7 +114,7 @@ public static class StartProformaToInvoiceProcess
     [FromServices] ListProformas.Runner listProformasRunner,
     [FromServices] RegisterInvoice.Handler registerInvoiceHandler,
     [FromServices] ListInvoices.Runner listInvoicesRunner,
-    [FromServices] SearchClients.Runner searchClientsRunner,
+    [FromServices] ApplicationDbContext dbContext,
     [FromBody] Command command,
     [FromServices] IClock clock,
     HttpContext context)
@@ -122,6 +123,6 @@ public static class StartProformaToInvoiceProcess
 
         context.Response.Headers.TriggerShowRegisterSuccessMessage($"invoice", register.Value!.InvoiceId);
 
-        return await ListInvoices.HandlePage(new ListInvoices.Query() { }, searchClientsRunner, listInvoicesRunner);
+        return await ListInvoices.HandlePage(new ListInvoices.Query() { }, dbContext, listInvoicesRunner);
     }
 }

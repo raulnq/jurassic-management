@@ -30,32 +30,9 @@ public static class AddProject
         }
     }
 
-    public class Handler
-    {
-        private readonly ApplicationDbContext _context;
-
-        public Handler(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
-        public Task<Result> Handle(Command command)
-        {
-            var project = new Project(NewId.Next().ToSequentialGuid(), command.ClientId, command.Name!);
-
-            _context.Set<Project>().Add(project);
-
-            return Task.FromResult(new Result()
-            {
-                ProjectId = project.ProjectId
-            });
-        }
-    }
-
-
     public static async Task<Ok<Result>> Handle(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
+    [FromServices] ApplicationDbContext dbContext,
     [FromRoute] Guid clientId,
     [FromBody] Command command)
     {
@@ -63,7 +40,17 @@ public static class AddProject
 
         new Validator().ValidateAndThrow(command);
 
-        var result = await behavior.Handle(() => handler.Handle(command));
+        var result = await behavior.Handle(() =>
+        {
+            var project = new Project(NewId.Next().ToSequentialGuid(), command.ClientId, command.Name!);
+
+            dbContext.Set<Project>().Add(project);
+
+            return Task.FromResult(new Result()
+            {
+                ProjectId = project.ProjectId
+            });
+        });
 
         return TypedResults.Ok(result);
     }
@@ -77,13 +64,13 @@ public static class AddProject
 
     public static async Task<RazorComponentResult> HandleAction(
         [FromServices] TransactionBehavior behavior,
-        [FromServices] Handler handler,
+        [FromServices] ApplicationDbContext dbContext,
         [FromServices] ListProjects.Runner runner,
         [FromBody] Command command,
         Guid clientId,
         HttpContext context)
     {
-        var result = await Handle(behavior, handler, clientId, command);
+        var result = await Handle(behavior, dbContext, clientId, command);
 
         context.Response.Headers.TriggerShowRegisterSuccessMessageAndCloseModal("project", result.Value!.ProjectId);
 

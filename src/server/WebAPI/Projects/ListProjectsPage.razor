@@ -2,7 +2,7 @@
 @using WebAPI.Infrastructure.Ui;
 @using WebAPI.Projects;
 
-<div id=@Targets.List>
+<div id=@List>
     <DataTable TResult=ListProjects.Result
                Result=@Result.Items
                Context="item">
@@ -13,7 +13,7 @@
         <RowTemplate>
             <RowToolbar>
                 <Actions>
-                    <ActionLink HtmxProps=@(new HtmxProps(Endpoints.GetEdit(item.ClientId, item.ProjectId), Infrastructure.Ui.Targets.Dialog))
+                    <ActionLink HtmxProps=@(new HtmxProps(Endpoints.Edit, Infrastructure.Ui.Targets.Dialog){Vals=$$"""{"clientId":"{{item.ClientId}}", "projectId":"{{item.ProjectId}}"}"""})
                                 Icon=@Icons.Edit />
                 </Actions>
             </RowToolbar>
@@ -22,7 +22,7 @@
     </DataTable>
     <Pagination Query=@Query
                 Result=@Result
-                HtmxProps=@(new HtmxProps(Endpoints.GetList(Query.ClientId!.Value),$"#{Targets.List}", Swap.OuterHTML)) />
+                HtmxProps=@(new HtmxProps(Endpoints.List,$"#{List}", Swap.OuterHTML){Vals=$$"""{"clientId":"{{Query.ClientId}}"}"""}) />
 </div>
 
 @code {
@@ -31,4 +31,5 @@
     [Parameter, EditorRequired]
     public ListProjects.Query Query { get; set; } = default!;
 
+    public const string List = "project-list-target";
 }

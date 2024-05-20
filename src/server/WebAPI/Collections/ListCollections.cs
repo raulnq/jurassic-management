@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WebAPI.Clients;
+using WebAPI.CollaboratorRoles;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.SqlKata;
 
@@ -64,10 +66,10 @@ public static class ListCollections
 
     public static async Task<RazorComponentResult> HandlePage(
     [AsParameters] Query query,
-    [FromServices] SearchClients.Runner searchClientsRunner,
+    [FromServices] ApplicationDbContext dbContext,
     [FromServices] Runner runner)
     {
-        var clients = await searchClientsRunner.Run(new SearchClients.Query() { });
+        var clients = await dbContext.Set<Client>().AsNoTracking().ToListAsync();
 
         var result = await runner.Run(query);
 

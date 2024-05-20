@@ -5,10 +5,10 @@
 
 <Heading Text=@Endpoints.Title />
 <Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new(Endpoints.ListTitle, Clients.Endpoints.List.AddListParameters()), new(Endpoints.EditTitle) })
-             Target=@(Infrastructure.Ui.Targets.Workspace) />
+             Target=@($"#{WebAPI.Users.MainPage.Workspace}") />
 <Section>
     <Content>
-        <Form HtmxProps=@(new HtmxProps(Clients.Endpoints.GetEdit(GetClientResult.ClientId), Infrastructure.Ui.Targets.Workspace))>
+        <Form HtmxProps=@(new HtmxProps(Clients.Endpoints.Edit, $"#{WebAPI.Users.MainPage.Workspace}"){Vals=$$"""{"clientId":"{{Client.ClientId}}"}"""})>
             <Content>
                 <FormRow>
                     <Content>
@@ -18,7 +18,7 @@
                                        Placeholder="Enter name"
                                        MaxLenght=200
                                        Required=true
-                                       Value=@GetClientResult.Name />
+                                       Value=@Client.Name />
                         </div>
                     </Content>
                 </FormRow>
@@ -30,7 +30,7 @@
                                        Placeholder="Enter phone number"
                                        MaxLenght=50
                                        Required=true
-                                       Value=@GetClientResult.PhoneNumber />
+                                       Value=@Client.PhoneNumber />
                         </div>
                         <div class="col-6">
                             <TextInput Property=@nameof(EditClient.Command.DocumentNumber)
@@ -38,7 +38,7 @@
                                        Placeholder="Enter document number"
                                        MaxLenght=50
                                        Required=true
-                                       Value=@GetClientResult.DocumentNumber />
+                                       Value=@Client.DocumentNumber />
                         </div>
                     </Content>
                 </FormRow>
@@ -50,7 +50,7 @@
                                        Placeholder="Enter address"
                                        MaxLenght=500
                                        Required=true
-                                       Value=@GetClientResult.Address />
+                                       Value=@Client.Address />
                         </div>
                     </Content>
                 </FormRow>
@@ -64,7 +64,7 @@
                                          Min=0
                                          Step=0.01m
                                          Required=true
-                                         Value=@GetClientResult.PenaltyMinimumHours />
+                                         Value=@Client.PenaltyMinimumHours />
                         </div>
                         <div class="col-6">
                             <NumberInput Property=@nameof(EditClient.Command.PenaltyAmount)
@@ -74,7 +74,7 @@
                                          Min=0
                                          Step=0.01m
                                          Required=true
-                                         Value=@GetClientResult.PenaltyAmount />
+                                         Value=@Client.PenaltyAmount />
                         </div>
                     </Content>
                 </FormRow>
@@ -89,7 +89,7 @@
                                          Max=100
                                          Step=0.01m
                                          Required=true
-                                         Value=@GetClientResult.TaxesExpensesPercentage />
+                                         Value=@Client.TaxesExpensesPercentage />
                         </div>
                         <div class="col-6">
                             <NumberInput Property=@nameof(EditClient.Command.AdministrativeExpensesPercentage)
@@ -100,7 +100,7 @@
                                          Max=100
                                          Step=0.01m
                                          Required=true
-                                         Value=@GetClientResult.AdministrativeExpensesPercentage />
+                                         Value=@Client.AdministrativeExpensesPercentage />
                         </div>
                     </Content>
                 </FormRow>
@@ -114,7 +114,7 @@
                                          Min=0
                                          Max=100
                                          Step=0.01m
-                                         Value=@GetClientResult.BankingExpensesPercentage
+                                         Value=@Client.BankingExpensesPercentage
                                          Required=true />
                         </div>
                         <div class="col-6">
@@ -124,7 +124,7 @@
                                          Prefix="$"
                                          Min=0
                                          Step=0.01m
-                                         Value=@GetClientResult.MinimumBankingExpenses
+                                         Value=@Client.MinimumBankingExpenses
                                          Required=true />
                         </div>
                     </Content>
@@ -139,7 +139,7 @@
             <Actions>
                 <ActionButton Text=@Projects.Endpoints.AddTitle
                               Icon=@Icons.Add
-                              HtmxProps=@(new HtmxProps(WebAPI.Projects.Endpoints.GetRegister(GetClientResult.ClientId), Infrastructure.Ui.Targets.Dialog)) />
+                              HtmxProps=@(new HtmxProps(WebAPI.Projects.Endpoints.Add, $"#{WebAPI.Users.MainPage.Dialog}"){ Vals=$$"""{"clientId":"{{Client.ClientId}}"}""" }) />
             </Actions>
         </Toolbar>
         <ListProjectsPage Query=@ListProjectsQuery
@@ -149,7 +149,7 @@
 
 @code {
     [Parameter, EditorRequired]
-    public GetClient.Result GetClientResult { get; set; } = default!;
+    public Client Client { get; set; } = default!;
     [Parameter, EditorRequired]
     public ListResults<ListProjects.Result> ListProjectsResult { get; set; } = default!;
     [Parameter, EditorRequired]

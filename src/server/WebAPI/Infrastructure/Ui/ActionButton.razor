@@ -29,21 +29,23 @@ else
         switch (HtmxProps.HttpMethod)
         {
             case "POST":
-                <button type="button"
-                        hx-post=@HtmxProps.Endpoint
-                        hx-ext="json-enc"
-                        hx-target=@HtmxProps.Target
-                        hx-select=@HtmxProps.Select
-                        hx-swap=@HtmxProps.Swap
-                        hx-confirm=@HtmxProps.Confirm
-                        hx-vals=@HtmxProps.Vals
-                        hx-indicator="#action-spinner-@Id"
-                        hx-disabled-elt="#action-button-@Id"
-                        class="@Icon btn btn-primary"
-                        id="action-button-@Id">
-                    @Text
-                    <span id="action-spinner-@Id" class="spinner-border spinner-border-sm htmx-indicator" aria-hidden="true" />
-                </button>
+                <div hx-ext="path-params">
+                    <button type="button"
+                            hx-post=@HtmxProps.Endpoint
+                            hx-ext="json-enc"
+                            hx-target=@HtmxProps.Target
+                            hx-select=@HtmxProps.Select
+                            hx-swap=@HtmxProps.Swap
+                            hx-confirm=@HtmxProps.Confirm
+                            hx-vals=@HtmxProps.Vals
+                            hx-indicator="#action-spinner-@Id"
+                            hx-disabled-elt="#action-button-@Id"
+                            class="@Icon btn btn-primary"
+                            id="action-button-@Id">
+                        @Text
+                        <span id="action-spinner-@Id" class="spinner-border spinner-border-sm htmx-indicator" aria-hidden="true" />
+                    </button>
+                </div>
                 break;
         }
 

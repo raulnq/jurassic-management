@@ -7,7 +7,7 @@
              Target=@($"#{WebAPI.Users.MainPage.Workspace}") />
 <Section>
     <Content>
-        <Form HtmxProps=@(new HtmxProps(Endpoints.Edit, $"#{WebAPI.Users.MainPage.Workspace}"){Vals=$$"""{"collaboratorRoleId":"{{Result.CollaboratorRoleId}}"}"""})>
+        <Form HtmxProps=@(new HtmxProps(Endpoints.Edit, $"#{WebAPI.Users.MainPage.Workspace}"){Vals=$$"""{"collaboratorRoleId":"{{CollaboratorRole.CollaboratorRoleId}}"}"""})>
             <Content>
                 <FormRow>
                     <Content>
@@ -15,7 +15,7 @@
                             <TextInput Property=@nameof(EditCollaboratorRole.Command.Name)
                                        Label="Name"
                                        Placeholder="Enter name"
-                                       Value=@Result.Name
+                                       Value=@CollaboratorRole.Name
                                        Required=true />
                         </div>
                     </Content>
@@ -30,7 +30,7 @@
                                          Max=100
                                          Min=0
                                          Step=0.0001m
-                                         Value=@Result.ProfitPercentage
+                                         Value=@CollaboratorRole.ProfitPercentage
                                          Required=true />
                         </div>
                         <div class="col-6">
@@ -40,7 +40,7 @@
                                          Prefix="$"
                                          Min=0
                                          Step=0.01m
-                                         Value=@Result.FeeAmount
+                                         Value=@CollaboratorRole.FeeAmount
                                          Required=true />
                         </div>
                     </Content>
@@ -52,5 +52,5 @@
 
 @code {
     [Parameter, EditorRequired]
-    public CollaboratorRole Result { get; set; } = default!;
+    public CollaboratorRole CollaboratorRole { get; set; } = default!;
 }

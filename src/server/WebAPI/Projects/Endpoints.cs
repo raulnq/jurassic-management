@@ -16,23 +16,6 @@ public static class Endpoints
 
     public const string EditTitle = "Edit project";
 
-    public static string GetEdit(Guid clientId, Guid projectId)
-    {
-        var temp = Edit.Replace("{clientId}", clientId.ToString());
-
-        return temp.Replace("{projectId}", projectId.ToString());
-    }
-
-    public static string GetRegister(Guid clientId)
-    {
-        return Add.Replace("{clientId}", clientId.ToString());
-    }
-
-    public static string GetList(Guid clientId)
-    {
-        return List.Replace("{clientId}", clientId.ToString());
-    }
-
     public static void RegisterProjectEndpoints(this WebApplication app)
     {
         var group = app.MapGroup("/clients")

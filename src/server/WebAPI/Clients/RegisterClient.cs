@@ -3,6 +3,7 @@ using MassTransit;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Infrastructure.EntityFramework;
+using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Infrastructure.Ui;
 
 namespace WebAPI.Clients;
@@ -45,16 +46,14 @@ public static class RegisterClient
         }
     }
 
-    public class Handler
+    public static async Task<Ok<Result>> Handle(
+        [FromServices] TransactionBehavior behavior,
+        [FromServices] ApplicationDbContext dbContext,
+        [FromBody] Command command)
     {
-        private readonly ApplicationDbContext _context;
+        new Validator().ValidateAndThrow(command);
 
-        public Handler(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
-        public Task<Result> Handle(Command command)
+        var result = await behavior.Handle(() =>
         {
             var client = new Client(NewId.Next().ToSequentialGuid(),
                 command.Name!,
@@ -68,24 +67,13 @@ public static class RegisterClient
                 command.BankingExpensesPercentage,
                 command.MinimumBankingExpenses);
 
-            _context.Set<Client>().Add(client);
+            dbContext.Set<Client>().Add(client);
 
             return Task.FromResult(new Result()
             {
                 ClientId = client.ClientId
             });
-        }
-    }
-
-
-    public static async Task<Ok<Result>> Handle(
-    [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
-    [FromBody] Command command)
-    {
-        new Validator().ValidateAndThrow(command);
-
-        var result = await behavior.Handle(() => handler.Handle(command));
+        });
 
         return TypedResults.Ok(result);
     }
@@ -96,13 +84,13 @@ public static class RegisterClient
     }
 
     public static async Task<RazorComponentResult> HandleAction(
-    [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
-    [FromServices] ListClients.Runner runner,
-    [FromBody] Command command,
-    HttpContext context)
+        [FromServices] TransactionBehavior behavior,
+        [FromServices] ApplicationDbContext dbContext,
+        [FromServices] SqlKataQueryRunner runner,
+        [FromBody] Command command,
+        HttpContext context)
     {
-        var result = await Handle(behavior, handler, command);
+        var result = await Handle(behavior, dbContext, command);
 
         context.Response.Headers.TriggerShowRegisterSuccessMessage("client", result.Value!.ClientId);
 

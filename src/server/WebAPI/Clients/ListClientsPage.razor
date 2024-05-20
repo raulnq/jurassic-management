@@ -4,12 +4,12 @@
 
 <Heading Text=@Endpoints.Title />
 <Breadcrumbs Links=@(new []{new Breadcrumbs.Link(Endpoints.ListTitle)})
-             Target=@(Infrastructure.Ui.Targets.Workspace) />
+             Target=@($"#{WebAPI.Users.MainPage.Workspace}") />
 <Toolbar>
     <Actions>
         <ActionButton Text=@Endpoints.RegisterTitle
                       Icon=@Icons.Add
-                      HtmxProps=@(new HtmxProps(Endpoints.Register, Infrastructure.Ui.Targets.Workspace)) />
+                      HtmxProps=@(new HtmxProps(Endpoints.Register, $"#{WebAPI.Users.MainPage.Workspace}")) />
     </Actions>
 </Toolbar>
 <Section>
@@ -20,11 +20,11 @@
                     <SearchFilter Label="Name"
                                   Property=@(nameof(ListClients.Query.Name))
                                   Query=@Query
-                                  HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}", Swap.OuterHTML, $"#{Targets.List}")) />
+                                  HtmxProps=@(new HtmxProps(Endpoints.List, $"#{List}", Swap.OuterHTML, $"#{List}")) />
                 </div>
             </Content>
         </FormRow>
-        <div id=@Targets.List>
+        <div id=@List>
             <DataTable TResult=ListClients.Result
                        Result=@Result.Items
                        Context="item">
@@ -39,7 +39,7 @@
                     <RowToolbar>
                         <Actions>
                             <ActionLink Icon=@Icons.Edit
-                                        HtmxProps=@(new HtmxProps(Endpoints.GetEdit(item.ClientId), Infrastructure.Ui.Targets.Workspace)) />
+                                        HtmxProps=@(new HtmxProps(Endpoints.Edit, $"#{WebAPI.Users.MainPage.Workspace}"){Vals=$$"""{"clientId":"{{item.ClientId}}"}"""}) />
                         </Actions>
                     </RowToolbar>
                     <td>@item.ClientId</td>
@@ -50,7 +50,7 @@
             </DataTable>
             <Pagination Query=@Query
                         Result=@Result
-                        HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}", Swap.OuterHTML, $"#{Targets.List}"))
+                        HtmxProps=@(new HtmxProps(Endpoints.List, $"#{List}", Swap.OuterHTML, $"#{List}"))
                         Parameters=@(new []{ new KeyValuePair<string, object?>(nameof(Query.Name), Query.Name)}) />
         </div>
     </Content>
@@ -60,4 +60,6 @@
     public ListResults<ListClients.Result> Result { get; set; } = default!;
     [Parameter, EditorRequired]
     public ListClients.Query Query { get; set; } = default!;
+
+    public const string List = "client-list-target";
 }

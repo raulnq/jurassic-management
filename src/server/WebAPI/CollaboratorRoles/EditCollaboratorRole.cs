@@ -54,9 +54,9 @@ public static class EditCollaboratorRole
     [FromServices] ApplicationDbContext dbContext,
     [FromRoute] Guid collaboratorRoleId)
     {
-        var result = await dbContext.Set<CollaboratorRole>().AsNoTracking().FirstAsync(cr => cr.CollaboratorRoleId == collaboratorRoleId);
+        var collaboratorRole = await dbContext.Set<CollaboratorRole>().AsNoTracking().FirstAsync(cr => cr.CollaboratorRoleId == collaboratorRoleId);
 
-        return new RazorComponentResult<EditCollaboratorRolePage>(new { Result = result });
+        return new RazorComponentResult<EditCollaboratorRolePage>(new { CollaboratorRole = collaboratorRole });
     }
 
     public static async Task<RazorComponentResult> HandleAction(
