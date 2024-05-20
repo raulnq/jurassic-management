@@ -36,9 +36,9 @@ public static class ListInvoiceToCollectionProcessItems
 
     public static async Task<RazorComponentResult> HandlePage(
     [AsParameters] Query query,
-    [FromServices] Runner runner)
+    [FromServices] SqlKataQueryRunner runner)
     {
-        var result = await runner.Run(query);
+        var result = await new Runner(runner).Run(query);
         return new RazorComponentResult<ListInvoiceToCollectionProcessItemsPage>(new { Result = result, Query = query });
     }
 }

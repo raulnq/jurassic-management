@@ -64,9 +64,6 @@ builder.Services.AddRebus(builder.Configuration, onCreated: bus =>
 builder.Services.AddProblemDetails();
 
 builder.Services.AddInvoices(builder.Configuration);
-builder.Services.AddInvoiceToCollectionProcesses();
-builder.Services.AddCollections();
-builder.Services.AddProformaToCollaboratorPaymentProcesses();
 builder.Services.AddCollaboratorPayments(builder.Configuration);
 builder.Services.AddProformaDocuments(builder.Configuration);
 builder.Services.AddTransactions(builder.Configuration);

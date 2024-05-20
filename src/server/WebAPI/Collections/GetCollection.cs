@@ -30,42 +30,33 @@ public static class GetCollection
         public string? Currency { get; set; }
     }
 
-    public class Runner : BaseRunner
+    public static async Task<Ok<Result>> Handle(
+    [FromServices] SqlKataQueryRunner runner,
+    [FromRoute] Guid collectionId)
     {
-        public Runner(SqlKataQueryRunner queryRunner) : base(queryRunner) { }
-
-        public Task<Result> Run(Query query)
-        {
-            return _queryRunner.Get<Result>((qf) => qf
+        var result = await runner.Get<Result>((qf) => qf
                 .Query(Tables.Collections)
                 .Select(Tables.Collections.AllFields)
                 .Select(Tables.Clients.Field(nameof(Client.Name), nameof(Result.ClientName)))
                 .Join(Tables.Clients, Tables.Collections.Field(nameof(Collection.ClientId)), Tables.Clients.Field(nameof(Client.ClientId)))
-                .Where(Tables.Collections.Field(nameof(Query.CollectionId)), query.CollectionId));
-        }
-    }
+                .Where(Tables.Collections.Field(nameof(Query.CollectionId)), collectionId));
 
-    public static async Task<Ok<Result>> Handle(
-    [FromServices] Runner runner,
-    [FromRoute] Guid collectionId)
-    {
-        return TypedResults.Ok(await runner.Run(new Query() { CollectionId = collectionId }));
+        return TypedResults.Ok(result);
     }
 
     public static async Task<RazorComponentResult> HandlePage(
-    [FromServices] Runner runner,
-    [FromServices] ListInvoiceToCollectionProcessItems.Runner listInvoiceToCollectionProcessItemsRunner,
+    [FromServices] SqlKataQueryRunner runner,
     [FromRoute] Guid collectionId)
     {
-        var result = await runner.Run(new Query() { CollectionId = collectionId });
+        var result = await Handle(runner, collectionId);
 
         var listInvoiceToCollectionProcessItemsQuery = new ListInvoiceToCollectionProcessItems.Query() { CollectionId = collectionId, PageSize = 5 };
 
-        var listInvoiceToCollectionProcessItemsResult = await listInvoiceToCollectionProcessItemsRunner.Run(listInvoiceToCollectionProcessItemsQuery);
+        var listInvoiceToCollectionProcessItemsResult = await new ListInvoiceToCollectionProcessItems.Runner(runner).Run(listInvoiceToCollectionProcessItemsQuery);
 
         return new RazorComponentResult<GetCollectionPage>(new
         {
-            Result = result,
+            Result = result.Value,
             ListInvoiceToCollectionProcessItemsResult = listInvoiceToCollectionProcessItemsResult,
             ListInvoiceToCollectionProcessItemsQuery = listInvoiceToCollectionProcessItemsQuery,
         });

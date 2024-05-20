@@ -12,8 +12,8 @@
     <MenuItems>
         <MenuItem Text=@Endpoints.ConfirmTitle
                   IsDisabled=@(Result.Status!=CollectionStatus.Pending.ToString())
-                  HtmxProps=@(new HtmxProps(Endpoints.GetConfirm(Result.CollectionId), $"#{WebAPI.Users.MainPage.Dialog}")) />
-        <MenuItem HtmxProps=@(new HtmxProps(Endpoints.GetCancel(Result.CollectionId), $"#{WebAPI.Users.MainPage.Workspace}"){ Confirm = "Are you sure?", HttpMethod="POST"})
+                  HtmxProps=@(new HtmxProps(Endpoints.Confirm, $"#{WebAPI.Users.MainPage.Dialog}"){Vals=$$"""{"collectionId":"{{Result.CollectionId}}"}"""}) />
+        <MenuItem HtmxProps=@(new HtmxProps(Endpoints.Cancel, $"#{WebAPI.Users.MainPage.Workspace}"){ Confirm = "Are you sure?", HttpMethod="POST", Vals=$$"""{"collectionId":"{{Result.CollectionId}}"}"""})
                   IsDisabled=@(Result.Status !=CollectionStatus.Pending.ToString())
                   Text=@Endpoints.CancelTitle />
     </MenuItems>

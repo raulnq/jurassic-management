@@ -1,8 +1,10 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
+using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Infrastructure.Ui;
 using WebAPI.InvoiceToCollectionProcesses;
 
@@ -32,26 +34,9 @@ public static class ConfirmCollection
         }
     }
 
-    public class Handler
-    {
-        private readonly ApplicationDbContext _context;
-
-        public Handler(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
-        public async Task Handle(Command command)
-        {
-            var collection = await _context.Get<Collection>(command.CollectionId);
-
-            collection.Confirm(command.Total, command.Commission, command.Number, command.ConfirmedAt);
-        }
-    }
-
     public static async Task<Ok> Handle(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
+    [FromServices] ApplicationDbContext dbContext,
     [FromRoute] Guid collectionId,
     [FromBody] Command command)
     {
@@ -59,7 +44,12 @@ public static class ConfirmCollection
 
         new Validator().ValidateAndThrow(command);
 
-        await behavior.Handle(() => handler.Handle(command));
+        await behavior.Handle(async () =>
+        {
+            var collection = await dbContext.Get<Collection>(command.CollectionId);
+
+            collection.Confirm(command.Total, command.Commission, command.Number, command.ConfirmedAt);
+        });
 
         return TypedResults.Ok();
     }
@@ -78,17 +68,16 @@ public static class ConfirmCollection
 
     public static async Task<RazorComponentResult> HandleAction(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
-    [FromServices] GetCollection.Runner getCollectionRunner,
-    [FromServices] ListInvoiceToCollectionProcessItems.Runner listInvoiceToCollectionProcessItemsRunner,
+    [FromServices] ApplicationDbContext dbContext,
+    [FromServices] SqlKataQueryRunner runner,
     [FromBody] Command command,
     Guid collectionId,
     HttpContext context)
     {
-        await Handle(behavior, handler, collectionId, command);
+        await Handle(behavior, dbContext, collectionId, command);
 
         context.Response.Headers.TriggerShowSuccessMessageAndCloseModal("collection", "confirmed", collectionId);
 
-        return await GetCollection.HandlePage(getCollectionRunner, listInvoiceToCollectionProcessItemsRunner, collectionId);
+        return await GetCollection.HandlePage(runner, collectionId);
     }
 }

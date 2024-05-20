@@ -8,6 +8,7 @@ using System.Text.Json.Serialization;
 using WebAPI.Clients;
 using WebAPI.Collections;
 using WebAPI.Infrastructure.EntityFramework;
+using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Infrastructure.Ui;
 using WebAPI.Invoices;
 using WebAPI.Proformas;
@@ -40,7 +41,6 @@ public static class StartInvoiceToCollectionProcess
 
     public static async Task<Ok<Result>> Handle(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] RegisterCollection.Handler registerCollectionHandler,
     [FromServices] ApplicationDbContext dbContext,
     [FromServices] IClock clock,
     [FromBody] Command command)
@@ -57,7 +57,7 @@ public static class StartInvoiceToCollectionProcess
 
             dbContext.Set<InvoiceToCollectionProcess>().Add(process);
 
-            await registerCollectionHandler.Handle(new RegisterCollection.Command()
+            await new RegisterCollection.Handler(dbContext).Handle(new RegisterCollection.Command()
             {
                 CollectionId = process.CollectionId,
                 ClientId = command.ClientId,
@@ -88,17 +88,16 @@ public static class StartInvoiceToCollectionProcess
 
     public static async Task<RazorComponentResult> HandleAction(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] RegisterCollection.Handler registerCollectionHandler,
-    [FromServices] ListCollections.Runner listCollectionsRunner,
+    [FromServices] SqlKataQueryRunner runner,
     [FromServices] ApplicationDbContext dbContext,
     [FromBody] Command command,
     [FromServices] IClock clock,
     HttpContext context)
     {
-        var register = await Handle(behavior, registerCollectionHandler, dbContext, clock, command);
+        var register = await Handle(behavior, dbContext, clock, command);
 
         context.Response.Headers.TriggerShowRegisterSuccessMessage($"collection", register.Value!.CollectionId);
 
-        return await ListCollections.HandlePage(new ListCollections.Query() { }, dbContext, listCollectionsRunner);
+        return await ListCollections.HandlePage(new ListCollections.Query() { }, dbContext, runner);
     }
 }

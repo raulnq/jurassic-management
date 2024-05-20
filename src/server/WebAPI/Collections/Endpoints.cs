@@ -20,21 +20,6 @@ public static class Endpoints
 
     public const string CancelTitle = "Cancel";
 
-    public static string GetView(Guid collectionId)
-    {
-        return View.Replace("{collectionId}", collectionId.ToString());
-    }
-    public static string GetConfirm(Guid collectionId)
-    {
-        return Confirm.Replace("{collectionId}", collectionId.ToString());
-    }
-
-    public static string GetCancel(Guid collectionId)
-    {
-        return Cancel.Replace("{collectionId}", collectionId.ToString());
-    }
-
-
     public static void RegisterCollectionEndpoints(this WebApplication app)
     {
         var group = app.MapGroup("/collections")

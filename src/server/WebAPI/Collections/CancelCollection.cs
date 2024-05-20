@@ -2,9 +2,11 @@
 using Infrastructure;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.ExceptionHandling;
+using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Infrastructure.Ui;
 using WebAPI.InvoiceToCollectionProcesses;
 
@@ -28,31 +30,9 @@ public static class CancelCollection
         }
     }
 
-    public class Handler
-    {
-        private readonly ApplicationDbContext _context;
-
-        public Handler(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
-        public async Task Handle(Command command)
-        {
-            var collection = await _context.Get<Collection>(command.CollectionId);
-
-            if (collection == null)
-            {
-                throw new NotFoundException<Collection>();
-            }
-
-            collection.Cancel(command.CanceledAt);
-        }
-    }
-
     public static async Task<Ok> Handle(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
+    [FromServices] ApplicationDbContext dbContext,
     [FromRoute] Guid collectionId,
     [FromServices] IClock clock,
     [FromBody] Command command)
@@ -63,16 +43,25 @@ public static class CancelCollection
 
         new Validator().ValidateAndThrow(command);
 
-        await behavior.Handle(() => handler.Handle(command));
+        await behavior.Handle(async () =>
+        {
+            var collection = await dbContext.Get<Collection>(command.CollectionId);
+
+            if (collection == null)
+            {
+                throw new NotFoundException<Collection>();
+            }
+
+            collection.Cancel(command.CanceledAt);
+        });
 
         return TypedResults.Ok();
     }
 
     public static async Task<RazorComponentResult> HandleAction(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] Handler handler,
-    [FromServices] GetCollection.Runner getCollectionRunner,
-    [FromServices] ListInvoiceToCollectionProcessItems.Runner listInvoiceToCollectionProcessItemsRunner,
+    [FromServices] ApplicationDbContext dbContext,
+    [FromServices] SqlKataQueryRunner runner,
     [FromServices] IClock clock,
     HttpContext context,
     Guid collectionId)
@@ -83,10 +72,10 @@ public static class CancelCollection
             CanceledAt = clock.Now
         };
 
-        await Handle(behavior, handler, collectionId, clock, command);
+        await Handle(behavior, dbContext, collectionId, clock, command);
 
         context.Response.Headers.TriggerShowSuccessMessage("collection", "canceled", command.CollectionId);
 
-        return await GetCollection.HandlePage(getCollectionRunner, listInvoiceToCollectionProcessItemsRunner, command.CollectionId);
+        return await GetCollection.HandlePage(runner, command.CollectionId);
     }
 }

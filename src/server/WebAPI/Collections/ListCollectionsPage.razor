@@ -19,7 +19,7 @@
         <FormRow>
             <Content>
                 <div class="col-6">
-                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}",Swap.OuterHTML,$"#{Targets.List}"){ Include=$"#{nameof(ListCollections.Query.ClientId)}"})
+                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{List}",Swap.OuterHTML,$"#{List}"){ Include=$"#{nameof(ListCollections.Query.ClientId)}"})
                                   Label="Status"
                                   Property=@(nameof(ListCollections.Query.Status))
                                   Query=@Query
@@ -28,7 +28,7 @@
                     </SelectFilter>
                 </div>
                 <div class="col-6">
-                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}",Swap.OuterHTML,$"#{Targets.List}"){ Include=$"#{nameof(ListCollections.Query.Status)}"})
+                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{List}",Swap.OuterHTML,$"#{List}"){ Include=$"#{nameof(ListCollections.Query.Status)}"})
                                   Label="Client"
                                   Property=@(nameof(ListCollections.Query.ClientId))
                                   Query=@Query
@@ -39,7 +39,7 @@
                 </div>
             </Content>
         </FormRow>
-        <div id=@Targets.List>
+        <div id=@List>
             <DataTable TResult=ListCollections.Result
                        Result=@Result.Items
                        Context="item">
@@ -56,7 +56,7 @@
                 <RowTemplate>
                     <RowToolbar>
                         <Actions>
-                            <ActionLink HtmxProps=@(new HtmxProps(Endpoints.GetView(@item.CollectionId), $"#{WebAPI.Users.MainPage.Workspace}"))
+                            <ActionLink HtmxProps=@(new HtmxProps(Endpoints.View, $"#{WebAPI.Users.MainPage.Workspace}"){Vals=$$"""{"collectionId":"{{item.CollectionId}}"}"""})
                                         Icon=@Icons.View />
                         </Actions>
                     </RowToolbar>
@@ -71,7 +71,7 @@
             </DataTable>
             <Pagination Query=@Query
                         Result=@Result
-                        HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}", Swap.OuterHTML, $"#{Targets.List}"))
+                        HtmxProps=@(new HtmxProps(Endpoints.List, $"#{List}", Swap.OuterHTML, $"#{List}"))
                         Parameters=@(new KeyValuePair<string, object?>[]{ new (nameof(ListCollections.Query.Status), Query.Status),new (nameof(ListCollections.Query.ClientId), Query.ClientId)}) />
         </div>
     </Content>
@@ -83,4 +83,6 @@
     public ListCollections.Query Query { get; set; } = default!;
     [Parameter, EditorRequired]
     public IEnumerable<Client> Clients { get; set; } = default!;
+
+    public const string List = "collection-list-target";
 }

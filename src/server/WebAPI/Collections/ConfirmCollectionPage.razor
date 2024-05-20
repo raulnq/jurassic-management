@@ -4,7 +4,7 @@
 @using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
 
-<ModalForm HtmxProps=@(new HtmxProps(Endpoints.GetConfirm(CollectionId), $"#{WebAPI.Users.MainPage.Workspace}"))
+<ModalForm HtmxProps=@(new HtmxProps(Endpoints.Confirm, $"#{WebAPI.Users.MainPage.Workspace}"){Vals=$$"""{"collectionId":"{{CollectionId}}"}"""})
            Title=@Endpoints.ConfirmTitle>
     <Content>
         <FormRow>
