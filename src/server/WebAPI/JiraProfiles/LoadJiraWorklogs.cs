@@ -39,7 +39,7 @@ public static class LoadJiraWorklogs
                 Token = jiraProfileProject.TempoToken
             });
 
-            var jiraProfileAccounts = await dbContext.Set<JiraProfileAccount>().AsNoTracking().Where(a => a.ClientId == jiraProfileProject.ClientId).ToListAsync();
+            var jiraProfileAccounts = await dbContext.Set<JiraProfileAccount>().AsNoTracking().Where(a => a.ProjectId == proforma.ProjectId).ToListAsync();
 
             var proformaWeelWorkItems = await dbContext.Set<ProformaWeekWorkItem>().AsNoTracking().Where(i => i.ProformaId == proformaId && i.Week == week).ToListAsync();
 
