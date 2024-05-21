@@ -35,6 +35,19 @@ public class JiraProfileAccount
     private JiraProfileAccount() { }
 }
 
+public class ProfileEntityTypeConfiguration : IEntityTypeConfiguration<JiraProfile>
+{
+    public void Configure(EntityTypeBuilder<JiraProfile> builder)
+    {
+        builder
+            .ToTable(Tables.JiraProfiles);
+
+        builder
+            .HasKey(j => j.ClientId);
+
+    }
+}
+
 public class ProjectEntityTypeConfiguration : IEntityTypeConfiguration<JiraProfileProject>
 {
     public void Configure(EntityTypeBuilder<JiraProfileProject> builder)
@@ -44,6 +57,19 @@ public class ProjectEntityTypeConfiguration : IEntityTypeConfiguration<JiraProfi
 
         builder
             .HasKey(j => new { j.ClientId, j.ProjectId });
+
+    }
+}
+
+public class AccountEntityTypeConfiguration : IEntityTypeConfiguration<JiraProfileAccount>
+{
+    public void Configure(EntityTypeBuilder<JiraProfileAccount> builder)
+    {
+        builder
+            .ToTable(Tables.JiraProfileAccounts);
+
+        builder
+            .HasKey(j => new { j.ClientId, j.CollaboratorId });
 
     }
 }

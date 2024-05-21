@@ -20,28 +20,28 @@ public static class LoadJiraWorklogs
     public static async Task<Ok> Handle(
     [FromRoute] Guid proformaId,
     [FromRoute] int week,
-    [FromServices] GetJiraProfileProject.Runner getJiraProfileProjectRunner,
-    [FromServices] ListJiraProfileAccounts.Runner listJiraProfileAccountsRunner,
     [FromServices] TempoService tempoService,
     [FromServices] TransactionBehavior behavior,
     [FromServices] ApplicationDbContext dbContext,
     [FromBody] Command command)
     {
-        var proform = await dbContext.Set<Proforma>().AsNoTracking().FirstAsync(p => p.ProformaId == proformaId);
+        var proforma = await dbContext.Set<Proforma>().AsNoTracking().FirstAsync(p => p.ProformaId == proformaId);
 
-        var getJiraProfileProjectResult = await getJiraProfileProjectRunner.Run(new GetJiraProfileProject.Query() { ProjectId = proform.ProjectId });
+        var jiraProfileProject = await dbContext.Set<JiraProfileProject>().AsNoTracking().FirstOrDefaultAsync(p => p.ProjectId == proformaId);
 
-        if (getJiraProfileProjectResult != null)
+        if (jiraProfileProject != null)
         {
+            var jiraProfile = await dbContext.Set<JiraProfile>().AsNoTracking().FirstAsync(p => p.ClientId == jiraProfileProject.ClientId);
+
             var worklogs = await tempoService.Get(new TempoService.Request()
             {
                 Start = command.Start,
                 End = command.End,
-                ProjectId = getJiraProfileProjectResult.JiraProjectId,
-                Token = getJiraProfileProjectResult.TempoToken
+                ProjectId = jiraProfileProject.JiraProjectId,
+                Token = jiraProfile.TempoToken
             });
 
-            var listJiraProfileAccountsResult = await listJiraProfileAccountsRunner.Run(new ListJiraProfileAccounts.Query() { ClientId = getJiraProfileProjectResult.ClientId });
+            var jiraProfileAccounts = await dbContext.Set<JiraProfileAccount>().AsNoTracking().Where(a => a.ClientId == jiraProfileProject.ClientId).ToListAsync();
 
             var proformaWeelWorkItems = await dbContext.Set<ProformaWeekWorkItem>().AsNoTracking().Where(i => i.ProformaId == proformaId && i.Week == week).ToListAsync();
 
@@ -56,7 +56,7 @@ public static class LoadJiraWorklogs
                     await removeWorkItemHandler.Handle(new RemoveWorkItem.Command() { CollaboratorId = item.CollaboratorId, ProformaId = item.ProformaId, Week = item.Week });
                 }
 
-                foreach (var account in listJiraProfileAccountsResult)
+                foreach (var account in jiraProfileAccounts)
                 {
                     var items = worklogs.Results.Where(worklog => worklog.Author?.AccountId == account.JiraAccountId);
 
@@ -88,16 +88,13 @@ public static class LoadJiraWorklogs
     public static async Task<RazorComponentResult> HandleAction(
     [FromServices] SqlKataQueryRunner runner,
     [FromServices] ApplicationDbContext dbContext,
-    [FromServices] GetJiraProfileProject.Runner getJiraProfileProjectRunner,
-    [FromServices] ListJiraProfileAccounts.Runner listJiraProfileAccountsRunner,
     [FromServices] TempoService tempoService,
     [FromServices] TransactionBehavior behavior,
     Guid proformaId,
     int week,
     [FromBody] Command command)
     {
-        await Handle(proformaId, week, getJiraProfileProjectRunner,
-            listJiraProfileAccountsRunner, tempoService, behavior, dbContext, command);
+        await Handle(proformaId, week, tempoService, behavior, dbContext, command);
 
         return await ListProformaWeekWorkItems.HandlePage(
             new ListProformaWeekWorkItems.Query() { ProformaId = proformaId, Week = week },
