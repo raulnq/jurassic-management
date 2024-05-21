@@ -48,6 +48,6 @@ public static class ListProformaWeeks
         [FromServices] SqlKataQueryRunner runner)
     {
         var result = await Handle(runner, proformaId, query);
-        return new RazorComponentResult<ListProformaWeeksPage>(new { Result = result, Query = query });
+        return new RazorComponentResult<ListProformaWeeksPage>(new { Result = result.Value, Query = query });
     }
 }
