@@ -27,18 +27,16 @@ public static class LoadJiraWorklogs
     {
         var proforma = await dbContext.Set<Proforma>().AsNoTracking().FirstAsync(p => p.ProformaId == proformaId);
 
-        var jiraProfileProject = await dbContext.Set<JiraProfileProject>().AsNoTracking().FirstOrDefaultAsync(p => p.ProjectId == proformaId);
+        var jiraProfileProject = await dbContext.Set<JiraProfileProject>().AsNoTracking().FirstOrDefaultAsync(p => p.ProjectId == proforma.ProjectId);
 
         if (jiraProfileProject != null)
         {
-            var jiraProfile = await dbContext.Set<JiraProfile>().AsNoTracking().FirstAsync(p => p.ClientId == jiraProfileProject.ClientId);
-
             var worklogs = await tempoService.Get(new TempoService.Request()
             {
                 Start = command.Start,
                 End = command.End,
                 ProjectId = jiraProfileProject.JiraProjectId,
-                Token = jiraProfile.TempoToken
+                Token = jiraProfileProject.TempoToken
             });
 
             var jiraProfileAccounts = await dbContext.Set<JiraProfileAccount>().AsNoTracking().Where(a => a.ClientId == jiraProfileProject.ClientId).ToListAsync();

@@ -15,7 +15,7 @@
                 <ActionButton Text=@Endpoints.LoadWorkItemsTitle
                               Icon=@Icons.Add
                               Id="load"
-                              IsDisabled=@(!Proforma.CanAddWorkItems() || AnyJiraProfileProject)
+                              IsDisabled=@(!Proforma.CanAddWorkItems() || !AnyJiraProfileProject)
                               HtmxProps=@(new HtmxProps(Endpoints.GetLoadWorkItems(Query.ProformaId!.Value, Query.Week!.Value), $"#{List}",Swap.OuterHTML,$"#{List}"){ Confirm = "Are you sure?", HttpMethod="POST", Vals=$"{{\"Start\": \"{ProformaWeek.Start:yyy-MM-dd}\", \"End\": \"{ProformaWeek.End:yyyy-MM-dd}\"}}"}) />
             </Actions>
         </Toolbar>
