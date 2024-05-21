@@ -14,17 +14,12 @@ public static class CancelCollaboratorPayment
 {
     public class Command
     {
-        [JsonIgnore]
-        public Guid CollaboratorPaymentId { get; set; }
-        [JsonIgnore]
-        public DateTimeOffset CanceledAt { get; set; }
     }
 
     public class Validator : AbstractValidator<Command>
     {
         public Validator()
         {
-            RuleFor(command => command.CollaboratorPaymentId).NotEmpty();
         }
     }
 
@@ -35,22 +30,18 @@ public static class CancelCollaboratorPayment
     [FromServices] IClock clock,
     [FromBody] Command command)
     {
-        command.CollaboratorPaymentId = collaboratorPaymentId;
-
-        command.CanceledAt = clock.Now;
-
         new Validator().ValidateAndThrow(command);
 
         await behavior.Handle(async () =>
         {
-            var collaboratorPayment = await dbContext.Get<CollaboratorPayment>(command.CollaboratorPaymentId);
+            var collaboratorPayment = await dbContext.Get<CollaboratorPayment>(collaboratorPaymentId);
 
             if (collaboratorPayment == null)
             {
                 throw new NotFoundException<CollaboratorPayment>();
             }
 
-            collaboratorPayment.Cancel(command.CanceledAt);
+            collaboratorPayment.Cancel(clock.Now);
         });
 
         return TypedResults.Ok();
@@ -66,8 +57,6 @@ public static class CancelCollaboratorPayment
     {
         var command = new Command()
         {
-            CollaboratorPaymentId = collaboratorPaymentId,
-            CanceledAt = clock.Now
         };
 
         await Handle(behavior, dbContext, collaboratorPaymentId, clock, command);

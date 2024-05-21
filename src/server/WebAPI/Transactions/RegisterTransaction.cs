@@ -3,7 +3,6 @@ using Infrastructure;
 using MassTransit;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.SqlKata;
@@ -23,8 +22,6 @@ public static class RegisterTransaction
         public decimal Taxes { get; set; }
         public DateTime IssuedAt { get; set; }
         public string? Number { get; set; }
-        [JsonIgnore]
-        public DateTimeOffset CreatedAt { get; set; }
     }
 
     public class Result
@@ -49,14 +46,12 @@ public static class RegisterTransaction
     [FromServices] IClock clock,
     [FromBody] Command command)
     {
-        command.CreatedAt = clock.Now;
-
         new Validator().ValidateAndThrow(command);
 
         var result = await behavior.Handle(() =>
         {
             var transaction = new Transaction(NewId.Next().ToSequentialGuid(), command.Type,
-    command.Description, command.SubTotal, command.Taxes, command.Currency, command.Number, command.IssuedAt, command.CreatedAt);
+    command.Description, command.SubTotal, command.Taxes, command.Currency, command.Number, command.IssuedAt, clock.Now);
 
             dbContext.Set<Transaction>().Add(transaction);
 

@@ -12,14 +12,14 @@
     <MenuItems>
         <MenuItem Text=@Endpoints.UploadTitle
                   IsDisabled=@(Result.Status==CollaboratorPaymentStatus.Canceled.ToString())
-                  HtmxProps=@(new HtmxProps(Endpoints.GetUpload(Result.CollaboratorPaymentId), $"#{WebAPI.Users.MainPage.Dialog}")) />
+                  HtmxProps=@(new HtmxProps(Endpoints.Upload, $"#{WebAPI.Users.MainPage.Dialog}"){Vals=$$"""{"collaboratorPaymentId":"{{Result.CollaboratorPaymentId}}"}"""}) />
         <MenuItem Text=@Endpoints.PayTitle
                   IsDisabled=@(Result.Status!=CollaboratorPaymentStatus.Pending.ToString())
-                  HtmxProps=@(new HtmxProps(Endpoints.GetPay(Result.CollaboratorPaymentId), $"#{WebAPI.Users.MainPage.Dialog}")) />
+                  HtmxProps=@(new HtmxProps(Endpoints.Pay, $"#{WebAPI.Users.MainPage.Dialog}"){Vals=$$"""{"collaboratorPaymentId":"{{Result.CollaboratorPaymentId}}"}"""}) />
         <MenuItem Text=@Endpoints.ConfirmTitle
                   IsDisabled=@(Result.Status!=CollaboratorPaymentStatus.Paid.ToString())
-                  HtmxProps=@(new HtmxProps(Endpoints.GetConfirm(Result.CollaboratorPaymentId), $"#{WebAPI.Users.MainPage.Dialog}")) />
-        <MenuItem HtmxProps=@(new HtmxProps(Endpoints.GetCancel(Result.CollaboratorPaymentId), $"#{WebAPI.Users.MainPage.Workspace}"){ Confirm = "Are you sure?", HttpMethod="POST"})
+                  HtmxProps=@(new HtmxProps(Endpoints.Confirm, $"#{WebAPI.Users.MainPage.Dialog}"){Vals=$$"""{"collaboratorPaymentId":"{{Result.CollaboratorPaymentId}}"}"""}) />
+        <MenuItem HtmxProps=@(new HtmxProps(Endpoints.Cancel, $"#{WebAPI.Users.MainPage.Workspace}"){ Confirm = "Are you sure?", HttpMethod="POST", Vals=$$"""{"collaboratorPaymentId":"{{Result.CollaboratorPaymentId}}"}"""})
                   IsDisabled=@(Result.Status !=CollaboratorPaymentStatus.Pending.ToString())
                   Text=@Endpoints.CancelTitle />
     </MenuItems>
@@ -45,7 +45,8 @@
 </Toolbar>
 <Section>
     <Content>
-        <Form HtmxProps=@(new HtmxProps(Endpoints.GetEdit(@Result.CollaboratorPaymentId), $"#{WebAPI.Users.MainPage.Workspace}")) IsDisabled=@(Result.Status !=CollaboratorPaymentStatus.Pending.ToString())>
+        <Form HtmxProps=@(new HtmxProps(Endpoints.Edit, $"#{WebAPI.Users.MainPage.Workspace}"){Vals=$$"""{"collaboratorPaymentId":"{{Result.CollaboratorPaymentId}}"}"""})
+              IsDisabled=@(Result.Status !=CollaboratorPaymentStatus.Pending.ToString())>
             <Content>
                 <FormRow>
                     <Content>

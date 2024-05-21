@@ -82,7 +82,7 @@ public static class GetProforma
         [FromServices] ApplicationDbContext dbContext,
         [FromRoute] Guid proformaId)
     {
-        var getProformaResult = await new Runner(runner).Run(new Query() { ProformaId = proformaId });
+        var getProformaResult = await Handle(runner, proformaId);
 
         var listProformaWeeksQuery = new ListProformaWeeks.Query() { ProformaId = proformaId, PageSize = 5 };
 
@@ -92,7 +92,7 @@ public static class GetProforma
 
         return new RazorComponentResult<GetProformaPage>(new
         {
-            GetProformaResult = getProformaResult,
+            GetProformaResult = getProformaResult.Value,
             ListProformaWeeksResult = listProformaWeeksResult,
             ListProformaWeeksQuery = listProformaWeeksQuery,
             ProformaDocument = proformaDocument,

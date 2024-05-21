@@ -23,7 +23,7 @@
         <FormRow>
             <Content>
                 <div class="col">
-                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}",Swap.OuterHTML,$"#{Targets.List}"))
+                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{List}",Swap.OuterHTML,$"#{List}"))
                                   Label="Status"
                                   Property=@(nameof(ListCollaboratorPayments.Query.Status))
                                   Query=@Query
@@ -32,7 +32,7 @@
                 </div>
             </Content>
         </FormRow>
-        <div id=@Targets.List>
+        <div id=@List>
             <DataTable TResult=ListCollaboratorPayments.Result
                        Result=@Result.Items
                        Context="item">
@@ -50,7 +50,7 @@
                 <RowTemplate>
                     <RowToolbar>
                         <Actions>
-                            <ActionLink HtmxProps=@(new HtmxProps(Endpoints.GetEdit(@item.CollaboratorPaymentId), $"#{WebAPI.Users.MainPage.Workspace}"))
+                            <ActionLink HtmxProps=@(new HtmxProps(Endpoints.Edit, $"#{WebAPI.Users.MainPage.Workspace}"){Vals=$$"""{"collaboratorPaymentId":"{{item.CollaboratorPaymentId}}"}"""})
                                         Icon=@Icons.Edit />
                         </Actions>
                     </RowToolbar>
@@ -66,7 +66,7 @@
             </DataTable>
             <Pagination Query=@Query
                         Result=@Result
-                        HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}", Swap.OuterHTML, $"#{Targets.List}"))
+                        HtmxProps=@(new HtmxProps(Endpoints.List, $"#{List}", Swap.OuterHTML, $"#{List}"))
                         Parameters=@(new []{ new KeyValuePair<string, object?>(nameof(ListCollaboratorPayments.Query.Status), Query.Status)}) />
         </div>
     </Content>
@@ -76,4 +76,6 @@
     public ListResults<ListCollaboratorPayments.Result> Result { get; set; } = default!;
     [Parameter, EditorRequired]
     public ListCollaboratorPayments.Query Query { get; set; } = default!;
+
+    public const string List = "collaborator-payment-list-target";
 }

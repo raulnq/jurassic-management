@@ -20,8 +20,6 @@ public static class StartInvoiceToCollectionProcess
     public class Command
     {
         public IEnumerable<Guid>? InvoiceId { get; set; }
-        [JsonIgnore]
-        public DateTimeOffset CreatedAt { get; set; }
         public Guid ClientId { get; set; }
         public Currency Currency { get; set; }
     }
@@ -47,13 +45,11 @@ public static class StartInvoiceToCollectionProcess
     {
         new Validator().ValidateAndThrow(command);
 
-        command.CreatedAt = clock.Now;
-
         var invoices = await dbContext.Set<Invoice>().AsNoTracking().Where(i => command.InvoiceId!.Contains(i.InvoiceId)).ToListAsync();
 
         var result = await behavior.Handle(async () =>
         {
-            var process = new InvoiceToCollectionProcess(NewId.Next().ToSequentialGuid(), command.ClientId, command.Currency, invoices, command.CreatedAt);
+            var process = new InvoiceToCollectionProcess(NewId.Next().ToSequentialGuid(), command.ClientId, command.Currency, invoices, clock.Now);
 
             dbContext.Set<InvoiceToCollectionProcess>().Add(process);
 
@@ -61,7 +57,7 @@ public static class StartInvoiceToCollectionProcess
             {
                 CollectionId = process.CollectionId,
                 ClientId = command.ClientId,
-                CreatedAt = command.CreatedAt,
+                CreatedAt = clock.Now,
                 Total = invoices.Sum(i => i.Total),
                 Currency = command.Currency
             });

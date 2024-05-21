@@ -15,9 +15,8 @@ public class IssueInvoiceTests : BaseTest
 
         await _appDsl.Invoice.Upload("blank.pdf", c => c.InvoiceId = start!.InvoiceId);
 
-        await _appDsl.Invoice.Issue(c =>
+        await _appDsl.Invoice.Issue(start!.InvoiceId, c =>
         {
-            c.InvoiceId = start!.InvoiceId;
             c.IssuedAt = today.AddDays(1);
         });
 

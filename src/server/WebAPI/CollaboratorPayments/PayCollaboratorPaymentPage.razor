@@ -4,7 +4,7 @@
 @using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
 
-<ModalForm HtmxProps=@(new HtmxProps(Endpoints.GetPay(CollaboratorPaymentId), $"#{WebAPI.Users.MainPage.Workspace}"))
+<ModalForm HtmxProps=@(new HtmxProps(Endpoints.Pay, $"#{WebAPI.Users.MainPage.Workspace}"){Vals=$$"""{"collaboratorPaymentId":"{{CollaboratorPaymentId}}"}"""})
            Title=@Endpoints.PayTitle>
     <Content>
         <FormRow>

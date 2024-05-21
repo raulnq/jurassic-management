@@ -43,7 +43,7 @@ public class TransactionDsl
         return (request, result);
     }
 
-    public async Task<EditTransaction.Command> Edit(Action<EditTransaction.Command>? setup = null, string? errorDetail = null, IDictionary<string, string[]>? errors = null)
+    public async Task<EditTransaction.Command> Edit(Guid transactionId, Action<EditTransaction.Command>? setup = null, string? errorDetail = null, IDictionary<string, string[]>? errors = null)
     {
         var faker = new Faker<EditTransaction.Command>()
             .RuleFor(command => command.Description, faker => faker.Lorem.Sentence())
@@ -58,7 +58,7 @@ public class TransactionDsl
 
         setup?.Invoke(request);
 
-        var (status, error) = await _httpDriver.Put($"{_uri}/{request.TransactionId}", request);
+        var (status, error) = await _httpDriver.Put($"{_uri}/{transactionId}", request);
 
         (status, error).Check(errorDetail, errors: errors);
 

@@ -3,7 +3,6 @@ using Infrastructure;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.ExceptionHandling;
 using WebAPI.Infrastructure.SqlKata;
@@ -15,17 +14,12 @@ public static class CancelProforma
 {
     public class Command
     {
-        [JsonIgnore]
-        public Guid ProformaId { get; set; }
-        [JsonIgnore]
-        public DateTimeOffset CanceledAt { get; set; }
     }
 
     public class Validator : AbstractValidator<Command>
     {
         public Validator()
         {
-            RuleFor(command => command.ProformaId).NotEmpty();
         }
     }
 
@@ -36,10 +30,6 @@ public static class CancelProforma
         [FromServices] IClock clock,
         [FromBody] Command command)
     {
-        command.ProformaId = proformaId;
-
-        command.CanceledAt = clock.Now;
-
         new Validator().ValidateAndThrow(command);
 
         await behavior.Handle(async () =>
@@ -47,14 +37,14 @@ public static class CancelProforma
             var proforma = await dbContext.Set<Proforma>()
             .Include(p => p.Weeks)
             .ThenInclude(w => w.WorkItems)
-            .SingleOrDefaultAsync(p => p.ProformaId == command.ProformaId);
+            .SingleOrDefaultAsync(p => p.ProformaId == proformaId);
 
             if (proforma == null)
             {
                 throw new NotFoundException<Proforma>();
             }
 
-            proforma.Cancel(command.CanceledAt);
+            proforma.Cancel(clock.Now);
         });
 
         return TypedResults.Ok();
@@ -70,8 +60,6 @@ public static class CancelProforma
     {
         var command = new Command()
         {
-            ProformaId = proformaId,
-            CanceledAt = clock.Now
         };
 
         await Handle(behavior, dbContext, proformaId, clock, command);

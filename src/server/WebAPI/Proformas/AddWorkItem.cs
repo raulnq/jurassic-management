@@ -123,8 +123,8 @@ public static class AddWorkItem
 
         return await ListProformaWeekWorkItems.HandlePage(new ListProformaWeekWorkItems.Query()
         {
-            ProformaId = command.ProformaId,
-            Week = command.Week
+            ProformaId = proformaId,
+            Week = week
         }, runner, dbContext, proformaId, week);
     }
 

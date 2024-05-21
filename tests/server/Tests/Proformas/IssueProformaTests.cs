@@ -11,9 +11,8 @@ public class IssueProformaTests : BaseTest
 
         var (proformaResult, _, _, _) = await _appDsl.RegisterProformaReadyToIssue(today);
 
-        await _appDsl.Proformas.Issue(c =>
+        await _appDsl.Proformas.Issue(proformaResult.ProformaId, c =>
         {
-            c.ProformaId = proformaResult.ProformaId;
             c.IssuedAt = today.AddDays(7);
         });
     }

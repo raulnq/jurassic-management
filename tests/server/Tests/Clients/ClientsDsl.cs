@@ -46,7 +46,7 @@ public class ClientDsl
         return (request, result);
     }
 
-    public async Task<EditClient.Command> Edit(Action<EditClient.Command>? setup = null, string? errorDetail = null, IDictionary<string, string[]>? errors = null)
+    public async Task<EditClient.Command> Edit(Guid clientId, Action<EditClient.Command>? setup = null, string? errorDetail = null, IDictionary<string, string[]>? errors = null)
     {
         var faker = new Faker<EditClient.Command>()
             .RuleFor(command => command.Name, faker => faker.Random.Guid().ToString())
@@ -64,7 +64,7 @@ public class ClientDsl
 
         setup?.Invoke(request);
 
-        var (status, error) = await _httpDriver.Put($"{_uri}/{request.ClientId}", request);
+        var (status, error) = await _httpDriver.Put($"{_uri}/{clientId}", request);
 
         (status, error).Check(errorDetail, errors: errors);
 

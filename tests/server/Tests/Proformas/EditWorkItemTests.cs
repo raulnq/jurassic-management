@@ -35,11 +35,8 @@ public class EditWorkItemTests : BaseTest
             c.FreeHours = 0;
         });
 
-        await _appDsl.Proformas.EditWorkItem(c =>
+        await _appDsl.Proformas.EditWorkItem(result!.ProformaId, 1, collaborator!.CollaboratorId, c =>
         {
-            c.ProformaId = result!.ProformaId;
-            c.Week = 1;
-            c.CollaboratorId = collaborator!.CollaboratorId;
             c.Hours = 10;
             c.FreeHours = 0;
         });

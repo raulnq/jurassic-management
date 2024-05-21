@@ -9,9 +9,6 @@ public class AddProjectTests : BaseTest
     {
         var (_, client) = await _appDsl.Client.Register();
 
-        await _appDsl.Project.Add(c =>
-        {
-            c.ClientId = client!.ClientId;
-        });
+        await _appDsl.Project.Add(client!.ClientId);
     }
 }

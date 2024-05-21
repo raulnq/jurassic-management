@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.Ui;
 
@@ -12,8 +11,6 @@ public static class EditCollaboratorRole
 {
     public class Command
     {
-        [JsonIgnore]
-        public Guid CollaboratorRoleId { get; set; }
         public string Name { get; set; } = default!;
         public decimal FeeAmount { get; set; }
         public decimal ProfitPercentage { get; set; }
@@ -23,7 +20,6 @@ public static class EditCollaboratorRole
     {
         public Validator()
         {
-            RuleFor(command => command.CollaboratorRoleId).NotEmpty();
             RuleFor(command => command.Name).MaximumLength(100).NotEmpty();
             RuleFor(command => command.FeeAmount).GreaterThanOrEqualTo(0);
             RuleFor(command => command.ProfitPercentage).GreaterThanOrEqualTo(0).LessThanOrEqualTo(100);
@@ -32,17 +28,15 @@ public static class EditCollaboratorRole
 
     public static async Task<Ok> Handle(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] ApplicationDbContext context,
+    [FromServices] ApplicationDbContext dbContext,
     [FromRoute] Guid collaboratorRoleId,
     [FromBody] Command command)
     {
-        command.CollaboratorRoleId = collaboratorRoleId;
-
         new Validator().ValidateAndThrow(command);
 
         await behavior.Handle(async () =>
         {
-            var collaboratorRole = await context.Get<CollaboratorRole>(command.CollaboratorRoleId);
+            var collaboratorRole = await dbContext.Get<CollaboratorRole>(collaboratorRoleId);
 
             collaboratorRole.Edit(command.Name!, command.FeeAmount, command.ProfitPercentage);
         });
@@ -61,15 +55,15 @@ public static class EditCollaboratorRole
 
     public static async Task<RazorComponentResult> HandleAction(
     [FromServices] TransactionBehavior behavior,
-    [FromServices] ApplicationDbContext dbcontext,
+    [FromServices] ApplicationDbContext dbContext,
     [FromRoute] Guid collaboratorRoleId,
     [FromBody] Command command,
-    HttpContext context)
+    HttpContext httpContext)
     {
-        await Handle(behavior, dbcontext, collaboratorRoleId, command);
+        await Handle(behavior, dbContext, collaboratorRoleId, command);
 
-        context.Response.Headers.TriggerShowEditSuccessMessage("collaborator role", command.CollaboratorRoleId);
+        httpContext.Response.Headers.TriggerShowEditSuccessMessage("collaborator role", collaboratorRoleId);
 
-        return await HandlePage(dbcontext, command.CollaboratorRoleId);
+        return await HandlePage(dbContext, collaboratorRoleId);
     }
 }

@@ -32,27 +32,6 @@ public static class Endpoints
 
     public const string CancelTitle = "Cancel";
 
-    public static string GetEdit(Guid collaboratorPaymentId)
-    {
-        return Edit.Replace("{collaboratorPaymentId}", collaboratorPaymentId.ToString());
-    }
-    public static string GetPay(Guid collaboratorPaymentId)
-    {
-        return Pay.Replace("{collaboratorPaymentId}", collaboratorPaymentId.ToString());
-    }
-    public static string GetConfirm(Guid collaboratorPaymentId)
-    {
-        return Confirm.Replace("{collaboratorPaymentId}", collaboratorPaymentId.ToString());
-    }
-    public static string GetCancel(Guid collaboratorPaymentId)
-    {
-        return Cancel.Replace("{collaboratorPaymentId}", collaboratorPaymentId.ToString());
-    }
-
-    public static string GetUpload(Guid collaboratorPaymentId)
-    {
-        return Upload.Replace("{collaboratorPaymentId}", collaboratorPaymentId.ToString());
-    }
     public static void RegisterCollaboratorPaymentEndpoints(this WebApplication app)
     {
         var group = app.MapGroup("/collaborator-payments")

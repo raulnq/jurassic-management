@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.Ui;
 
@@ -12,8 +11,6 @@ public static class EditCollaborator
 {
     public class Command
     {
-        [JsonIgnore]
-        public Guid CollaboratorId { get; set; }
         public string Name { get; set; } = default!;
         public decimal WithholdingPercentage { get; set; }
     }
@@ -22,7 +19,6 @@ public static class EditCollaborator
     {
         public Validator()
         {
-            RuleFor(command => command.CollaboratorId).NotEmpty();
             RuleFor(command => command.Name).MaximumLength(100).NotEmpty();
             RuleFor(command => command.WithholdingPercentage).GreaterThanOrEqualTo(0).LessThanOrEqualTo(100);
         }
@@ -34,13 +30,11 @@ public static class EditCollaborator
         [FromRoute] Guid collaboratorId,
         [FromBody] Command command)
     {
-        command.CollaboratorId = collaboratorId;
-
         new Validator().ValidateAndThrow(command);
 
         await behavior.Handle(async () =>
         {
-            var collaborator = await dbContext.Get<Collaborator>(command.CollaboratorId);
+            var collaborator = await dbContext.Get<Collaborator>(collaboratorId);
 
             collaborator.Edit(command.Name, command.WithholdingPercentage);
         });
@@ -62,12 +56,12 @@ public static class EditCollaborator
         [FromServices] ApplicationDbContext dbContext,
         [FromRoute] Guid collaboratorId,
         [FromBody] Command command,
-        HttpContext context)
+        HttpContext httpContext)
     {
         await Handle(behavior, dbContext, collaboratorId, command);
 
-        context.Response.Headers.TriggerShowEditSuccessMessage("collaborator", command.CollaboratorId);
+        httpContext.Response.Headers.TriggerShowEditSuccessMessage("collaborator", collaboratorId);
 
-        return await HandlePage(dbContext, command.CollaboratorId);
+        return await HandlePage(dbContext, collaboratorId);
     }
 }

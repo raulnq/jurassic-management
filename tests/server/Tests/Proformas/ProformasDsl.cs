@@ -53,7 +53,7 @@ public class ProformasDsl
         return request;
     }
 
-    public async Task<EditWorkItem.Command> EditWorkItem(Action<EditWorkItem.Command>? setup = null, string? errorDetail = null, IDictionary<string, string[]>? errors = null)
+    public async Task<EditWorkItem.Command> EditWorkItem(Guid proformaId, int week, Guid collaboratorId, Action<EditWorkItem.Command>? setup = null, string? errorDetail = null, IDictionary<string, string[]>? errors = null)
     {
         var faker = new Faker<EditWorkItem.Command>()
             .RuleFor(command => command.Hours, faker => faker.Random.Number(1, 10))
@@ -63,7 +63,7 @@ public class ProformasDsl
 
         setup?.Invoke(request);
 
-        var (status, error) = await _httpDriver.Put($"{_uri}/{request.ProformaId}/weeks/{request.Week}/work-items/{request.CollaboratorId}", request);
+        var (status, error) = await _httpDriver.Put($"{_uri}/{proformaId}/weeks/{week}/work-items/{collaboratorId}", request);
 
         (status, error).Check(errorDetail, errors: errors);
 
@@ -86,7 +86,7 @@ public class ProformasDsl
         return request;
     }
 
-    public async Task<IssueProforma.Command> Issue(Action<IssueProforma.Command>? setup = null, string? errorDetail = null, IDictionary<string, string[]>? errors = null)
+    public async Task<IssueProforma.Command> Issue(Guid proformaId, Action<IssueProforma.Command>? setup = null, string? errorDetail = null, IDictionary<string, string[]>? errors = null)
     {
         var faker = new Faker<IssueProforma.Command>()
             ;
@@ -95,23 +95,22 @@ public class ProformasDsl
 
         setup?.Invoke(request);
 
-        var (status, error) = await _httpDriver.Post($"{_uri}/{request.ProformaId}/issue", request);
+        var (status, error) = await _httpDriver.Post($"{_uri}/{proformaId}/issue", request);
 
         (status, error).Check(errorDetail, errors: errors);
 
         return request;
     }
 
-    public async Task<CancelProforma.Command> Cancel(Action<CancelProforma.Command>? setup = null, string? errorDetail = null, IDictionary<string, string[]>? errors = null)
+    public async Task<CancelProforma.Command> Cancel(Guid proformaId, Action<CancelProforma.Command>? setup = null, string? errorDetail = null, IDictionary<string, string[]>? errors = null)
     {
-        var faker = new Faker<CancelProforma.Command>()
-            ;
+        var faker = new Faker<CancelProforma.Command>();
 
         var request = faker.Generate();
 
         setup?.Invoke(request);
 
-        var (status, error) = await _httpDriver.Post($"{_uri}/{request.ProformaId}/cancel", request);
+        var (status, error) = await _httpDriver.Post($"{_uri}/{proformaId}/cancel", request);
 
         (status, error).Check(errorDetail, errors: errors);
 

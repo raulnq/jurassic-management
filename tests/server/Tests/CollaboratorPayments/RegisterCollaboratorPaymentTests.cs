@@ -13,14 +13,3 @@ public class RegisterCollaboratorPaymentTests : BaseTest
     }
 }
 
-public class EditCollaboratorPaymentTests : BaseTest
-{
-    [Fact]
-    public async Task edit_should_be_ok()
-    {
-        var (_, collaboratorResult) = await _appDsl.Collaborator.Register();
-
-        await _appDsl.CollaboratorPayment.Register(c => c.CollaboratorId = collaboratorResult!.CollaboratorId);
-    }
-}
-

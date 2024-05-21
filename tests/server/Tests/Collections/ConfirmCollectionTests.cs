@@ -22,9 +22,8 @@ public class ConfirmCollectionTests : BaseTest
 
         var (_, collection) = await _appDsl.Collection.Get(q => q.CollectionId = start!.CollectionId);
 
-        await _appDsl.Collection.Confirm(c =>
+        await _appDsl.Collection.Confirm(start!.CollectionId, c =>
         {
-            c.CollectionId = start!.CollectionId;
             c.ConfirmedAt = today.AddDays(1);
             c.Total = collection!.Total;
             c.Commission = collection!.Commission;

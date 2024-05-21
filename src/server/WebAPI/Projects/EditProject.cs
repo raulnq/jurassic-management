@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Infrastructure.Ui;
@@ -13,8 +12,6 @@ public static class EditProject
 {
     public class Command
     {
-        [JsonIgnore]
-        public Guid ProjectId { get; set; }
         public string Name { get; set; } = default!;
     }
 
@@ -22,7 +19,6 @@ public static class EditProject
     {
         public Validator()
         {
-            RuleFor(command => command.ProjectId).NotEmpty();
             RuleFor(command => command.Name).MaximumLength(100).NotEmpty();
         }
     }
@@ -34,13 +30,11 @@ public static class EditProject
     [FromRoute] Guid clientId,
     [FromBody] Command command)
     {
-        command.ProjectId = projectId;
-
         new Validator().ValidateAndThrow(command);
 
         await behavior.Handle(async () =>
         {
-            var project = await dbContext.Get<Project>(command.ProjectId);
+            var project = await dbContext.Get<Project>(projectId);
 
             project.Edit(command.Name!);
         });
@@ -72,7 +66,7 @@ public static class EditProject
     {
         await Handle(behavior, dbContext, projectId, clientId, command);
 
-        context.Response.Headers.TriggerShowEditSuccessMessageAndCloseModal("project", command.ProjectId);
+        context.Response.Headers.TriggerShowEditSuccessMessageAndCloseModal("project", projectId);
 
         return await ListProjects.HandlePage(new ListProjects.Query() { ClientId = clientId }, clientId, runner);
     }

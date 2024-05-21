@@ -38,7 +38,7 @@ public class InvoiceDsl
         }
     }
 
-    public async Task<IssueInvoice.Command> Issue(Action<IssueInvoice.Command>? setup = null, string? errorDetail = null, IDictionary<string, string[]>? errors = null)
+    public async Task<IssueInvoice.Command> Issue(Guid invoiceId, Action<IssueInvoice.Command>? setup = null, string? errorDetail = null, IDictionary<string, string[]>? errors = null)
     {
         var faker = new Faker<IssueInvoice.Command>()
              .RuleFor(command => command.Number, faker => faker.Random.Guid().ToString())
@@ -47,14 +47,14 @@ public class InvoiceDsl
 
         setup?.Invoke(request);
 
-        var (status, error) = await _httpDriver.Post($"{_uri}/{request.InvoiceId}/issue", request);
+        var (status, error) = await _httpDriver.Post($"{_uri}/{invoiceId}/issue", request);
 
         (status, error).Check(errorDetail, errors: errors);
 
         return request;
     }
 
-    public async Task<CancelInvoice.Command> Cancel(Action<CancelInvoice.Command>? setup = null, string? errorDetail = null, IDictionary<string, string[]>? errors = null)
+    public async Task<CancelInvoice.Command> Cancel(Guid invoiceId, Action<CancelInvoice.Command>? setup = null, string? errorDetail = null, IDictionary<string, string[]>? errors = null)
     {
         var faker = new Faker<CancelInvoice.Command>();
         ;
@@ -62,7 +62,7 @@ public class InvoiceDsl
 
         setup?.Invoke(request);
 
-        var (status, error) = await _httpDriver.Post($"{_uri}/{request.InvoiceId}/cancel", request);
+        var (status, error) = await _httpDriver.Post($"{_uri}/{invoiceId}/cancel", request);
 
         (status, error).Check(errorDetail, errors: errors);
 

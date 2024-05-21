@@ -4,7 +4,6 @@ using MassTransit;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json.Serialization;
 using WebAPI.Clients;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.SqlKata;
@@ -21,8 +20,6 @@ public static class StartProformaToInvoiceProcess
         public IEnumerable<Guid>? ProformaId { get; set; }
         public Guid ClientId { get; set; }
         public Currency Currency { get; set; }
-        [JsonIgnore]
-        public DateTimeOffset CreatedAt { get; set; }
     }
 
     public class Result
@@ -46,20 +43,18 @@ public static class StartProformaToInvoiceProcess
     {
         new Validator().ValidateAndThrow(command);
 
-        command.CreatedAt = clock.Now;
-
         var proformas = await dbContext.Set<Proforma>().AsNoTracking().Where(p => command.ProformaId!.Contains(p.ProformaId)).ToListAsync();
 
         var result = await behavior.Handle(async () =>
         {
-            var process = new ProformaToInvoiceProcess(NewId.Next().ToSequentialGuid(), command.ClientId, command.Currency, proformas, command.CreatedAt);
+            var process = new ProformaToInvoiceProcess(NewId.Next().ToSequentialGuid(), command.ClientId, command.Currency, proformas, clock.Now);
 
             dbContext.Set<ProformaToInvoiceProcess>().Add(process);
 
             await new RegisterInvoice.Handler(dbContext).Handle(new RegisterInvoice.Command()
             {
                 InvoiceId = process.InvoiceId,
-                CreatedAt = command.CreatedAt,
+                CreatedAt = clock.Now,
                 SubTotal = proformas.Sum(p => p.Total),
                 Taxes = 0,
                 Currency = command.Currency,

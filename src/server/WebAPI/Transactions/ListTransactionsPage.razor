@@ -18,7 +18,7 @@
         <FormRow>
             <Content>
                 <div class="col">
-                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}",Swap.OuterHTML,$"#{Targets.List}"))
+                    <SelectFilter HtmxProps=@(new HtmxProps(Endpoints.List, $"#{List}",Swap.OuterHTML,$"#{List}"))
                                   Label="Type"
                                   Property=@(nameof(ListTransactions.Query.Type))
                                   Query=@Query
@@ -27,7 +27,7 @@
                 </div>
             </Content>
         </FormRow>
-        <div id=@Targets.List>
+        <div id=@List>
             <DataTable TResult=ListTransactions.Result
                        Result=@Result.Items
                        Context="item">
@@ -61,7 +61,7 @@
             </DataTable>
             <Pagination Query=@Query
                         Result=@Result
-                        HtmxProps=@(new HtmxProps(Endpoints.List, $"#{Targets.List}", Swap.OuterHTML, $"#{Targets.List}"))
+                        HtmxProps=@(new HtmxProps(Endpoints.List, $"#{List}", Swap.OuterHTML, $"#{List}"))
                         Parameters=@(new[] { new KeyValuePair<string, object?>(nameof(Query.Type), Query.Type) }) />
         </div>
     </Content>
@@ -71,4 +71,6 @@
     public ListResults<ListTransactions.Result> Result { get; set; } = default!;
     [Parameter, EditorRequired]
     public ListTransactions.Query Query { get; set; } = default!;
+
+    public const string List = "transaction-list-target";
 }

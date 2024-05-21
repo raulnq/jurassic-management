@@ -36,7 +36,7 @@ public class CollaboratorDsl
         return (request, result);
     }
 
-    public async Task<EditCollaborator.Command> Edit(Action<EditCollaborator.Command>? setup = null, string? errorDetail = null, IDictionary<string, string[]>? errors = null)
+    public async Task<EditCollaborator.Command> Edit(Guid collaboratorId, Action<EditCollaborator.Command>? setup = null, string? errorDetail = null, IDictionary<string, string[]>? errors = null)
     {
         var faker = new Faker<EditCollaborator.Command>()
             .RuleFor(command => command.Name, faker => faker.Random.Guid().ToString())
@@ -45,7 +45,7 @@ public class CollaboratorDsl
 
         setup?.Invoke(request);
 
-        var (status, error) = await _httpDriver.Put($"{_uri}/{request.CollaboratorId}", request);
+        var (status, error) = await _httpDriver.Put($"{_uri}/{collaboratorId}", request);
 
         (status, error).Check(errorDetail, errors: errors);
 

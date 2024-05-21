@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Rebus.Bus;
-using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.ExceptionHandling;
 using WebAPI.Infrastructure.SqlKata;
@@ -15,8 +14,6 @@ public static class IssueProforma
 {
     public class Command
     {
-        [JsonIgnore]
-        public Guid ProformaId { get; set; }
         public DateTime IssuedAt { get; set; }
     }
 
@@ -24,7 +21,6 @@ public static class IssueProforma
     {
         public Validator()
         {
-            RuleFor(command => command.ProformaId).NotEmpty();
         }
     }
 
@@ -41,8 +37,6 @@ public static class IssueProforma
     [FromServices] IBus bus,
     [FromBody] Command command)
     {
-        command.ProformaId = proformaId;
-
         new Validator().ValidateAndThrow(command);
 
         await behavior.Handle(async () =>
@@ -50,7 +44,7 @@ public static class IssueProforma
             var proforma = await dbContext.Set<Proforma>()
                 .Include(p => p.Weeks)
                 .ThenInclude(w => w.WorkItems)
-                .SingleOrDefaultAsync(p => p.ProformaId == command.ProformaId);
+                .SingleOrDefaultAsync(p => p.ProformaId == proformaId);
 
             if (proforma == null)
             {
@@ -60,7 +54,7 @@ public static class IssueProforma
             proforma.Issue(command.IssuedAt);
         });
 
-        await bus.Publish(new ProformaIssued() { ProformaId = command.ProformaId });
+        await bus.Publish(new ProformaIssued() { ProformaId = proformaId });
 
         return TypedResults.Ok();
     }

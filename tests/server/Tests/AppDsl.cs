@@ -98,10 +98,7 @@ public class AppDsl : IAsyncDisposable
     {
         var (clientCommand, client) = await Client.Register(clientSetup);
 
-        var (_, project) = await Project.Add(c =>
-        {
-            c.ClientId = client!.ClientId;
-        });
+        var (_, project) = await Project.Add(client!.ClientId);
 
         var (command, result) = await Proformas.Register(c =>
         {
@@ -144,9 +141,8 @@ public class AppDsl : IAsyncDisposable
     {
         var (proformaResult, proformaCommand, clientResult, collaboratorResult) = await RegisterProformaReadyToIssue(start, days);
 
-        await Proformas.Issue(c =>
+        await Proformas.Issue(proformaResult.ProformaId, c =>
         {
-            c.ProformaId = proformaResult.ProformaId;
             c.IssuedAt = start.AddDays(days + 1);
         });
 
@@ -186,9 +182,8 @@ public class AppDsl : IAsyncDisposable
             c.ProformaId = new[] { proformaId };
         });
 
-        await CollaboratorPayment.Pay(c =>
+        await CollaboratorPayment.Pay(start!.CollaboratorPaymentId, c =>
         {
-            c.CollaboratorPaymentId = start!.CollaboratorPaymentId;
             c.PaidAt = today.AddDays(1);
         });
 
@@ -206,9 +201,8 @@ public class AppDsl : IAsyncDisposable
 
         await Invoice.Upload("blank.pdf", c => c.InvoiceId = start!.InvoiceId);
 
-        await Invoice.Issue(c =>
+        await Invoice.Issue(start!.InvoiceId, c =>
         {
-            c.InvoiceId = start!.InvoiceId;
             c.IssuedAt = today.AddDays(1);
         });
 

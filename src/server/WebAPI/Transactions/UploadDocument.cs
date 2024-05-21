@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Transactions;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.Ui;
@@ -13,7 +12,6 @@ public static class UploadDocument
 {
     public class Command
     {
-        public Guid TransactionId { get; set; }
         public string? DocumentUrl { get; set; }
     }
 
@@ -22,7 +20,6 @@ public static class UploadDocument
         public Validator()
         {
             RuleFor(command => command.DocumentUrl).NotEmpty().MaximumLength(500);
-            RuleFor(command => command.TransactionId).NotEmpty();
         }
     }
 
@@ -41,7 +38,6 @@ public static class UploadDocument
 
             var command = new Command
             {
-                TransactionId = transactionId,
                 DocumentUrl = url
             };
 
@@ -49,7 +45,7 @@ public static class UploadDocument
 
             await behavior.Handle(async () =>
             {
-                var transaction = await dbContext.Get<Transaction>(command.TransactionId);
+                var transaction = await dbContext.Get<Transaction>(transactionId);
 
                 transaction.UploadDocument(command.DocumentUrl!);
             });

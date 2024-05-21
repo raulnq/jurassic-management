@@ -15,7 +15,7 @@ public class CollectionDsl
     {
         _httpDriver = httpDriver;
     }
-    public async Task<ConfirmCollection.Command> Confirm(Action<ConfirmCollection.Command>? setup = null, string? errorDetail = null, IDictionary<string, string[]>? errors = null)
+    public async Task<ConfirmCollection.Command> Confirm(Guid collectionId, Action<ConfirmCollection.Command>? setup = null, string? errorDetail = null, IDictionary<string, string[]>? errors = null)
     {
         var faker = new Faker<ConfirmCollection.Command>()
             .RuleFor(command => command.Number, faker => faker.Random.Guid().ToString())
@@ -24,7 +24,7 @@ public class CollectionDsl
 
         setup?.Invoke(request);
 
-        var (status, error) = await _httpDriver.Post($"{_uri}/{request.CollectionId}/confirm", request);
+        var (status, error) = await _httpDriver.Post($"{_uri}/{collectionId}/confirm", request);
 
         (status, error).Check(errorDetail, errors: errors);
 

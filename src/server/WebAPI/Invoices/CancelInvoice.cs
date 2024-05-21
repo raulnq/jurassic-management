@@ -14,17 +14,12 @@ public static class CancelInvoice
 {
     public class Command
     {
-        [JsonIgnore]
-        public Guid InvoiceId { get; set; }
-        [JsonIgnore]
-        public DateTimeOffset CanceledAt { get; set; }
     }
 
     public class Validator : AbstractValidator<Command>
     {
         public Validator()
         {
-            RuleFor(command => command.InvoiceId).NotEmpty();
         }
     }
 
@@ -35,22 +30,18 @@ public static class CancelInvoice
     [FromServices] IClock clock,
     [FromBody] Command command)
     {
-        command.InvoiceId = invoiceId;
-
-        command.CanceledAt = clock.Now;
-
         new Validator().ValidateAndThrow(command);
 
         await behavior.Handle(async () =>
         {
-            var invoice = await dbContext.Get<Invoice>(command.InvoiceId);
+            var invoice = await dbContext.Get<Invoice>(invoiceId);
 
             if (invoice == null)
             {
                 throw new NotFoundException<Invoice>();
             }
 
-            invoice.Cancel(command.CanceledAt);
+            invoice.Cancel(clock.Now);
         });
 
         return TypedResults.Ok();
@@ -66,14 +57,12 @@ public static class CancelInvoice
     {
         var command = new Command()
         {
-            InvoiceId = invoiceId,
-            CanceledAt = clock.Now
         };
 
         await Handle(behavior, dbContext, invoiceId, clock, command);
 
-        context.Response.Headers.TriggerShowSuccessMessage("invoice", "canceled", command.InvoiceId);
+        context.Response.Headers.TriggerShowSuccessMessage("invoice", "canceled", invoiceId);
 
-        return await GetInvoice.HandlePage(runner, command.InvoiceId);
+        return await GetInvoice.HandlePage(runner, invoiceId);
     }
 }

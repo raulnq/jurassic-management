@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.ExceptionHandling;
 using WebAPI.Infrastructure.SqlKata;
@@ -14,12 +13,6 @@ public static class EditWorkItem
 {
     public class Command
     {
-        [JsonIgnore]
-        public Guid ProformaId { get; set; }
-        [JsonIgnore]
-        public int Week { get; set; }
-        [JsonIgnore]
-        public Guid CollaboratorId { get; set; }
         public decimal Hours { get; set; }
         public decimal FreeHours { get; set; }
     }
@@ -28,9 +21,6 @@ public static class EditWorkItem
     {
         public Validator()
         {
-            RuleFor(command => command.ProformaId).NotEmpty();
-            RuleFor(command => command.CollaboratorId).NotEmpty();
-            RuleFor(command => command.Week).GreaterThan(0);
             RuleFor(command => command.Hours).GreaterThan(0);
             RuleFor(command => command.FreeHours).GreaterThanOrEqualTo(0);
         }
@@ -44,12 +34,6 @@ public static class EditWorkItem
         [FromRoute] Guid collaboratorId,
         [FromBody] Command command)
     {
-        command.ProformaId = proformaId;
-
-        command.Week = week;
-
-        command.CollaboratorId = collaboratorId;
-
         new Validator().ValidateAndThrow(command);
 
         await behavior.Handle(async () =>
@@ -57,14 +41,14 @@ public static class EditWorkItem
             var proforma = await dbContext.Set<Proforma>()
             .Include(p => p.Weeks)
             .ThenInclude(w => w.WorkItems)
-            .SingleOrDefaultAsync(p => p.ProformaId == command.ProformaId);
+            .SingleOrDefaultAsync(p => p.ProformaId == proformaId);
 
             if (proforma == null)
             {
                 throw new NotFoundException<Proforma>();
             }
 
-            proforma.EditWorkItem(command.Week, command.CollaboratorId, command.Hours, command.FreeHours);
+            proforma.EditWorkItem(week, collaboratorId, command.Hours, command.FreeHours);
         });
 
         return TypedResults.Ok();
@@ -101,8 +85,8 @@ public static class EditWorkItem
         return await ListProformaWeekWorkItems.HandlePage(
             new ListProformaWeekWorkItems.Query()
             {
-                ProformaId = command.ProformaId,
-                Week = command.Week
+                ProformaId = proformaId,
+                Week = week
             }, runner, dbContext, proformaId, week);
     }
 }

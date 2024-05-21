@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Infrastructure.Ui;
@@ -13,8 +12,6 @@ public static class ConfirmCollaboratorPayment
 {
     public class Command
     {
-        [JsonIgnore]
-        public Guid CollaboratorPaymentId { get; set; }
         public string Number { get; set; } = default!;
         public DateTime ConfirmedAt { get; set; }
     }
@@ -23,7 +20,6 @@ public static class ConfirmCollaboratorPayment
     {
         public Validator()
         {
-            RuleFor(command => command.CollaboratorPaymentId).NotEmpty();
             RuleFor(command => command.Number).NotEmpty().MaximumLength(50);
         }
     }
@@ -34,13 +30,11 @@ public static class ConfirmCollaboratorPayment
     [FromRoute] Guid collaboratorPaymentId,
     [FromBody] Command command)
     {
-        command.CollaboratorPaymentId = collaboratorPaymentId;
-
         new Validator().ValidateAndThrow(command);
 
         await behavior.Handle(async () =>
         {
-            var payment = await dbContext.Get<CollaboratorPayment>(command.CollaboratorPaymentId);
+            var payment = await dbContext.Get<CollaboratorPayment>(collaboratorPaymentId);
 
             payment.Confirm(command.ConfirmedAt, command.Number);
         });

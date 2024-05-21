@@ -13,10 +13,7 @@ public class CancelInvoiceTests : BaseTest
 
         var start = await _appDsl.RegisterInvoice(proformaResult.ProformaId, clientResult.ClientId, proformaCommand.Currency);
 
-        await _appDsl.Invoice.Cancel(c =>
-        {
-            c.InvoiceId = start!.InvoiceId;
-        });
+        await _appDsl.Invoice.Cancel(start!.InvoiceId);
 
     }
 }

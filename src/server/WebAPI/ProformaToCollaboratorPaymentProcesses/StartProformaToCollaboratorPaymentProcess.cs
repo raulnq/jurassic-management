@@ -21,8 +21,6 @@ public static class StartProformaToCollaboratorPaymentProcess
         public Guid CollaboratorId { get; set; }
         public Currency Currency { get; set; }
         public IEnumerable<Guid>? ProformaId { get; set; }
-        [JsonIgnore]
-        public DateTimeOffset CreatedAt { get; set; }
     }
 
     public class Result
@@ -46,15 +44,13 @@ public static class StartProformaToCollaboratorPaymentProcess
     {
         new Validator().ValidateAndThrow(command);
 
-        command.CreatedAt = clock.Now;
-
         var proformas = await dbContext.Set<Proforma>().AsNoTracking().Include(p => p.Weeks).ThenInclude(w => w.WorkItems).AsNoTracking().Where(i => command.ProformaId!.Contains(i.ProformaId)).ToListAsync();
 
         var registerCollaboratorPaymentHandler = new RegisterCollaboratorPayment.Handler(dbContext);
 
         var result = await behavior.Handle(async () =>
         {
-            var process = new ProformaToCollaboratorPaymentProcess(NewId.Next().ToSequentialGuid(), command.CollaboratorId, command.Currency, proformas, command.CreatedAt);
+            var process = new ProformaToCollaboratorPaymentProcess(NewId.Next().ToSequentialGuid(), command.CollaboratorId, command.Currency, proformas, clock.Now);
 
             dbContext.Set<ProformaToCollaboratorPaymentProcess>().Add(process);
 
@@ -64,7 +60,7 @@ public static class StartProformaToCollaboratorPaymentProcess
                 {
                     CollaboratorPaymentId = process.CollaboratorPaymentId,
                     CollaboratorId = collaborator.Key.CollaboratorId,
-                    CreatedAt = command.CreatedAt,
+                    CreatedAt = clock.Now,
                     GrossSalary = collaborator.Sum(i => i.GrossSalary),
                     Currency = command.Currency
                 });

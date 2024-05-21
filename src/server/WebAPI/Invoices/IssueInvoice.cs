@@ -13,8 +13,6 @@ public static class IssueInvoice
 {
     public class Command
     {
-        [JsonIgnore]
-        public Guid InvoiceId { get; set; }
         public DateTime IssuedAt { get; set; }
         public string Number { get; set; } = default!;
     }
@@ -23,7 +21,6 @@ public static class IssueInvoice
     {
         public Validator()
         {
-            RuleFor(command => command.InvoiceId).NotEmpty();
             RuleFor(command => command.Number).NotEmpty().MaximumLength(50);
         }
     }
@@ -34,13 +31,11 @@ public static class IssueInvoice
     [FromRoute] Guid invoiceId,
     [FromBody] Command command)
     {
-        command.InvoiceId = invoiceId;
-
         new Validator().ValidateAndThrow(command);
 
         await behavior.Handle(async () =>
         {
-            var invoice = await dbContext.Get<Invoice>(command.InvoiceId);
+            var invoice = await dbContext.Get<Invoice>(invoiceId);
 
             invoice.Issue(command.IssuedAt, command.Number);
         });

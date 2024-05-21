@@ -16,8 +16,6 @@ public static class EditCollaboratorPayment
 {
     public class Command
     {
-        [JsonIgnore]
-        public Guid CollaboratorPaymentId { get; set; }
         public decimal GrossSalary { get; set; }
         public Currency Currency { get; set; }
     }
@@ -27,7 +25,6 @@ public static class EditCollaboratorPayment
         public Validator()
         {
             RuleFor(command => command.GrossSalary).GreaterThan(0);
-            RuleFor(command => command.CollaboratorPaymentId).NotEmpty();
         }
     }
 
@@ -37,13 +34,11 @@ public static class EditCollaboratorPayment
     [FromServices] ApplicationDbContext dbContext,
     [FromBody] Command command)
     {
-        command.CollaboratorPaymentId = collaboratorPaymentId;
-
         new Validator().ValidateAndThrow(command);
 
         await behavior.Handle(async () =>
         {
-            var payment = await dbContext.Get<CollaboratorPayment>(command.CollaboratorPaymentId);
+            var payment = await dbContext.Get<CollaboratorPayment>(collaboratorPaymentId);
 
             var collaborator = await dbContext.Set<Collaborator>().AsNoTracking().FirstAsync(cr => cr.CollaboratorId == payment.CollaboratorId);
 

@@ -105,11 +105,7 @@ public static class ListProformaWeekWorkItems
         [FromRoute] Guid proformaId,
         [FromRoute] int week)
     {
-        query.ProformaId = proformaId;
-
-        query.Week = week;
-
-        var result = await new Runner(runner).Run(query);
+        var result = await Handle(runner, proformaId, week, query);
 
         var proforma = await dbContext.Set<Proforma>().AsNoTracking().FirstAsync(p => p.ProformaId == proformaId);
 
@@ -119,7 +115,7 @@ public static class ListProformaWeekWorkItems
 
         return new RazorComponentResult<ListProformaWeekWorkItemsPage>(new
         {
-            Result = result,
+            Result = result.Value,
             Query = query,
             Proforma = proforma,
             ProformaWeek = proformaWeek,

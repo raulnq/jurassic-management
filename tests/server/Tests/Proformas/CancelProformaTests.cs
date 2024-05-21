@@ -9,7 +9,7 @@ public class CancelProformaTests : BaseTest
     {
         var (proformaResult, _, _, _) = await _appDsl.RegisterProformaReadyToIssue(_appDsl.Clock.Now.DateTime);
 
-        await _appDsl.Proformas.Cancel(c => c.ProformaId = proformaResult.ProformaId);
+        await _appDsl.Proformas.Cancel(proformaResult.ProformaId);
     }
 
     [Fact]
@@ -17,6 +17,6 @@ public class CancelProformaTests : BaseTest
     {
         var (proformaResult, _, _, _) = await _appDsl.IssueProforma(_appDsl.Clock.Now.DateTime);
 
-        await _appDsl.Proformas.Cancel(c => c.ProformaId = proformaResult.ProformaId, "code: proforma-status-not-pending");
+        await _appDsl.Proformas.Cancel(proformaResult.ProformaId, errorDetail: "code: proforma-status-not-pending");
     }
 }

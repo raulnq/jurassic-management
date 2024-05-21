@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Infrastructure.Ui;
@@ -14,8 +13,6 @@ public static class EditClient
 {
     public class Command
     {
-        [JsonIgnore]
-        public Guid ClientId { get; set; }
         public string Name { get; set; } = default!;
         public string PhoneNumber { get; set; } = default!;
         public string DocumentNumber { get; set; } = default!;
@@ -32,7 +29,6 @@ public static class EditClient
     {
         public Validator()
         {
-            RuleFor(command => command.ClientId).NotEmpty();
             RuleFor(command => command.Name).MaximumLength(200).NotEmpty();
             RuleFor(command => command.PhoneNumber).MaximumLength(50).NotEmpty();
             RuleFor(command => command.DocumentNumber).MaximumLength(50).NotEmpty();
@@ -52,13 +48,11 @@ public static class EditClient
         [FromRoute] Guid clientId,
         [FromBody] Command command)
     {
-        command.ClientId = clientId;
-
         new Validator().ValidateAndThrow(command);
 
         await behavior.Handle(async () =>
         {
-            var client = await dbContext.Get<Client>(command.ClientId);
+            var client = await dbContext.Get<Client>(clientId);
 
             client.Edit(command.Name!, command.PhoneNumber, command.DocumentNumber, command.Address);
 
@@ -99,8 +93,8 @@ public static class EditClient
     {
         await Handle(behavior, dbContext, clientId, command);
 
-        context.Response.Headers.TriggerShowEditSuccessMessage("client", command.ClientId);
+        context.Response.Headers.TriggerShowEditSuccessMessage("client", clientId);
 
-        return await HandlePage(dbContext, runner, command.ClientId);
+        return await HandlePage(dbContext, runner, clientId);
     }
 }

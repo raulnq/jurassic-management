@@ -13,8 +13,6 @@ public static class EditTransaction
 {
     public class Command
     {
-        [JsonIgnore]
-        public Guid TransactionId { get; set; }
         public TransactionType Type { get; set; }
         public Currency Currency { get; set; }
         public string Description { get; set; } = default!;
@@ -41,13 +39,11 @@ public static class EditTransaction
     [FromRoute] Guid transactionId,
     [FromBody] Command command)
     {
-        command.TransactionId = transactionId;
-
         new Validator().ValidateAndThrow(command);
 
         await behavior.Handle(async () =>
         {
-            var transaction = await dbContext.Get<Transaction>(command.TransactionId);
+            var transaction = await dbContext.Get<Transaction>(transactionId);
 
             transaction.Edit(command.Type,
                 command.Description,
@@ -79,8 +75,8 @@ public static class EditTransaction
     {
         await Handle(behavior, dbContext, transactionId, command);
 
-        context.Response.Headers.TriggerShowEditSuccessMessage($"transaction", command.TransactionId);
+        context.Response.Headers.TriggerShowEditSuccessMessage($"transaction", transactionId);
 
-        return await HandlePage(dbContext, command.TransactionId);
+        return await HandlePage(dbContext, transactionId);
     }
 }

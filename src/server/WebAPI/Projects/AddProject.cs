@@ -2,7 +2,6 @@
 using MassTransit;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Infrastructure.Ui;
@@ -13,8 +12,6 @@ public static class AddProject
 {
     public class Command
     {
-        [JsonIgnore]
-        public Guid ClientId { get; set; }
         public string Name { get; set; } = default!;
     }
 
@@ -37,13 +34,11 @@ public static class AddProject
     [FromRoute] Guid clientId,
     [FromBody] Command command)
     {
-        command.ClientId = clientId;
-
         new Validator().ValidateAndThrow(command);
 
         var result = await behavior.Handle(() =>
         {
-            var project = new Project(NewId.Next().ToSequentialGuid(), command.ClientId, command.Name!);
+            var project = new Project(NewId.Next().ToSequentialGuid(), clientId, command.Name!);
 
             dbContext.Set<Project>().Add(project);
 
@@ -75,7 +70,7 @@ public static class AddProject
 
         context.Response.Headers.TriggerShowRegisterSuccessMessageAndCloseModal("project", result.Value!.ProjectId);
 
-        return await ListProjects.HandlePage(new ListProjects.Query() { ClientId = command.ClientId }, clientId, runner);
+        return await ListProjects.HandlePage(new ListProjects.Query() { ClientId = clientId }, clientId, runner);
     }
 
 }

@@ -15,9 +15,8 @@ public class PayCollaboratorPaymentTests : BaseTest
 
         var start = await _appDsl.RegisterCollaboratorPaymentFromProforma(proformaResult.ProformaId, collaboratorResult.CollaboratorId, proformaCommand.Currency);
 
-        await _appDsl.CollaboratorPayment.Pay(c =>
+        await _appDsl.CollaboratorPayment.Pay(start!.CollaboratorPaymentId, c =>
         {
-            c.CollaboratorPaymentId = start!.CollaboratorPaymentId;
             c.PaidAt = today.AddDays(1);
         });
     }

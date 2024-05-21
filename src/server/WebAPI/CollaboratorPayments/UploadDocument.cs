@@ -13,7 +13,6 @@ public static class UploadDocument
 {
     public class Command
     {
-        public Guid CollaboratorPaymentId { get; set; }
         public string? DocumentUrl { get; set; }
     }
 
@@ -22,7 +21,6 @@ public static class UploadDocument
         public Validator()
         {
             RuleFor(command => command.DocumentUrl).NotEmpty().MaximumLength(500);
-            RuleFor(command => command.CollaboratorPaymentId).NotEmpty();
         }
     }
 
@@ -41,7 +39,6 @@ public static class UploadDocument
 
             var command = new Command
             {
-                CollaboratorPaymentId = collaboratorPaymentId,
                 DocumentUrl = url
             };
 
@@ -49,7 +46,7 @@ public static class UploadDocument
 
             await behavior.Handle(async () =>
             {
-                var payment = await dbContext.Get<CollaboratorPayment>(command.CollaboratorPaymentId);
+                var payment = await dbContext.Get<CollaboratorPayment>(collaboratorPaymentId);
 
                 payment.Upload(command.DocumentUrl!);
             });

@@ -17,7 +17,7 @@ public class CollaboratorPaymentDsl
         _httpDriver = httpDriver;
     }
 
-    public async Task<UploadDocument.Command?> Upload(string file, Action<UploadDocument.Command>? setup = null, string? errorDetail = null, IDictionary<string, string[]>? errors = null)
+    public async Task<UploadDocument.Command?> Upload(string file, Guid collaboratorPaymentId, Action<UploadDocument.Command>? setup = null, string? errorDetail = null, IDictionary<string, string[]>? errors = null)
     {
         var faker = new Faker<UploadDocument.Command>()
            ;
@@ -29,7 +29,7 @@ public class CollaboratorPaymentDsl
         {
             var fileName = Path.GetFileName(file);
 
-            var (status, result, error) = await _httpDriver.Post<EmptyResult>($"{_uri}/{request.CollaboratorPaymentId}/upload-document", fs, fileName, MediaTypeNames.Application.Pdf);
+            var (status, result, error) = await _httpDriver.Post<EmptyResult>($"{_uri}/{collaboratorPaymentId}/upload-document", fs, fileName, MediaTypeNames.Application.Pdf);
 
             (status, error).Check(errorDetail, errors: errors);
 
@@ -56,7 +56,22 @@ public class CollaboratorPaymentDsl
         return (request, result!);
     }
 
-    public async Task<EditCollaboratorPayment.Command> Pay(Action<EditCollaboratorPayment.Command>? setup = null, string? errorDetail = null, IDictionary<string, string[]>? errors = null)
+    public async Task<PayCollaboratorPayment.Command> Pay(Guid collaboratorPaymentId, Action<PayCollaboratorPayment.Command>? setup = null, string? errorDetail = null, IDictionary<string, string[]>? errors = null)
+    {
+        var faker = new Faker<PayCollaboratorPayment.Command>()
+            ;
+        var request = faker.Generate();
+
+        setup?.Invoke(request);
+
+        var (status, error) = await _httpDriver.Post($"{_uri}/{collaboratorPaymentId}/pay", request);
+
+        (status, error).Check(errorDetail, errors: errors);
+
+        return request;
+    }
+
+    public async Task<EditCollaboratorPayment.Command> Edit(Guid collaboratorPaymentId, Action<EditCollaboratorPayment.Command>? setup = null, string? errorDetail = null, IDictionary<string, string[]>? errors = null)
     {
         var faker = new Faker<EditCollaboratorPayment.Command>()
             .RuleFor(command => command.GrossSalary, faker => faker.Random.Number(100, 1000))
@@ -65,29 +80,14 @@ public class CollaboratorPaymentDsl
 
         setup?.Invoke(request);
 
-        var (status, error) = await _httpDriver.Put($"{_uri}/{request.CollaboratorPaymentId}", request);
+        var (status, error) = await _httpDriver.Put($"{_uri}/{collaboratorPaymentId}", request);
 
         (status, error).Check(errorDetail, errors: errors);
 
         return request;
     }
 
-    public async Task<PayCollaboratorPayment.Command> Pay(Action<PayCollaboratorPayment.Command>? setup = null, string? errorDetail = null, IDictionary<string, string[]>? errors = null)
-    {
-        var faker = new Faker<PayCollaboratorPayment.Command>()
-            ;
-        var request = faker.Generate();
-
-        setup?.Invoke(request);
-
-        var (status, error) = await _httpDriver.Post($"{_uri}/{request.CollaboratorPaymentId}/pay", request);
-
-        (status, error).Check(errorDetail, errors: errors);
-
-        return request;
-    }
-
-    public async Task<ConfirmCollaboratorPayment.Command> Confirm(Action<ConfirmCollaboratorPayment.Command>? setup = null, string? errorDetail = null, IDictionary<string, string[]>? errors = null)
+    public async Task<ConfirmCollaboratorPayment.Command> Confirm(Guid collaboratorPaymentId, Action<ConfirmCollaboratorPayment.Command>? setup = null, string? errorDetail = null, IDictionary<string, string[]>? errors = null)
     {
         var faker = new Faker<ConfirmCollaboratorPayment.Command>()
             .RuleFor(command => command.Number, faker => faker.Random.Guid().ToString());
@@ -96,7 +96,7 @@ public class CollaboratorPaymentDsl
 
         setup?.Invoke(request);
 
-        var (status, error) = await _httpDriver.Post($"{_uri}/{request.CollaboratorPaymentId}/confirm", request);
+        var (status, error) = await _httpDriver.Post($"{_uri}/{collaboratorPaymentId}/confirm", request);
 
         (status, error).Check(errorDetail, errors: errors);
 

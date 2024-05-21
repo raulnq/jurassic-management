@@ -4,7 +4,6 @@ using MassTransit;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json.Serialization;
 using WebAPI.Clients;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.SqlKata;
@@ -22,10 +21,6 @@ public static class RegisterProforma
         public Guid ProjectId { get; set; }
         public decimal Discount { get; set; }
         public Currency Currency { get; set; }
-        [JsonIgnore]
-        public DateTimeOffset CreatedAt { get; set; }
-        [JsonIgnore]
-        public int Count { get; set; }
     }
 
     public class Result
@@ -50,17 +45,15 @@ public static class RegisterProforma
     {
         new Validator().ValidateAndThrow(command);
 
-        command.Count = await dbContext.Set<Proforma>().AsNoTracking().CountAsync(p => p.End == command.End);
-
-        command.CreatedAt = clock.Now;
-
         var result = await behavior.Handle(async () =>
         {
             var project = await dbContext.Get<Project>(command.ProjectId);
 
             var client = await dbContext.Get<Client>(project.ClientId);
 
-            var proforma = new Proforma(NewId.Next().ToSequentialGuid(), command.Start, command.End, command.ProjectId, client, command.CreatedAt, command.Discount, command.Currency, command.Count);
+            var count = await dbContext.Set<Proforma>().AsNoTracking().CountAsync(p => p.End == command.End);
+
+            var proforma = new Proforma(NewId.Next().ToSequentialGuid(), command.Start, command.End, command.ProjectId, client, clock.Now, command.Discount, command.Currency, count);
 
             dbContext.Set<Proforma>().Add(proforma);
 

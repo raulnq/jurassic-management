@@ -1,12 +1,10 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Infrastructure.Ui;
-using WebAPI.InvoiceToCollectionProcesses;
 
 
 namespace WebAPI.Collections;
@@ -15,8 +13,6 @@ public static class ConfirmCollection
 {
     public class Command
     {
-        [JsonIgnore]
-        public Guid CollectionId { get; set; }
         public decimal Total { get; set; }
         public decimal Commission { get; set; }
         public string Number { get; set; } = default!;
@@ -27,7 +23,6 @@ public static class ConfirmCollection
     {
         public Validator()
         {
-            RuleFor(command => command.CollectionId).NotEmpty();
             RuleFor(command => command.Number).NotEmpty().MaximumLength(50);
             RuleFor(command => command.Total).GreaterThan(0);
             RuleFor(command => command.Commission).GreaterThanOrEqualTo(0);
@@ -40,13 +35,11 @@ public static class ConfirmCollection
     [FromRoute] Guid collectionId,
     [FromBody] Command command)
     {
-        command.CollectionId = collectionId;
-
         new Validator().ValidateAndThrow(command);
 
         await behavior.Handle(async () =>
         {
-            var collection = await dbContext.Get<Collection>(command.CollectionId);
+            var collection = await dbContext.Get<Collection>(collectionId);
 
             collection.Confirm(command.Total, command.Commission, command.Number, command.ConfirmedAt);
         });

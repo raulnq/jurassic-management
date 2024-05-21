@@ -15,6 +15,6 @@ public class UploadDocumentTests : BaseTest
 
         var start = await _appDsl.PayCollaboratorPayment(proformaResult.ProformaId, collaboratorResult.CollaboratorId, proformaCommand.Currency, today);
 
-        await _appDsl.CollaboratorPayment.Upload("blank.pdf", c => c.CollaboratorPaymentId = start!.CollaboratorPaymentId);
+        await _appDsl.CollaboratorPayment.Upload("blank.pdf", start!.CollaboratorPaymentId);
     }
 }

@@ -16,7 +16,7 @@ public class ProjectDsl
         _httpDriver = httpDriver;
     }
 
-    public async Task<(AddProject.Command, AddProject.Result?)> Add(Action<AddProject.Command>? setup = null, string? errorDetail = null, IDictionary<string, string[]>? errors = null)
+    public async Task<(AddProject.Command, AddProject.Result?)> Add(Guid clientId, Action<AddProject.Command>? setup = null, string? errorDetail = null, IDictionary<string, string[]>? errors = null)
     {
         var faker = new Faker<AddProject.Command>()
             .RuleFor(command => command.Name, faker => faker.Random.Guid().ToString())
@@ -26,7 +26,7 @@ public class ProjectDsl
 
         setup?.Invoke(request);
 
-        var (status, result, error) = await _httpDriver.Post<AddProject.Command, AddProject.Result>($"{_uri}/{request.ClientId}/projects", request);
+        var (status, result, error) = await _httpDriver.Post<AddProject.Command, AddProject.Result>($"{_uri}/{clientId}/projects", request);
 
         (status, result, error).Check(errorDetail, errors: errors, successAssert: result =>
         {
@@ -36,7 +36,7 @@ public class ProjectDsl
         return (request, result);
     }
 
-    public async Task<EditProject.Command> Edit(Action<EditProject.Command>? setup = null, string? errorDetail = null, IDictionary<string, string[]>? errors = null)
+    public async Task<EditProject.Command> Edit(Guid projectId, Action<EditProject.Command>? setup = null, string? errorDetail = null, IDictionary<string, string[]>? errors = null)
     {
         var faker = new Faker<EditProject.Command>()
             .RuleFor(command => command.Name, faker => faker.Random.Guid().ToString())
@@ -45,7 +45,7 @@ public class ProjectDsl
 
         setup?.Invoke(request);
 
-        var (status, error) = await _httpDriver.Put($"{_uri}/{Guid.NewGuid()}/projects/{request.ProjectId}", request);
+        var (status, error) = await _httpDriver.Put($"{_uri}/{Guid.NewGuid()}/projects/{projectId}", request);
 
         (status, error).Check(errorDetail, errors: errors);
 

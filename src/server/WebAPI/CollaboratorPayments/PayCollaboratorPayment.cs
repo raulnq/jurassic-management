@@ -13,8 +13,6 @@ public static class PayCollaboratorPayment
 {
     public class Command
     {
-        [JsonIgnore]
-        public Guid CollaboratorPaymentId { get; set; }
         public DateTime PaidAt { get; set; }
     }
 
@@ -22,7 +20,6 @@ public static class PayCollaboratorPayment
     {
         public Validator()
         {
-            RuleFor(command => command.CollaboratorPaymentId).NotEmpty();
         }
     }
 
@@ -32,13 +29,11 @@ public static class PayCollaboratorPayment
     [FromRoute] Guid collaboratorPaymentId,
     [FromBody] Command command)
     {
-        command.CollaboratorPaymentId = collaboratorPaymentId;
-
         new Validator().ValidateAndThrow(command);
 
         await behavior.Handle(async () =>
         {
-            var payment = await dbContext.Get<CollaboratorPayment>(command.CollaboratorPaymentId);
+            var payment = await dbContext.Get<CollaboratorPayment>(collaboratorPaymentId);
 
             payment.Paid(command.PaidAt);
         });

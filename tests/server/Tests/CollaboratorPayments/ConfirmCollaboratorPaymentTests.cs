@@ -15,11 +15,10 @@ public class ConfirmCollaboratorPaymentTests : BaseTest
 
         var start = await _appDsl.PayCollaboratorPayment(proformaResult.ProformaId, collaboratorResult.CollaboratorId, proformaCommand.Currency, today);
 
-        await _appDsl.CollaboratorPayment.Upload("blank.pdf", c => c.CollaboratorPaymentId = start!.CollaboratorPaymentId);
+        await _appDsl.CollaboratorPayment.Upload("blank.pdf", start!.CollaboratorPaymentId);
 
-        await _appDsl.CollaboratorPayment.Confirm(c =>
+        await _appDsl.CollaboratorPayment.Confirm(start!.CollaboratorPaymentId, c =>
         {
-            c.CollaboratorPaymentId = start!.CollaboratorPaymentId;
             c.ConfirmedAt = today.AddDays(1);
         });
     }

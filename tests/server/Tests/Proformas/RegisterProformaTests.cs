@@ -9,10 +9,7 @@ public class RegisterProformaTests : BaseTest
     {
         var (_, client) = await _appDsl.Client.Register();
 
-        var (_, project) = await _appDsl.Project.Add(c =>
-        {
-            c.ClientId = client!.ClientId;
-        });
+        var (_, project) = await _appDsl.Project.Add(client!.ClientId);
 
         var (_, proforma) = await _appDsl.Proformas.Register(c =>
         {
@@ -27,10 +24,7 @@ public class RegisterProformaTests : BaseTest
     {
         var (_, client) = await _appDsl.Client.Register();
 
-        var (_, project) = await _appDsl.Project.Add(c =>
-        {
-            c.ClientId = client!.ClientId;
-        });
+        var (_, project) = await _appDsl.Project.Add(client!.ClientId);
 
         var (_, proforma) = await _appDsl.Proformas.Register(c =>
         {
@@ -45,10 +39,7 @@ public class RegisterProformaTests : BaseTest
     {
         var (_, client) = await _appDsl.Client.Register();
 
-        var (_, project) = await _appDsl.Project.Add(c =>
-        {
-            c.ClientId = client!.ClientId;
-        });
+        var (_, project) = await _appDsl.Project.Add(client!.ClientId);
 
         var (_, proforma) = await _appDsl.Proformas.Register(c =>
         {
@@ -63,10 +54,7 @@ public class RegisterProformaTests : BaseTest
     {
         var (_, client) = await _appDsl.Client.Register();
 
-        var (_, project) = await _appDsl.Project.Add(c =>
-        {
-            c.ClientId = client!.ClientId;
-        });
+        var (_, project) = await _appDsl.Project.Add(client!.ClientId);
 
         var (_, proforma) = await _appDsl.Proformas.Register(c =>
         {
