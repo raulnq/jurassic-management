@@ -44,8 +44,10 @@ public static class ListProformaToCollaboratorPaymentProcessItems
 
     public static async Task<RazorComponentResult> HandlePage(
     [AsParameters] Query query,
+    [FromRoute] Guid collaboratoPaymentId,
     [FromServices] SqlKataQueryRunner runner)
     {
+        query.CollaboratorPaymentId = collaboratoPaymentId;
         var result = await new Runner(runner).Run(query);
         return new RazorComponentResult<ListProformaToCollaboratorPaymentProcessItemsPage>(new { Result = result, Query = query });
     }

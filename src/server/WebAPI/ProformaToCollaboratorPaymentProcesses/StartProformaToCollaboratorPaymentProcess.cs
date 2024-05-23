@@ -54,17 +54,16 @@ public static class StartProformaToCollaboratorPaymentProcess
 
             dbContext.Set<ProformaToCollaboratorPaymentProcess>().Add(process);
 
-            foreach (var collaborator in proformas.SelectMany(p => p.Weeks).SelectMany(w => w.WorkItems).GroupBy(i => new { i.CollaboratorId }))
+            var workItems = proformas.SelectMany(p => p.Weeks).SelectMany(w => w.WorkItems).Where(w => w.CollaboratorId == command.CollaboratorId);
+
+            await registerCollaboratorPaymentHandler.Handle(new RegisterCollaboratorPayment.Command()
             {
-                await registerCollaboratorPaymentHandler.Handle(new RegisterCollaboratorPayment.Command()
-                {
-                    CollaboratorPaymentId = process.CollaboratorPaymentId,
-                    CollaboratorId = collaborator.Key.CollaboratorId,
-                    CreatedAt = clock.Now,
-                    GrossSalary = collaborator.Sum(i => i.GrossSalary),
-                    Currency = command.Currency
-                });
-            }
+                CollaboratorPaymentId = process.CollaboratorPaymentId,
+                CollaboratorId = command.CollaboratorId,
+                CreatedAt = clock.Now,
+                GrossSalary = workItems.Sum(i => i.GrossSalary),
+                Currency = command.Currency
+            });
 
             return new Result()
             {

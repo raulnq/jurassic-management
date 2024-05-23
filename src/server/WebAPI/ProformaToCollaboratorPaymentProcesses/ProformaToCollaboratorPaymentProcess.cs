@@ -32,7 +32,7 @@ public class ProformaToCollaboratorPaymentProcess
 
             foreach (var week in proforma.Weeks)
             {
-                foreach (var item in week.WorkItems)
+                foreach (var item in week.WorkItems.Where(w => w.CollaboratorId == collaboratorId))
                 {
                     Items.Add(new ProformaToCollaboratorPaymentProcessItem(CollaboratorPaymentId, item.ProformaId, item.Week, item.CollaboratorId));
                 }
