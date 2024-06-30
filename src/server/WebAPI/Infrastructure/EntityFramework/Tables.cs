@@ -56,6 +56,8 @@ public static class Tables
 
     public static Table CollaboratorPayments = new Table("CollaboratorPayments");
 
+    public static Table PayrollPayments = new Table("PayrollPayments");
+
     public static Table ProformaToCollaboratorPaymentProcesses = new Table("ProformaToCollaboratorPaymentProcesses");
 
     public static Table ProformaToCollaboratorPaymentProcessItems = new Table("ProformaToCollaboratorPaymentProcessItems");

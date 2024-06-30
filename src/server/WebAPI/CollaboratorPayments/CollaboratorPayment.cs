@@ -59,7 +59,7 @@ public class CollaboratorPayment
             ITF = Math.Round(ITF) / 20m;
         }
     }
-    public void Paid(DateTime paidAt)
+    public void Pay(DateTime paidAt)
     {
         EnsureStatus(CollaboratorPaymentStatus.Pending);
         Status = CollaboratorPaymentStatus.Paid;

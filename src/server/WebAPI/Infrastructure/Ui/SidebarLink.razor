@@ -1,5 +1,5 @@
 ﻿<li class="nav-item">
-    <a class="nav-link text-white" href="#"
+    <a class="nav-link link-dark" href="#"
        hx-get=@HtmxProps.Endpoint
        hx-target=@HtmxProps.Target
        hx-on:click=@HtmxProps.OnClick
@@ -10,7 +10,7 @@
         }
         @if (!string.IsNullOrEmpty(Text))
         {
-            @Text
+            <span>@Text</span>
         }
     </a>
 </li>

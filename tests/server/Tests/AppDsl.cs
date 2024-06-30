@@ -8,6 +8,7 @@ using Tests.Collections;
 using Tests.Infrastructure;
 using Tests.Invoices;
 using Tests.InvoiceToCollectionProcesses;
+using Tests.PayrollPayments;
 using Tests.Proformas;
 using Tests.ProformaToCollaboratorPaymentProcesses;
 using Tests.ProformaToInvoiceProcesses;
@@ -63,11 +64,15 @@ public class AppDsl : IAsyncDisposable
         CollaboratorPayment = new CollaboratorPaymentDsl(httpDriver);
 
         Transaction = new TransactionDsl(httpDriver);
+
+        PayrollPayment = new PayrollPaymentDsl(httpDriver);
     }
 
     public TransactionDsl Transaction { get; set; }
 
     public CollaboratorPaymentDsl CollaboratorPayment { get; set; }
+
+    public PayrollPaymentDsl PayrollPayment { get; set; }
 
     public ProformaToCollaboratorPaymentProcessDsl ProformaToCollaboratorPaymentProcess { get; set; }
 

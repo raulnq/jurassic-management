@@ -1,15 +1,14 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json.Serialization;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Infrastructure.Ui;
 
 
-namespace WebAPI.CollaboratorPayments;
+namespace WebAPI.PayrollPayments;
 
-public static class PayCollaboratorPayment
+public static class PayAfpPayrollPayment
 {
     public class Command
     {
@@ -26,30 +25,30 @@ public static class PayCollaboratorPayment
     public static async Task<Ok> Handle(
     [FromServices] TransactionBehavior behavior,
     [FromServices] ApplicationDbContext dbContext,
-    [FromRoute] Guid collaboratorPaymentId,
+    [FromRoute] Guid payrollPaymentId,
     [FromBody] Command command)
     {
         new Validator().ValidateAndThrow(command);
 
         await behavior.Handle(async () =>
         {
-            var payment = await dbContext.Get<CollaboratorPayment>(collaboratorPaymentId);
+            var payment = await dbContext.Get<PayrollPayment>(payrollPaymentId);
 
-            payment.Pay(command.PaidAt);
+            payment.PayAfp(command.PaidAt);
         });
 
         return TypedResults.Ok();
     }
 
     public static Task<RazorComponentResult> HandlePage(
-    [FromRoute] Guid collaboratorPaymentId,
+    [FromRoute] Guid payrollPaymentId,
     HttpContext context)
     {
         context.Response.Headers.TriggerOpenModal();
 
-        return Task.FromResult<RazorComponentResult>(new RazorComponentResult<PayCollaboratorPaymentPage>(new
+        return Task.FromResult<RazorComponentResult>(new RazorComponentResult<PayAfpPayrollPaymentPage>(new
         {
-            CollaboratorPaymentId = collaboratorPaymentId,
+            PayrollPaymentId = payrollPaymentId,
         }));
     }
 
@@ -58,13 +57,13 @@ public static class PayCollaboratorPayment
     [FromServices] ApplicationDbContext dbContext,
     [FromServices] SqlKataQueryRunner runner,
     [FromBody] Command command,
-    Guid collaboratorPaymentId,
+    Guid payrollPaymentId,
     HttpContext context)
     {
-        await Handle(behavior, dbContext, collaboratorPaymentId, command);
+        await Handle(behavior, dbContext, payrollPaymentId, command);
 
-        context.Response.Headers.TriggerShowSuccessMessageAndCloseModal("collaborator payment", "paid", collaboratorPaymentId);
+        context.Response.Headers.TriggerShowSuccessMessageAndCloseModal("payroll payment", "afp paid", payrollPaymentId);
 
-        return await EditCollaboratorPayment.HandlePage(runner, collaboratorPaymentId);
+        return await EditPayrollPayment.HandlePage(runner, payrollPaymentId);
     }
 }
