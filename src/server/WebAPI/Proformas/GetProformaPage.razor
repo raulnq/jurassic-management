@@ -15,6 +15,9 @@
         <MenuItem HtmxProps=@(new HtmxProps(Endpoints.Cancel, $"#{WebAPI.Users.MainPage.Workspace}"){ Confirm = "Are you sure?", HttpMethod="POST", Vals=$$"""{"proformaId":"{{GetProformaResult.ProformaId}}"}"""})
                   IsDisabled=@(GetProformaResult.Status !=ProformaStatus.Pending.ToString())
                   Text="Cancel" />
+        <MenuItem HtmxProps=@(new HtmxProps(Endpoints.Open, $"#{WebAPI.Users.MainPage.Workspace}"){ Confirm = "Are you sure?", HttpMethod="POST", Vals=$$"""{"proformaId":"{{GetProformaResult.ProformaId}}"}"""})
+                  IsDisabled=@(GetProformaResult.Status !=ProformaStatus.Issued.ToString())
+                  Text="Open" />
     </MenuItems>
 </Breadcrumbs>
 <Toolbar>

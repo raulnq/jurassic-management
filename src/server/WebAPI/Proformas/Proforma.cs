@@ -140,6 +140,13 @@ public class Proforma
         CanceledAt = canceledAt;
     }
 
+    public void Open()
+    {
+        EnsureStatus(ProformaStatus.Issued);
+        Status = ProformaStatus.Pending;
+        IssuedAt = null;
+    }
+
     private void EnsureIssueAtGreaterOrEqualThanEnd(DateTime issuedAt)
     {
         if (End > issuedAt)

@@ -26,7 +26,7 @@ public static class Endpoints
 
     public const string Cancel = "/ui/proformas/{proformaId}/cancel";
 
-    public const string CancelTitle = "Cancel";
+    public const string Open = "/ui/proformas/{proformaId}/open";
 
     public const string ListWeeks = "/ui/proformas/{proformaId}/weeks/list";
 
@@ -78,6 +78,8 @@ public static class Endpoints
 
         group.MapPost("/{proformaId:guid}/cancel", CancelProforma.Handle);
 
+        group.MapPost("/{proformaId:guid}/open", OpenProforma.Handle);
+
         group.MapPost("/{proformaId:guid}/weeks/{week:int}/work-items", Proformas.AddWorkItem.Handle);
 
         group.MapPut("/{proformaId:guid}/weeks/{week:int}/work-items/{collaboratorId:guid}", Proformas.EditWorkItem.Handle);
@@ -101,6 +103,8 @@ public static class Endpoints
         uigroup.MapPost("/{proformaId:guid}/issue", IssueProforma.HandleAction);
 
         uigroup.MapPost("/{proformaId:guid}/cancel", CancelProforma.HandleAction);
+
+        uigroup.MapPost("/{proformaId:guid}/open", OpenProforma.HandleAction);
 
         uigroup.MapGet("/{proformaId:guid}/weeks/list", ListProformaWeeks.HandlePage);
 
