@@ -10,6 +10,8 @@ public static class Tables
 
     public static Table Transactions = new Table("Transactions");
 
+    public static Table MoneyExchanges = new Table("MoneyExchanges");
+
     public static Table Collaborators = new Table("Collaborators");
 
     public static Table Periods = new Table("Periods");

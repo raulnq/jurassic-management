@@ -29,7 +29,9 @@
                     <th>Role</th>
                     <th>Hours</th>
                     <th>Free Hours</th>
-                    <th class="text-end">SubTotal</th>
+                    <th class="text-end">Profit Amount</th>
+                    <th class="text-end">Gross Salary</th>
+                    <th class="text-end">Sub Total</th>
                     <th class="text-end">Fee Amount</th>
                 </TableHeader>
                 <RowTemplate>
@@ -47,6 +49,8 @@
                     <td>@item.CollaboratorRoleName</td>
                     <td>@item.Hours</td>
                     <td>@item.FreeHours</td>
+                    <td class="text-end">@item.ProfitAmount.ToMoneyFormat()</td>
+                    <td class="text-end">@item.GrossSalary.ToMoneyFormat()</td>
                     <td class="text-end">@item.SubTotal.ToMoneyFormat()</td>
                     <td class="text-end">@item.FeeAmount.ToMoneyFormat()</td>
                 </RowTemplate>

@@ -8,6 +8,7 @@ using Tests.Collections;
 using Tests.Infrastructure;
 using Tests.Invoices;
 using Tests.InvoiceToCollectionProcesses;
+using Tests.MoneyExchanges;
 using Tests.PayrollPayments;
 using Tests.Proformas;
 using Tests.ProformaToCollaboratorPaymentProcesses;
@@ -66,6 +67,8 @@ public class AppDsl : IAsyncDisposable
         Transaction = new TransactionDsl(httpDriver);
 
         PayrollPayment = new PayrollPaymentDsl(httpDriver);
+
+        MoneyExchange = new MoneyExchangeDsl(httpDriver);
     }
 
     public TransactionDsl Transaction { get; set; }
@@ -93,6 +96,8 @@ public class AppDsl : IAsyncDisposable
     public ProformaToInvoiceProcessDsl ProformaToInvoiceProcess { get; set; }
 
     public InvoiceToCollectionProcessDsl InvoiceToCollectionProcess { get; set; }
+
+    public MoneyExchangeDsl MoneyExchange { get; set; }
 
     public ValueTask DisposeAsync()
     {

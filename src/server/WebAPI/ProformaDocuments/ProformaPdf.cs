@@ -144,7 +144,7 @@ namespace WebAPI.ProformaDocuments
                     }
                 });
 
-                foreach (var item in ListProformaWeekWorkItems.GroupBy(wi => new { wi.CollaboratorRoleId, wi.CollaboratorRoleName }))
+                foreach (var item in ListProformaWeekWorkItems.GroupBy(wi => new { wi.CollaboratorRoleName }))
                 {
 
                     var subtotal = item.Sum(i => i.SubTotal);
