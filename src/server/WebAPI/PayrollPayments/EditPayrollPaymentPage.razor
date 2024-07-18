@@ -72,6 +72,7 @@
                                          Label="Net Salary"
                                          Prefix="$"
                                          Value=@Result.NetSalary
+                                         Step=0.01m
                                          Readonly=@(Result.Status !=PayrollPaymentStatus.Pending.ToString()) />
                         </div>
                         <div class="col-3">
@@ -79,6 +80,7 @@
                                          Label="AFP"
                                          Prefix="+$"
                                          Value=@Result.Afp
+                                         Step=0.01m
                                          Readonly=@(Result.Status !=PayrollPaymentStatus.Pending.ToString()) />
                         </div>
                         <div class="col-3">
@@ -92,6 +94,7 @@
                             <NumberInput Property=@nameof(GetPayrollPayment.Result.Commission)
                                          Label="Commission"
                                          Prefix="$"
+                                         Step=0.01m
                                          Value=@Result.Commission
                                          Readonly=@(Result.Status !=PayrollPaymentStatus.Pending.ToString()) />
                         </div>
