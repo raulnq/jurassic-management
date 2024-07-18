@@ -27,8 +27,8 @@ public static class EditPayrollPayment
         public Validator()
         {
             RuleFor(command => command.NetSalary).GreaterThan(0);
-            RuleFor(command => command.Afp).GreaterThan(0);
-            RuleFor(command => command.Commission).GreaterThan(0);
+            RuleFor(command => command.Afp).GreaterThanOrEqualTo(0);
+            RuleFor(command => command.Commission).GreaterThanOrEqualTo(0);
         }
     }
 

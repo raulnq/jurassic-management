@@ -39,7 +39,8 @@ public static class RegisterPayrollPayment
         public Validator()
         {
             RuleFor(command => command.NetSalary).GreaterThan(0);
-            RuleFor(command => command.Afp).GreaterThan(0);
+            RuleFor(command => command.Afp).GreaterThanOrEqualTo(0);
+            RuleFor(command => command.Commission).GreaterThanOrEqualTo(0);
             RuleFor(command => command.PayrollPaymentId).NotEmpty();
             RuleFor(command => command.CollaboratorId).NotEmpty();
         }
