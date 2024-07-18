@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WebAPI.ClientContacts;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Infrastructure.Ui;
@@ -73,13 +74,19 @@ public static class EditClient
 
         var listProjectQuery = new ListProjects.Query() { ClientId = clientId };
 
-        var listProjectResult = await new ListProjects.Runner(runner).Run(new ListProjects.Query() { ClientId = clientId });
+        var listProjectResult = await new ListProjects.Runner(runner).Run(listProjectQuery);
+
+        var listClientContactsQuery = new ListClientContacts.Query() { ClientId = clientId };
+
+        var listClientContactsResult = await new ListClientContacts.Runner(runner).Run(listClientContactsQuery);
 
         return new RazorComponentResult<EditClientPage>(new
         {
             Client = client,
             ListProjectsResult = listProjectResult,
             ListProjectsQuery = listProjectQuery,
+            ListClientContactsResult = listClientContactsResult,
+            ListClientContactsQuery = listClientContactsQuery
         });
     }
 

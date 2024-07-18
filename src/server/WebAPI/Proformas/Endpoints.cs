@@ -1,4 +1,6 @@
-﻿namespace WebAPI.Proformas;
+﻿using WebAPI.ProformaDocuments;
+
+namespace WebAPI.Proformas;
 
 public static class Endpoints
 {
@@ -27,6 +29,8 @@ public static class Endpoints
     public const string Cancel = "/ui/proformas/{proformaId}/cancel";
 
     public const string Open = "/ui/proformas/{proformaId}/open";
+
+    public const string Send = "/ui/proformas/{proformaId}/send";
 
     public const string ListWeeks = "/ui/proformas/{proformaId}/weeks/list";
 
@@ -103,6 +107,8 @@ public static class Endpoints
         uigroup.MapPost("/{proformaId:guid}/issue", IssueProforma.HandleAction);
 
         uigroup.MapPost("/{proformaId:guid}/cancel", CancelProforma.HandleAction);
+
+        uigroup.MapPost("/{proformaId:guid}/send", SendProformaDcument.HandleAction);
 
         uigroup.MapPost("/{proformaId:guid}/open", OpenProforma.HandleAction);
 

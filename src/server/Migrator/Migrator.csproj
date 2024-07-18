@@ -24,9 +24,11 @@
     <None Remove="Scripts\0014.sql" />
     <None Remove="Scripts\0015.sql" />
     <None Remove="Scripts\0016.sql" />
+    <None Remove="Scripts\0017.sql" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Scripts\0017.sql" />
     <EmbeddedResource Include="Scripts\0016.sql" />
     <EmbeddedResource Include="Scripts\0015.sql" />
     <EmbeddedResource Include="Scripts\0014.sql" />

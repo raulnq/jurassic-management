@@ -28,5 +28,18 @@ namespace Infrastructure
 
             return blob.Uri.AbsoluteUri;
         }
+
+        public async Task<Stream> Download(string name)
+        {
+            var blob = _container.GetBlobClient(name);
+
+            var memoryStream = new MemoryStream();
+
+            await blob.DownloadToAsync(memoryStream);
+
+            memoryStream.Position = 0;
+
+            return memoryStream;
+        }
     }
 }

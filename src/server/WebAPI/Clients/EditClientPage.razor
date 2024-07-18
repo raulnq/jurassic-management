@@ -1,4 +1,5 @@
-﻿@using WebAPI.Collaborators;
+﻿@using WebAPI.ClientContacts
+@using WebAPI.Collaborators;
 @using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
 @using WebAPI.Projects;
@@ -147,6 +148,20 @@
     </Content>
 </Section>
 
+<Section Title=@ClientContacts.Endpoints.Title>
+    <Content>
+        <Toolbar>
+            <Actions>
+                <ActionButton Text=@ClientContacts.Endpoints.AddTitle
+                              Icon=@Icons.Add
+                              HtmxProps=@(new HtmxProps(WebAPI.ClientContacts.Endpoints.Add, $"#{WebAPI.Users.MainPage.Dialog}"){ Vals=$$"""{"clientId":"{{Client.ClientId}}"}""" }) />
+            </Actions>
+        </Toolbar>
+        <ListClientContactsPage Query=@ListClientContactsQuery
+                                Result=@ListClientContactsResult></ListClientContactsPage>
+    </Content>
+</Section>
+
 @code {
     [Parameter, EditorRequired]
     public Client Client { get; set; } = default!;
@@ -154,4 +169,8 @@
     public ListResults<ListProjects.Result> ListProjectsResult { get; set; } = default!;
     [Parameter, EditorRequired]
     public ListProjects.Query ListProjectsQuery { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public ListResults<ListClientContacts.Result> ListClientContactsResult { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public ListClientContacts.Query ListClientContactsQuery { get; set; } = default!;
 }

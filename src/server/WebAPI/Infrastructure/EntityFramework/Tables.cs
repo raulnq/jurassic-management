@@ -18,6 +18,8 @@ public static class Tables
 
     public static Table Projects = new Table("Projects");
 
+    public static Table ClientContacts = new Table("ClientContacts");
+
     public static Table ProformaDocuments = new Table("ProformaDocuments");
 
     public static Table Clients = new Table("Clients");

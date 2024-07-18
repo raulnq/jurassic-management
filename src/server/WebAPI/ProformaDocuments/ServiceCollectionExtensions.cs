@@ -1,4 +1,6 @@
-﻿namespace WebAPI.ProformaDocuments;
+﻿using PostmarkDotNet;
+
+namespace WebAPI.ProformaDocuments;
 
 public static class ServiceCollectionExtensions
 {
@@ -14,6 +16,15 @@ public static class ServiceCollectionExtensions
         }
 
         services.AddSingleton(new ProformaDocumentStorage(connectionString));
+
+        var key = configuration["PostmarkKey"];
+
+        if (string.IsNullOrEmpty(key))
+        {
+            return services;
+        }
+
+        services.AddTransient(x => new PostmarkClient(key));
 
         return services;
     }

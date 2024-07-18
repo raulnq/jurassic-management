@@ -23,6 +23,7 @@ public static class GetProforma
         public DateTime End { get; set; }
         public string Number { get; set; } = default!;
         public Guid ProjectId { get; set; }
+        public Guid ClientId { get; set; }
         public string? ProjectName { get; set; }
         public string? ClientName { get; set; }
         public string? ClientPhoneNumber { get; set; }
@@ -59,6 +60,7 @@ public static class GetProforma
                 .Select(Tables.Proformas.AllFields)
                 .Select(Tables.Projects.Field(nameof(Project.Name), nameof(Result.ProjectName)))
                 .Select(
+                    Tables.Clients.Field(nameof(Client.ClientId), nameof(Result.ClientId)),
                     Tables.Clients.Field(nameof(Client.Name), nameof(Result.ClientName)),
                     Tables.Clients.Field(nameof(Client.PhoneNumber), nameof(Result.ClientPhoneNumber)),
                     Tables.Clients.Field(nameof(Client.Address), nameof(Result.ClientAddress)),
