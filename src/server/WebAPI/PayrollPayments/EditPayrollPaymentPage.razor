@@ -60,7 +60,7 @@
                         </div>
                         <div class="col-3">
                             <SelectInput Property="MoneyExchangeId"
-                                         Label="Money Exchange Rate"
+                                         Label="Exchange Rate"
                                          Value=@Result.MoneyExchangeId.ToString()
                                          Source=@MoneyExchanges.ToDictionary(c=>c.MoneyExchangeId.ToString(), c=>$"{c.Rate.ToRateFormat()}({c.IssuedAt.ToListFormat()})")
                                          Readonly=@(Result.Status !=PayrollPaymentStatus.Pending.ToString()) />
