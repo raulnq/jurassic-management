@@ -9,7 +9,7 @@
     <Content>
         <FormRow>
             <Content>
-                <div class="col-6">
+                <div class="col-4">
                     <TextInput Property=@nameof(IssueInvoice.Command.Number)
                                Label="Number"
                                Placeholder="Enter Number"
@@ -17,11 +17,21 @@
                                Required=true>
                     </TextInput>
                 </div>
-                <div class="col-6">
+                <div class="col-4">
+                    <NumberInput Property=@nameof(IssueInvoice.Command.ExchangeRate)
+                                 Label="Exchange Rate"
+                                 Placeholder="Exchange Rate"
+                                 Min=1m
+                                 Step=0.01m
+                                 Value="1"
+                                 Required=true />
+                </div>
+                <div class="col-4">
                     <DateInput Property=@nameof(IssueInvoice.Command.IssuedAt)
                                Label="Date"
                                Required=true />
                 </div>
+
 
             </Content>
         </FormRow>

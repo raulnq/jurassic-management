@@ -30,6 +30,7 @@ public static class ListInvoices
         public string? DocumentUrl { get; set; }
         public string? Status { get; set; }
         public string Currency { get; set; } = default!;
+        public decimal ExchangeRate { get; set; }
     }
 
     public static async Task<Ok<ListResults<Result>>> Handle(

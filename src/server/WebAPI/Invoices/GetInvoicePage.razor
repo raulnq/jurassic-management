@@ -63,23 +63,29 @@
         </FormRow>
         <FormRow>
             <Content>
-                <div class="col-4">
+                <div class="col-3">
                     <DateInput Property=@nameof(GetInvoice.Result.CreatedAt)
                                Label="Created at"
                                Value=@Result.CreatedAt
                                Readonly=true />
                 </div>
-                <div class="col-4">
+                <div class="col-3">
                     <DateInput Property=@nameof(GetInvoice.Result.IssuedAt)
                                Label="Issued at"
                                Value=@Result.IssuedAt
                                Readonly=true />
                 </div>
-                <div class="col-4">
+                <div class="col-3">
                     <DateInput Property=@nameof(GetInvoice.Result.CanceledAt)
                                Label="Canceled at"
                                Value=@Result.CanceledAt
                                Readonly=true />
+                </div>
+                <div class="col-3">
+                    <NumberInput Property=@nameof(GetInvoice.Result.ExchangeRate)
+                                 Label="Exchange Rate"
+                                 Value=@Result.ExchangeRate
+                                 Readonly=true />
                 </div>
             </Content>
         </FormRow>

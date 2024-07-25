@@ -27,6 +27,7 @@ public class Invoice
     public string? Number { get; private set; }
     public InvoiceStatus Status { get; private set; }
     public Currency Currency { get; private set; }
+    public decimal ExchangeRate { get; private set; }
     public DateTimeOffset? CanceledAt { get; private set; }
     private Invoice() { }
 
@@ -47,12 +48,13 @@ public class Invoice
         DocumentUrl = documentUrl;
     }
 
-    public void Issue(DateTime issuedAt, string number)
+    public void Issue(DateTime issuedAt, string number, decimal exchangeRate)
     {
         EnsureStatus(InvoiceStatus.Pending);
         Status = InvoiceStatus.Issued;
         IssuedAt = issuedAt;
         Number = number;
+        ExchangeRate = exchangeRate;
     }
 
     public void Cancel(DateTimeOffset canceledAt)
@@ -90,6 +92,10 @@ public class Invoice
 
             builder
                 .Property(c => c.Taxes)
+                .HasColumnType("decimal(19, 4)");
+
+            builder
+                .Property(c => c.ExchangeRate)
                 .HasColumnType("decimal(19, 4)");
 
             builder

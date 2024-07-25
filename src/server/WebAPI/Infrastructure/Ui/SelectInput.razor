@@ -3,14 +3,18 @@
     <label for=@Property class="form-label">@Label</label>
     @if (Readonly)
     {
-        var sourceValue = string.Empty;
-        @foreach (var item in Source)
+        var sourceValue = Value;
+        if (Source != null && Source.Any())
         {
-            @if (Value == item.Key.ToString())
+            @foreach (var item in Source)
             {
-                sourceValue = item.Value;
+                @if (Value == item.Key.ToString())
+                {
+                    sourceValue = item.Value;
+                }
             }
         }
+
         <input type="text"
                class="form-control"
                id=@Property

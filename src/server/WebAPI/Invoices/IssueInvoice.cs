@@ -15,6 +15,7 @@ public static class IssueInvoice
     {
         public DateTime IssuedAt { get; set; }
         public string Number { get; set; } = default!;
+        public decimal ExchangeRate { get; set; }
     }
 
     public class Validator : AbstractValidator<Command>
@@ -37,7 +38,7 @@ public static class IssueInvoice
         {
             var invoice = await dbContext.Get<Invoice>(invoiceId);
 
-            invoice.Issue(command.IssuedAt, command.Number);
+            invoice.Issue(command.IssuedAt, command.Number, command.ExchangeRate);
         });
 
         return TypedResults.Ok();

@@ -25,6 +25,7 @@ public static class GetInvoice
         public decimal SubTotal { get; set; }
         public decimal Taxes { get; set; }
         public decimal Total { get; set; }
+        public decimal ExchangeRate { get; set; }
         public string? DocumentUrl { get; set; }
         public string? Status { get; set; }
         public string? Currency { get; set; }
