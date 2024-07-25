@@ -54,7 +54,7 @@
                     }
                     @foreach (var item in Source)
                     {
-                        @if (Value == item.Value)
+                        @if (Value == item.Key.ToString())
                         {
                             <option value=@item.Key selected>@item.Value</option>
                         }
@@ -107,7 +107,7 @@
                     }
                     @foreach (var item in Source)
                     {
-                        @if (Value == item.Value)
+                        @if (Value == item.Key.ToString())
                         {
                             <option value=@item.Key selected>@item.Value</option>
                         }

@@ -62,6 +62,6 @@ public static class CancelPayrollPayment
 
         context.Response.Headers.TriggerShowSuccessMessage("payroll payment", "canceled", payrollPaymentId);
 
-        return await EditPayrollPayment.HandlePage(runner, payrollPaymentId);
+        return await EditPayrollPayment.HandlePage(runner, dbContext, payrollPaymentId);
     }
 }

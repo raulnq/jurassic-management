@@ -8,6 +8,8 @@ public static class Extensions
 
     private const string MoneyFormat = "#,##0.0000";
 
+    private const string RateFormat = "#,##0.0000";
+
     public static T ToEnum<T>(this string value)
     {
         return (T)Enum.Parse(typeof(T), value, true);
@@ -36,6 +38,11 @@ public static class Extensions
     public static string ToMoneyFormat(this decimal value)
     {
         return value.ToString(MoneyFormat);
+    }
+
+    public static string ToRateFormat(this decimal value)
+    {
+        return value.ToString(RateFormat);
     }
 
     public static string ToPercentageFormat(this decimal value)

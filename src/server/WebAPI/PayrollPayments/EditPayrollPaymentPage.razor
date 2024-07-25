@@ -1,6 +1,8 @@
-﻿@using WebAPI.Proformas;
+﻿@using WebAPI.MoneyExchanges
+@using WebAPI.Proformas;
 @using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
+@using global::Infrastructure
 
 <Heading Text=@Endpoints.Title />
 <Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new(Endpoints.ListTitle, Endpoints.List.AddListParameters()), new(Endpoints.EditTitle) })
@@ -42,7 +44,7 @@
             <Content>
                 <FormRow>
                     <Content>
-                        <div class="col-6">
+                        <div class="col-3">
                             <SelectInput Property=@nameof(GetPayrollPayment.Result.CollaboratorName)
                                          Label="Collaborator"
                                          TKey=Guid
@@ -54,6 +56,13 @@
                                          Label="Currency"
                                          Value=@Result.Currency
                                          Source=@(Enum.GetValues<Currency>().ToDictionary(i=>i.ToString(), i=>i.ToString()))
+                                         Readonly=@(Result.Status !=PayrollPaymentStatus.Pending.ToString()) />
+                        </div>
+                        <div class="col-3">
+                            <SelectInput Property="MoneyExchangeId"
+                                         Label="Money Exchange Rate"
+                                         Value=@Result.MoneyExchangeId.ToString()
+                                         Source=@MoneyExchanges.ToDictionary(c=>c.MoneyExchangeId.ToString(), c=>$"{c.Rate.ToRateFormat()}({c.IssuedAt.ToListFormat()})")
                                          Readonly=@(Result.Status !=PayrollPaymentStatus.Pending.ToString()) />
                         </div>
                         <div class="col-3">
@@ -136,4 +145,6 @@
 @code {
     [Parameter, EditorRequired]
     public GetPayrollPayment.Result Result { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public IEnumerable<MoneyExchange> MoneyExchanges { get; set; } = default!;
 }

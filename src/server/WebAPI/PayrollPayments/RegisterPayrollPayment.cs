@@ -9,6 +9,7 @@ using WebAPI.Collaborators;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Infrastructure.Ui;
+using WebAPI.MoneyExchanges;
 using WebAPI.Proformas;
 
 
@@ -27,6 +28,7 @@ public static class RegisterPayrollPayment
         [JsonIgnore]
         public DateTimeOffset CreatedAt { get; set; }
         public Currency Currency { get; set; }
+        public Guid MoneyExchangeId { get; set; }
     }
 
     public class Result
@@ -62,7 +64,7 @@ public static class RegisterPayrollPayment
         {
             var collaborator = await dbContext.Set<Collaborator>().AsNoTracking().FirstAsync(cr => cr.CollaboratorId == command.CollaboratorId);
 
-            var payment = new PayrollPayment(command.PayrollPaymentId, command.CollaboratorId, command.NetSalary, command.Afp, command.Commission, command.Currency, command.CreatedAt);
+            var payment = new PayrollPayment(command.PayrollPaymentId, command.CollaboratorId, command.NetSalary, command.Afp, command.Commission, command.Currency, command.CreatedAt, command.MoneyExchangeId);
 
             dbContext.Set<PayrollPayment>().Add(payment);
 
@@ -80,9 +82,12 @@ public static class RegisterPayrollPayment
     {
         var collaborators = await dbContext.Set<Collaborator>().AsNoTracking().ToListAsync();
 
+        var moneyExchanges = await dbContext.Set<MoneyExchange>().AsNoTracking().ToListAsync();
+
         return new RazorComponentResult<RegisterPayrollPaymentPage>(new
         {
-            Collaborators = collaborators
+            Collaborators = collaborators,
+            MoneyExchanges = moneyExchanges
         });
     }
 

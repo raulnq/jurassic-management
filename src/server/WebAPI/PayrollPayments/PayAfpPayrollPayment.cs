@@ -64,6 +64,6 @@ public static class PayAfpPayrollPayment
 
         context.Response.Headers.TriggerShowSuccessMessageAndCloseModal("payroll payment", "afp paid", payrollPaymentId);
 
-        return await EditPayrollPayment.HandlePage(runner, payrollPaymentId);
+        return await EditPayrollPayment.HandlePage(runner, dbContext, payrollPaymentId);
     }
 }

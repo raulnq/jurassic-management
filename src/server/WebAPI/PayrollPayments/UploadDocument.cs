@@ -80,6 +80,6 @@ public static class UploadDocument
 
         context.Response.Headers.TriggerShowSuccessMessageAndCloseModal("document for the collaborator payment", "uploaded", payrollPaymentId);
 
-        return await EditPayrollPayment.HandlePage(runner, payrollPaymentId);
+        return await EditPayrollPayment.HandlePage(runner, dbContext, payrollPaymentId);
     }
 }

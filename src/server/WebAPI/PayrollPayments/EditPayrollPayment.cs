@@ -7,6 +7,7 @@ using WebAPI.Collaborators;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.SqlKata;
 using WebAPI.Infrastructure.Ui;
+using WebAPI.MoneyExchanges;
 using WebAPI.Proformas;
 using WebAPI.ProformaToCollaboratorPaymentProcesses;
 
@@ -20,6 +21,7 @@ public static class EditPayrollPayment
         public decimal Afp { get; set; }
         public decimal Commission { get; set; }
         public Currency Currency { get; set; }
+        public Guid MoneyExchangeId { get; set; }
     }
 
     public class Validator : AbstractValidator<Command>
@@ -44,7 +46,7 @@ public static class EditPayrollPayment
         {
             var payment = await dbContext.Get<PayrollPayment>(payrollPaymentId);
 
-            payment.Edit(command.NetSalary, command.Currency, command.Afp, command.Commission);
+            payment.Edit(command.NetSalary, command.Currency, command.Afp, command.Commission, command.MoneyExchangeId);
         });
 
         return TypedResults.Ok();
@@ -62,18 +64,22 @@ public static class EditPayrollPayment
 
         context.Response.Headers.TriggerShowEditSuccessMessage("payroll payment", payrollPaymentId);
 
-        return await EditPayrollPayment.HandlePage(runner, payrollPaymentId);
+        return await EditPayrollPayment.HandlePage(runner, dbContext, payrollPaymentId);
     }
 
     public static async Task<RazorComponentResult> HandlePage(
     [FromServices] SqlKataQueryRunner runner,
+    [FromServices] ApplicationDbContext dbContext,
     [FromRoute] Guid payrollPaymentId)
     {
         var result = await new GetPayrollPayment.Runner(runner).Run(new GetPayrollPayment.Query() { PayrollPaymentId = payrollPaymentId });
 
+        var moneyExchanges = await dbContext.Set<MoneyExchange>().AsNoTracking().ToListAsync();
+
         return new RazorComponentResult<EditPayrollPaymentPage>(new
         {
             Result = result,
+            MoneyExchanges = moneyExchanges
         });
     }
 }

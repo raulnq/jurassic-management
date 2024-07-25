@@ -27,10 +27,11 @@ public class PayrollPayment
     public decimal ITF { get; private set; }
     public Currency Currency { get; private set; }
     public DateTimeOffset? CanceledAt { get; private set; }
+    public Guid? MoneyExchangeId { get; private set; }
 
     private PayrollPayment() { }
 
-    public PayrollPayment(Guid payrollPaymentId, Guid collaboratoId, decimal netSalary, decimal afp, decimal commission, Currency currency, DateTimeOffset createdAt)
+    public PayrollPayment(Guid payrollPaymentId, Guid collaboratoId, decimal netSalary, decimal afp, decimal commission, Currency currency, DateTimeOffset createdAt, Guid? moneyExchangeId)
     {
         PayrollPaymentId = payrollPaymentId;
         CollaboratorId = collaboratoId;
@@ -42,15 +43,17 @@ public class PayrollPayment
         Currency = currency;
         Commission = commission;
         Refresh();
+        MoneyExchangeId = moneyExchangeId;
     }
 
-    public void Edit(decimal netSalary, Currency currency, decimal afp, decimal commission)
+    public void Edit(decimal netSalary, Currency currency, decimal afp, decimal commission, Guid? moneyExchangeId)
     {
         NetSalary = netSalary;
         Afp = afp;
         GrossSalary = netSalary + afp;
         Commission = commission;
         Currency = currency;
+        MoneyExchangeId = moneyExchangeId;
         Refresh();
     }
     private void Refresh()

@@ -38,10 +38,12 @@
                     <th>Collaborator</th>
                     <th>Currency</th>
                     <th class="text-end">Gross Salary</th>
+                    <th class="text-end">Gross Salary (Original)</th>
                     <th class="text-end">Net Salary</th>
                     <th class="text-end">Afp</th>
                     <th class="text-end">Commission</th>
                     <th class="text-end">ITF</th>
+                    <th class="text-end">Paid at</th>
                     <th>Status</th>
                 </TableHeader>
                 <RowTemplate>
@@ -55,10 +57,12 @@
                     <td>@item.CollaboratorName</td>
                     <td>@item.Currency</td>
                     <td class="text-end">@item.GrossSalary.ToMoneyFormat()</td>
+                    <td class="text-end">@item.GrossSalaryInOriginalCurrency.ToMoneyFormat()</td>
                     <td class="text-end">@item.NetSalary.ToMoneyFormat()</td>
                     <td class="text-end">@item.Afp.ToMoneyFormat()</td>
                     <td class="text-end">@item.Commission.ToMoneyFormat()</td>
                     <td class="text-end">@item.ITF.ToMoneyFormat()</td>
+                    <td>@item.PaidAt.ToListFormat()</td>
                     <td>@item.Status</td>
                 </RowTemplate>
             </DataTable>

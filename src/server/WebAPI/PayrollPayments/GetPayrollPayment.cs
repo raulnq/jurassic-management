@@ -1,6 +1,7 @@
 ﻿using WebAPI.Collaborators;
 using WebAPI.Infrastructure.EntityFramework;
 using WebAPI.Infrastructure.SqlKata;
+using WebAPI.MoneyExchanges;
 
 namespace WebAPI.PayrollPayments;
 
@@ -28,6 +29,9 @@ public static class GetPayrollPayment
         public string? Currency { get; set; }
         public DateTimeOffset? CanceledAt { get; set; }
         public DateTime? AfpPaidAt { get; set; }
+        public Guid? MoneyExchangeId { get; set; }
+        public decimal Rate { get; set; }
+        public decimal GrossSalaryInOriginalCurrency { get { return Rate != 0 ? GrossSalary / Rate : 0; } }
     }
 
     public class Runner : BaseRunner
@@ -39,8 +43,10 @@ public static class GetPayrollPayment
             return _queryRunner.Get<Result>((qf) => qf
                 .Query(Tables.PayrollPayments)
                 .Select(Tables.PayrollPayments.AllFields)
+                .Select(Tables.MoneyExchanges.Field(nameof(MoneyExchange.Rate)))
                 .Select(Tables.Collaborators.Field(nameof(Collaborator.Name), nameof(Result.CollaboratorName)))
                 .Join(Tables.Collaborators, Tables.PayrollPayments.Field(nameof(PayrollPayment.CollaboratorId)), Tables.Collaborators.Field(nameof(Collaborator.CollaboratorId)))
+                .LeftJoin(Tables.MoneyExchanges, Tables.PayrollPayments.Field(nameof(PayrollPayment.MoneyExchangeId)), Tables.MoneyExchanges.Field(nameof(MoneyExchange.MoneyExchangeId)))
                 .Where(Tables.PayrollPayments.Field(nameof(PayrollPayment.PayrollPaymentId)), query.PayrollPaymentId));
         }
     }

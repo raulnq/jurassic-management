@@ -1,7 +1,9 @@
 ﻿@using WebAPI.Collaborators
 @using WebAPI.Infrastructure.SqlKata;
 @using WebAPI.Infrastructure.Ui;
+@using WebAPI.MoneyExchanges
 @using WebAPI.Proformas
+@using global::Infrastructure
 
 <Heading Text=@Endpoints.Title />
 <Breadcrumbs Links=@(new Breadcrumbs.Link[]{ new(Endpoints.ListTitle, Endpoints.List.AddListParameters()), new(Endpoints.RegisterTitle) })
@@ -13,7 +15,7 @@
             <Content>
                 <FormRow>
                     <Content>
-                        <div class="col-9">
+                        <div class="col-6">
                             <SelectInput Property=@(nameof(RegisterPayrollPayment.Command.CollaboratorId))
                                          Label="Collaborator"
                                          Source=@Collaborators.ToDictionary(c=>c.CollaboratorId, c=>c.Name)
@@ -25,6 +27,12 @@
                                          Source=@(Enum.GetValues<Currency>().ToDictionary(i=>i.ToString(), i=>i.ToString()))
                                          Required=true>
                             </SelectInput>
+                        </div>
+                        <div class="col-3">
+                            <SelectInput Property="MoneyExchangeId"
+                                         Label="Money Exchange Rate"
+                                         Source=@MoneyExchanges.ToDictionary(c=>c.MoneyExchangeId.ToString(), c=>$"{c.Rate.ToRateFormat()}({c.IssuedAt.ToListFormat()})")
+                                         Required=true />
                         </div>
                     </Content>
                 </FormRow>
@@ -69,4 +77,6 @@
 @code {
     [Parameter, EditorRequired]
     public IEnumerable<Collaborator> Collaborators { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public IEnumerable<MoneyExchange> MoneyExchanges { get; set; } = default!;
 }
