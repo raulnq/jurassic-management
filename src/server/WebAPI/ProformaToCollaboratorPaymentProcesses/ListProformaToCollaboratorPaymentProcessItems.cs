@@ -18,6 +18,10 @@ public static class ListProformaToCollaboratorPaymentProcessItems
         public Guid ProformaId { get; set; }
         public int Week { get; set; }
         public Guid CollaboratorId { get; set; }
+        public string? CollaboratorName { get; set; }
+        public string? CollaboratorEmail { get; set; }
+        public string? ProformaNote { get; set; }
+
         public string? ProjectName { get; set; }
         public string? ProformaNumber { get; set; }
         public string? ProformaCurrency { get; set; }
@@ -29,6 +33,7 @@ public static class ListProformaToCollaboratorPaymentProcessItems
         public decimal SubTotal { get; set; }
         public decimal ProfitAmount { get; set; }
         public decimal ProfitPercentage { get; set; }
+
     }
 
     public class Runner : BaseRunner

@@ -23,6 +23,16 @@
                 <FormRow>
                     <Content>
                         <div class="col">
+                            <EmailInput Property=@nameof(RegisterCollaborator.Command.Email)
+                                        Label="Email"
+                                        Placeholder="Enter email"
+                                        MaxLenght=255 />
+                        </div>
+                    </Content>
+                </FormRow>
+                <FormRow>
+                    <Content>
+                        <div class="col">
                             <NumberInput Property=@nameof(RegisterCollaborator.Command.WithholdingPercentage)
                                          Label="Withholding percentage"
                                          Placeholder="Enter withholding percentage"

@@ -13,6 +13,7 @@ public static class EditCollaborator
     {
         public string Name { get; set; } = default!;
         public decimal WithholdingPercentage { get; set; }
+        public string Email { get; set; } = default!;
     }
 
     public class Validator : AbstractValidator<Command>
@@ -20,6 +21,7 @@ public static class EditCollaborator
         public Validator()
         {
             RuleFor(command => command.Name).MaximumLength(100).NotEmpty();
+            RuleFor(command => command.Email).MaximumLength(255);
             RuleFor(command => command.WithholdingPercentage).GreaterThanOrEqualTo(0).LessThanOrEqualTo(100);
         }
     }
@@ -36,7 +38,7 @@ public static class EditCollaborator
         {
             var collaborator = await dbContext.Get<Collaborator>(collaboratorId);
 
-            collaborator.Edit(command.Name, command.WithholdingPercentage);
+            collaborator.Edit(command.Name, command.WithholdingPercentage, command.Email);
         });
 
         return TypedResults.Ok();

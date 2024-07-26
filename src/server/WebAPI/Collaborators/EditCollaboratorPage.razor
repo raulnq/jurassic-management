@@ -24,6 +24,17 @@
                 <FormRow>
                     <Content>
                         <div class="col">
+                            <EmailInput Property=@nameof(EditCollaborator.Command.Email)
+                                        Label="Email"
+                                        Placeholder="Enter email"
+                                        Value=@Collaborator.Email
+                                        MaxLenght=255 />
+                        </div>
+                    </Content>
+                </FormRow>
+                <FormRow>
+                    <Content>
+                        <div class="col">
                             <NumberInput Property=@nameof(EditCollaborator.Command.WithholdingPercentage)
                                          Label="Withholding percentage"
                                          Placeholder="Enter withholding percentage"

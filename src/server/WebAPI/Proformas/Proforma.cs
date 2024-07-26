@@ -29,6 +29,7 @@ public class Proforma
     public DateTime Start { get; private set; }
     public DateTime End { get; private set; }
     public string Number { get; private set; } = default!;
+    public string? Note { get; private set; } = string.Empty;
     public List<ProformaWeek> Weeks { get; private set; }
     public decimal Total { get; private set; }
     public decimal SubTotal { get; private set; }
@@ -51,7 +52,7 @@ public class Proforma
 
     private Proforma() { Weeks = []; }
 
-    public Proforma(Guid proformaId, DateTime start, DateTime end, Guid projectId, Client client, DateTimeOffset createdAt, decimal discount, Currency currency, int count)
+    public Proforma(Guid proformaId, DateTime start, DateTime end, Guid projectId, Client client, DateTimeOffset createdAt, decimal discount, Currency currency, int count, string note)
     {
         ProformaId = proformaId;
         CreatedAt = createdAt;
@@ -70,6 +71,7 @@ public class Proforma
         BankingExpensesPercentage = client.BankingExpensesPercentage;
         MinimumBankingExpenses = client.MinimumBankingExpenses;
         Discount = discount;
+        Note = note;
         FillWeeks();
         Refresh();
     }

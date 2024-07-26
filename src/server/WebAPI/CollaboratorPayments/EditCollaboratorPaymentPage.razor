@@ -22,6 +22,9 @@
         <MenuItem HtmxProps=@(new HtmxProps(Endpoints.Cancel, $"#{WebAPI.Users.MainPage.Workspace}"){ Confirm = "Are you sure?", HttpMethod="POST", Vals=$$"""{"collaboratorPaymentId":"{{Result.CollaboratorPaymentId}}"}"""})
                   IsDisabled=@(Result.Status !=CollaboratorPaymentStatus.Pending.ToString())
                   Text=@Endpoints.CancelTitle />
+        <MenuItem HtmxProps=@(new HtmxProps(Endpoints.Send, $"#{WebAPI.Users.MainPage.Workspace}"){ Confirm = "Are you sure?", HttpMethod="POST", Vals=$$"""{"collaboratorPaymentId":"{{Result.CollaboratorPaymentId}}"}"""})
+                  IsDisabled=@(Result.Status !=CollaboratorPaymentStatus.Paid.ToString())
+                  Text="Send" />
     </MenuItems>
 </Breadcrumbs>
 <Toolbar>

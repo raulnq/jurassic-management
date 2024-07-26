@@ -32,6 +32,8 @@ public static class Endpoints
 
     public const string CancelTitle = "Cancel";
 
+    public const string Send = "/ui/collaborator-payments/{collaboratorPaymentId}/send";
+
     public static void RegisterCollaboratorPaymentEndpoints(this WebApplication app)
     {
         var group = app.MapGroup("/collaborator-payments")
@@ -78,5 +80,7 @@ public static class Endpoints
         uigroup.MapPost("/{collaboratorPaymentId:guid}/confirm", ConfirmCollaboratorPayment.HandleAction);
 
         uigroup.MapPost("/{collaboratorPaymentId:guid}/cancel", CancelCollaboratorPayment.HandleAction);
+
+        uigroup.MapPost("/{collaboratorPaymentId:guid}/send", SendCollaboratorPayment.HandleAction);
     }
 }

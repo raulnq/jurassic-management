@@ -20,6 +20,7 @@ public static class RegisterProforma
         public DateTime End { get; set; }
         public Guid ProjectId { get; set; }
         public decimal Discount { get; set; }
+        public string Note { get; set; } = string.Empty;
         public Currency Currency { get; set; }
     }
 
@@ -33,6 +34,7 @@ public static class RegisterProforma
         public Validator()
         {
             RuleFor(command => command.ProjectId).NotEmpty();
+            RuleFor(command => command.Note).NotEmpty().MaximumLength(1000);
             RuleFor(command => command.End).GreaterThanOrEqualTo(command => command.Start);
         }
     }
@@ -53,7 +55,7 @@ public static class RegisterProforma
 
             var count = await dbContext.Set<Proforma>().AsNoTracking().CountAsync(p => p.End == command.End);
 
-            var proforma = new Proforma(NewId.Next().ToSequentialGuid(), command.Start, command.End, command.ProjectId, client, clock.Now, command.Discount, command.Currency, count);
+            var proforma = new Proforma(NewId.Next().ToSequentialGuid(), command.Start, command.End, command.ProjectId, client, clock.Now, command.Discount, command.Currency, count, command.Note);
 
             dbContext.Set<Proforma>().Add(proforma);
 

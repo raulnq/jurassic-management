@@ -48,6 +48,17 @@
                 </FormRow>
                 <FormRow>
                     <Content>
+                        <div class="col">
+                            <TextInput Property=@nameof(RegisterProforma.Command.Note)
+                                       Label="Note"
+                                       Placeholder="Enter note"
+                                       MaxLenght=1000
+                                       Required=true />
+                        </div>
+                    </Content>
+                </FormRow>
+                <FormRow>
+                    <Content>
                         <div class="col-6">
                             <SelectInput Property="ClientId"
                                          Label="Client"

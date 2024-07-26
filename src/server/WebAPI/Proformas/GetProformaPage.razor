@@ -88,6 +88,16 @@
                 </div>
             </Content>
         </FormRow>
+        <FormRow>
+            <Content>
+                <div class="col">
+                    <TextInput Property=@nameof(GetProforma.Result.Note)
+                               Label="Note"
+                               Value=@GetProformaResult.Note
+                               Readonly=true />
+                </div>
+            </Content>
+        </FormRow>
         <div id=@Totals>
             <TotalsSectionPage Total=@GetProformaResult.Total
                                Commission=@GetProformaResult.Commission

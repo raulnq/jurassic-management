@@ -17,6 +17,7 @@ public static class GetCollaborator
         public Guid CollaboratorId { get; set; }
         public string? Name { get; set; }
         public decimal WithholdingPercentage { get; set; }
+        public string Email { get; set; } = default!;
     }
 
     public static async Task<Ok<Result>> Handle(

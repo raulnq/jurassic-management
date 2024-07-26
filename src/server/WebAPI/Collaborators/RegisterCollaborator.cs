@@ -14,6 +14,7 @@ public static class RegisterCollaborator
     {
         public string Name { get; set; } = default!;
         public decimal WithholdingPercentage { get; set; }
+        public string Email { get; set; } = default!;
     }
 
     public class Result
@@ -26,6 +27,7 @@ public static class RegisterCollaborator
         public Validator()
         {
             RuleFor(command => command.Name).MaximumLength(100).NotEmpty();
+            RuleFor(command => command.Email).MaximumLength(255);
             RuleFor(command => command.WithholdingPercentage).GreaterThanOrEqualTo(0).LessThanOrEqualTo(100);
         }
     }
@@ -39,7 +41,7 @@ public static class RegisterCollaborator
 
         var result = await behavior.Handle(() =>
         {
-            var collaborator = new Collaborator(NewId.Next().ToSequentialGuid(), command.Name, command.WithholdingPercentage);
+            var collaborator = new Collaborator(NewId.Next().ToSequentialGuid(), command.Name, command.WithholdingPercentage, command.Email);
 
             dbContext.Set<Collaborator>().Add(collaborator);
 
