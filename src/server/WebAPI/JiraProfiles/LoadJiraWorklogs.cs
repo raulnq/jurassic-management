@@ -27,17 +27,24 @@ public static class LoadJiraWorklogs
     {
         var proforma = await dbContext.Set<Proforma>().AsNoTracking().FirstAsync(p => p.ProformaId == proformaId);
 
-        var jiraProfileProject = await dbContext.Set<JiraProfileProject>().AsNoTracking().FirstOrDefaultAsync(p => p.ProjectId == proforma.ProjectId);
+        var jiraProfileProjects = await dbContext.Set<JiraProfileProject>().AsNoTracking().Where(p => p.ProjectId == proforma.ProjectId).ToListAsync();
 
-        if (jiraProfileProject != null)
+        if (jiraProfileProjects != null)
         {
-            var worklogs = await tempoService.Get(new TempoService.Request()
+            var results = new List<TempoService.Response>();
+
+            foreach (var jiraProfileProject in jiraProfileProjects)
             {
-                Start = command.Start,
-                End = command.End,
-                ProjectId = jiraProfileProject.JiraProjectId,
-                Token = jiraProfileProject.TempoToken
-            });
+                var worklogs = await tempoService.Get(new TempoService.Request()
+                {
+                    Start = command.Start,
+                    End = command.End,
+                    ProjectId = jiraProfileProject.JiraProjectId,
+                    Token = jiraProfileProject.TempoToken
+                });
+
+                results.Add(worklogs);
+            }
 
             var jiraProfileAccounts = await dbContext.Set<JiraProfileAccount>().AsNoTracking().Where(a => a.ProjectId == proforma.ProjectId).ToListAsync();
 
@@ -56,9 +63,14 @@ public static class LoadJiraWorklogs
 
                 foreach (var account in jiraProfileAccounts)
                 {
-                    var items = worklogs.Results.Where(worklog => worklog.Author?.AccountId == account.JiraAccountId);
+                    decimal hours = 0;
 
-                    decimal hours = items.Sum(item => Math.Round(((decimal)item.BillableSeconds) / 3600, 2, MidpointRounding.AwayFromZero));
+                    foreach (var worklogs in results)
+                    {
+                        var items = worklogs.Results.Where(worklog => worklog.Author?.AccountId == account.JiraAccountId);
+
+                        hours = items.Sum(item => Math.Round(((decimal)item.BillableSeconds) / 3600, 2, MidpointRounding.AwayFromZero)) + hours;
+                    }
 
                     if (hours > 0)
                     {
