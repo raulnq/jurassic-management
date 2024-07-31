@@ -48,10 +48,12 @@ public class Invoice
         DocumentUrl = documentUrl;
     }
 
-    public void Issue(DateTime issuedAt, string number, decimal exchangeRate)
+    public void Issue(DateTime issuedAt, string number, decimal subtotal, decimal exchangeRate)
     {
         EnsureStatus(InvoiceStatus.Pending);
         Status = InvoiceStatus.Issued;
+        SubTotal = subtotal;
+        Total = subtotal + Taxes;
         IssuedAt = issuedAt;
         Number = number;
         ExchangeRate = exchangeRate;
