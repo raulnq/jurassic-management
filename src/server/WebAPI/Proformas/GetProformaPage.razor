@@ -12,6 +12,9 @@
         <MenuItem Text="Issue"
                   IsDisabled=@(GetProformaResult.Status!=ProformaStatus.Pending.ToString())
                   HtmxProps=@(new HtmxProps(Endpoints.Issue, $"#{WebAPI.Users.MainPage.Dialog}"){Vals=$$"""{"proformaId":"{{GetProformaResult.ProformaId}}"}"""}) />
+        <MenuItem Text="Tracking"
+                  IsDisabled=@(GetProformaResult.Status!=ProformaStatus.Issued.ToString())
+                  HtmxProps=@(new HtmxProps(Endpoints.Track, $"#{WebAPI.Users.MainPage.Dialog}"){Vals=$$"""{"proformaId":"{{GetProformaResult.ProformaId}}"}"""}) />
         <MenuItem HtmxProps=@(new HtmxProps(Endpoints.Cancel, $"#{WebAPI.Users.MainPage.Workspace}"){ Confirm = "Are you sure?", HttpMethod="POST", Vals=$$"""{"proformaId":"{{GetProformaResult.ProformaId}}"}"""})
                   IsDisabled=@(GetProformaResult.Status !=ProformaStatus.Pending.ToString())
                   Text="Cancel" />

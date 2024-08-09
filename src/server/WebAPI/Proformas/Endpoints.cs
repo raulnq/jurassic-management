@@ -32,6 +32,10 @@ public static class Endpoints
 
     public const string Send = "/ui/proformas/{proformaId}/send";
 
+    public const string TrackingTitle = "Tracking";
+
+    public const string Track = "/ui/proformas/{proformaId}/tracking";
+
     public const string ListWeeks = "/ui/proformas/{proformaId}/weeks/list";
 
     public const string AddWorkItem = "/ui/proformas/{proformaId}/weeks/{week}/work-items/add";
@@ -111,6 +115,8 @@ public static class Endpoints
         uigroup.MapPost("/{proformaId:guid}/send", SendProformaDcument.HandleAction);
 
         uigroup.MapPost("/{proformaId:guid}/open", OpenProforma.HandleAction);
+
+        uigroup.MapGet("/{proformaId:guid}/tracking", GetProformaTracking.HandlePage);
 
         uigroup.MapGet("/{proformaId:guid}/weeks/list", ListProformaWeeks.HandlePage);
 

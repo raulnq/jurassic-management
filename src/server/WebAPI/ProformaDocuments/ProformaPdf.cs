@@ -172,6 +172,7 @@ namespace WebAPI.ProformaDocuments
                     r.RelativeItem(3).Text($"{GetProforma.SubTotal:F2}").AlignRight();
                 });
                 table.Cell().ColumnSpan(2).Text(string.Empty);
+
                 table.Cell().Element(CellStyle).Padding(2).PaddingRight(5).Text("COMISIÓN").AlignCenter();
                 table.Cell().Element(CellStyle).Padding(2).PaddingRight(5).AlignRight().Row(r =>
                 {
@@ -179,12 +180,27 @@ namespace WebAPI.ProformaDocuments
                     r.RelativeItem(3).Text($"{GetProforma.Commission:F2}").AlignRight();
                 });
                 table.Cell().ColumnSpan(2).Text(string.Empty);
-                table.Cell().Element(CellStyle).Padding(2).PaddingRight(5).Text("SALDO A FAVOR").FontSize(10).AlignCenter();
+
+                var label = "SALDO A FAVOR";
+                if (GetProforma.Discount < 0)
+                {
+                    label = "DEUDA";
+                }
+
+                table.Cell().Element(CellStyle).Padding(2).PaddingRight(5).Text(label).FontSize(10).AlignCenter();
                 table.Cell().Element(CellStyle).Padding(2).PaddingRight(5).AlignRight().Row(r =>
                 {
                     r.RelativeItem().Text("$");
-                    r.RelativeItem(3).Text($"({GetProforma.Discount:F2})").AlignRight();
-                }); ;
+                    if (GetProforma.Discount < 0)
+                    {
+                        r.RelativeItem(3).Text($"{-1 * GetProforma.Discount:F2}").AlignRight();
+                    }
+                    else
+                    {
+                        r.RelativeItem(3).Text($"({GetProforma.Discount:F2})").AlignRight();
+                    }
+
+                });
                 table.Cell().ColumnSpan(2).Text(string.Empty);
                 table.Cell().Element(CellStyle).Padding(2).PaddingRight(5).Text("TOTAL").Bold().AlignCenter();
                 table.Cell().Element(CellStyle).Padding(2).PaddingRight(5).AlignRight().Row(r =>

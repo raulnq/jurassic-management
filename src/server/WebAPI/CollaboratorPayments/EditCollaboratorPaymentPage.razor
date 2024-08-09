@@ -75,6 +75,8 @@
                             <NumberInput Property=@nameof(GetCollaboratorPayment.Result.GrossSalary)
                                          Label="Gross Salary"
                                          Prefix="$"
+                                         Min=0.0001m
+                                         Step=0.0001m
                                          Value=@Result.GrossSalary
                                          Readonly=@(Result.Status !=CollaboratorPaymentStatus.Pending.ToString()) />
                         </div>
